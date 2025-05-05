@@ -1,10 +1,6 @@
 import { PolymarketMarket, FetchMarketsOptions, PolymarketApiResponse } from "../types";
 
-// Default API URL
-const DEFAULT_API_URL = "https://gamma-api.polymarket.com/markets";
-
-// Configuration
-let polymarketApiUrl = DEFAULT_API_URL;
+let polymarketApiUrl = "https://gamma-api.polymarket.com/markets";
 
 export const initializePolymarketConfig = (config: { apiUrl?: string }): void => {
   if (config.apiUrl) {
