@@ -26,7 +26,7 @@ export const readMarkets: Action = {
           },
           {
             user: "{{agent}}",
-            content: { text: 'Here are the top 5 prediction markets on Polymarket:\n1. "Will Trump win the 2024 election?" - Yes: 52%, No: 48%\n2. "Will Bitcoin exceed $100k in 2024?" - Yes: 35%, No: 65%\n3. "Will OpenAI release GPT-5 in 2024?" - Yes: 72%, No: 28%\n4. "Will SpaceX reach Mars by 2026?" - Yes: 15%, No: 85%\n5. "Will the Fed cut rates in June?" - Yes: 62%, No: 38%' },
+            content: { text: 'Here are the top 5 prediction markets on Polymarket:\n1. "Will Trump win the 2024 election?" - Yes: $0.52, No: $0.48\n2. "Will Bitcoin exceed $100k in 2024?" - Yes: $0.35, No: $0.65\n3. "Will OpenAI release GPT-5 in 2024?" - Yes: $0.72, No: $0.28\n4. "Will SpaceX reach Mars by 2026?" - Yes: $0.15, No: $0.85\n5. "Will the Fed cut rates in June?" - Yes: $0.62, No: $0.38' },
           },
         ],
         [
@@ -36,7 +36,7 @@ export const readMarkets: Action = {
           },
           {
             user: "{{agent}}",
-            content: { text: 'I found 3 markets about Bitcoin on Polymarket:\n1. "Will Bitcoin exceed $100k in 2024?" - Yes: 35%, No: 65%\n2. "Will Bitcoin drop below $40k in May 2024?" - Yes: 22%, No: 78%\n3. "Will a Bitcoin ETF be approved in 2024?" - Yes: 89%, No: 11%' },
+            content: { text: 'I found 3 markets about Bitcoin on Polymarket:\n1. "Will Bitcoin exceed $100k in 2024?" - Yes: $0.35, No: $0.65\n2. "Will Bitcoin drop below $40k in May 2024?" - Yes: $0.22, No: $0.78\n3. "Will a Bitcoin ETF be approved in 2024?" - Yes: $0.89, No: $0.11' },
           },
         ],
       ],
@@ -106,13 +106,13 @@ export const readMarkets: Action = {
 
                 // If not in cache, fetch from service
                 const result = await polymarketService.fetchMarkets({
-                limit,
-                activeOnly,
-                query,
+                  limit,
+                  activeOnly,
+                  query,
                 });
 
                 if (!result.success || !result.markets || result.markets.length === 0) {
-                return `Sorry, I couldn't find any prediction markets${query ? ` about "${query}"` : ""}. ${result.error || ""}`;
+                  return `Sorry, I couldn't find any prediction markets${query ? ` about "${query}"` : ""}.${result.error ? ` ${result.error}` : ""}`;
                 }
 
                 return formatMarketsResponse(result.markets, query);
@@ -138,7 +138,7 @@ export const readMarkets: Action = {
         
         if (market.outcomes && market.outcomes.length > 0) {
           response += market.outcomes
-            .map(outcome => `${outcome.name}: ${Math.round(outcome.probability * 100)}%`)
+            .map(outcome => `${outcome.name}: $${outcome.price.toFixed(2)}`)
             .join(", ");
         } else {
           response += "No outcome data available";

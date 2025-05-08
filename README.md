@@ -1,1 +1,1 @@
-hello world
+gonna be a super sick polymarket plugin for eliza

@@ -6,20 +6,37 @@ export interface PolymarketConfig {
 
 export interface PolymarketMarket {
     id: string;
+    slug: string;
     question: string;
     description?: string;
+    active: boolean;
+    closed?: boolean;
+    acceptingOrders?: boolean;
+    new?: boolean;
     volume: number;
     liquidity: number;
     url: string;
+    startDate?: string;
     endDate: string;
     outcomes: PolymarketOutcome[];
-    isActive: boolean;
+    orderMinSize?: string | number;
+    orderPriceMinTickSize?: string | number;
+    volume24hr?: number;
+    volume1wk?: number;
+    volume1mo?: number;
+    volume1yr?: number;
+    oneDayPriceChange?: number;
+    oneHourPriceChange?: number;
+    oneWeekPriceChange?: number;
+    oneMonthPriceChange?: number;
+    lastTradePrice?: number;
+    bestBid?: number;
+    bestAsk?: number;
 }
 
 export interface PolymarketOutcome {
-    id: string;
+    clobTokenId: string;
     name: string;
-    probability: number;
     price: number;
 }
 

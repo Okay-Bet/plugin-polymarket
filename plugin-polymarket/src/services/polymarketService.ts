@@ -10,7 +10,8 @@ export const initializePolymarketConfig = (config: { apiUrl?: string }): void =>
 
 export const polymarketService = {
   fetchMarkets: async (options: FetchMarketsOptions = {}): Promise<PolymarketApiResponse> => {
-    const { limit = 100, activeOnly = true, query = "" } = options;
+    const { limit = 1000, activeOnly = true, query = "" } = options; // 'limit' here is the user's desired final count
+    const API_FETCH_COUNT = '1000'; // Fixed count for fetching from Polymarket API
     
     try {
       // Calculate date 3 days ago for filtering
@@ -20,7 +21,7 @@ export const polymarketService = {
       
       // Build query parameters
       const params = new URLSearchParams({
-        limit: limit.toString(),
+        limit: API_FETCH_COUNT, // Use fixed count for API request
         offset: '0',
         active: activeOnly.toString(),
         ascending: 'false',
@@ -28,11 +29,6 @@ export const polymarketService = {
         liquidity_num_min: '5000',
         volume_num_min: '20000'
       });
-      
-      // Add query parameter if provided
-      if (query) {
-        params.append('search', query);
-      }
       
       // Make the API request
       const response = await fetch(`${polymarketApiUrl}?${params.toString()}`);
@@ -44,26 +40,73 @@ export const polymarketService = {
       const data = await response.json();
       
       // Transform API response to our internal format
-      const markets: PolymarketMarket[] = data.map((market: any) => ({
-        id: market.id,
-        question: market.question,
-        description: market.description || "",
-        volume: market.volume_num || 0,
-        liquidity: market.liquidity_num || 0,
-        url: `https://polymarket.com/market/${market.slug}`,
-        endDate: market.end_date,
-        isActive: market.active,
-        outcomes: (market.outcomes || []).map((outcome: any) => ({
-          id: outcome.id,
-          name: outcome.name,
-          probability: outcome.probability_implied || 0,
-          price: outcome.price || 0
-        }))
-      }));
+      const markets: PolymarketMarket[] = data.map((market: any) => {
+        let processedOutcomes: { name: string; price: number; clobTokenId: string }[] = [];
+        try {
+          const outcomeNames = typeof market.outcomes === 'string' ? JSON.parse(market.outcomes) : market.outcomes;
+          const outcomePricesStr = typeof market.outcomePrices === 'string' ? JSON.parse(market.outcomePrices) : market.outcomePrices;
+          const clobTokenIds = typeof market.clobTokenIds === 'string' ? JSON.parse(market.clobTokenIds) : market.clobTokenIds;
+
+          if (Array.isArray(outcomeNames) && Array.isArray(outcomePricesStr) && Array.isArray(clobTokenIds) && outcomeNames.length === outcomePricesStr.length && outcomeNames.length === clobTokenIds.length) {
+            processedOutcomes = outcomeNames.map((name: string, index: number) => ({
+              clobTokenId: clobTokenIds[index],
+              name: name,
+              price: parseFloat(outcomePricesStr[index]) || 0,
+            }));
+          } else if (market.outcomes || market.outcomePrices) { // Log only if there was an attempt to parse
+            console.warn(`Market ID ${market.id}: Mismatch or invalid format in outcomes/outcomePrices. Received outcomes: ${market.outcomes}, Received prices: ${market.outcomePrices}`);
+          }
+        } catch (e) {
+          console.error(`Market ID ${market.id}: Error parsing outcomes/prices JSON strings. Received outcomes: ${market.outcomes}, Received prices: ${market.outcomePrices}`, e);
+        }
+
+        return {
+          id: market.id,
+          slug: market.slug,
+          question: market.question,
+          description: market.description || "",
+          active: market.active,
+          closed: market.closed,
+          acceptingOrders: market.acceptingOrders,
+          new: market.new,
+          volume: market.volume || 0,
+          liquidity: market.liquidity || 0,
+          url: `https://polymarket.com/market/${market.slug}`,
+          startDate: market.startDate,
+          endDate: market.endDate,
+          orderMinSize: market.orderMinSize,
+          orderPriceMinTickSize: market.orderPriceMinTickSize,
+          volume24hr: market.volume24hr,
+          volume1wk: market.volume1wk,
+          volume1mo: market.volume1mo,
+          volume1yr: market.volume1yr,
+          oneDayPriceChange: market.oneDayPriceChange,
+          oneHourPriceChange: market.oneHourPriceChange,
+          oneWeekPriceChange: market.oneWeekPriceChange,
+          oneMonthPriceChange: market.oneMonthPriceChange,
+          lastTradePrice: market.lastTradePrice,
+          bestBid: market.bestBid,
+          bestAsk: market.bestAsk,
+          outcomes: processedOutcomes,
+        };
+      });
+
+      let filteredMarkets = markets;
+      if (query && query.trim() !== "") {
+        const lowerCaseQuery = query.toLowerCase().trim();
+        filteredMarkets = markets.filter(m =>
+          (m.question && m.question.toLowerCase().includes(lowerCaseQuery)) ||
+          (m.description && m.description.toLowerCase().includes(lowerCaseQuery)) ||
+          (m.slug && m.slug.toLowerCase().replace(/-/g, ' ').includes(lowerCaseQuery))
+        );
+      }
+
+      // Apply the user-specified limit to the filtered markets
+      const finalMarkets = filteredMarkets.slice(0, limit);
       
       return {
         success: true,
-        markets
+        markets: finalMarkets
       };
     } catch (error) {
       console.error("Error fetching markets:", error);
