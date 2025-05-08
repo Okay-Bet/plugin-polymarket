@@ -4,19 +4,17 @@ import { polymarketService } from '../../services/polymarketService';
 import type { IAgentRuntime, Memory, State, Content, UUID } from '@elizaos/core'; // Import UUID and Content
 import { ReadMarketsActionContent, PolymarketMarket } from '../../types';
 
-// Mock polymarketService
 vi.mock('../../services/polymarketService', () => ({
   polymarketService: {
     fetchMarkets: vi.fn(),
   },
 }));
 
-// Mock elizaLogger from @elizaos/core
 vi.mock('@elizaos/core', async (importOriginal) => {
     const original = await importOriginal<typeof import('@elizaos/core')>();
     return {
         ...original,
-        elizaLogger: { // Ensure all methods of elizaLogger are mocked if used
+        elizaLogger: { 
             log: vi.fn(),
             error: vi.fn(),
             warn: vi.fn(),
@@ -31,13 +29,10 @@ describe('readMarkets Action', () => {
   let mockMessage: Memory;
   let mockState: State;
 
-  // Helper to create a valid UUID
   const createMockUUID = (): UUID => '123e4567-e89b-12d3-a456-426614174000' as UUID;
 
   beforeEach(() => {
-    vi.resetAllMocks(); // Resets all mocks
-
-    // Provide a more complete mock for State
+    vi.resetAllMocks(); 
     mockState = {
         topics: ['test topic'],
         recentMessages: "test",
@@ -54,12 +49,7 @@ describe('readMarkets Action', () => {
 
     mockRuntime = {
       agentId: createMockUUID(),
-      // Ensure composeState returns a fully compliant State object
       composeState: vi.fn().mockResolvedValue(mockState),
-      // Add other IAgentRuntime methods if they are called and need mocking
-      // For example, if runtime.getMemory is used:
-      // getMemory: vi.fn(),
-      // send: vi.fn(),
     } as unknown as IAgentRuntime;
 
     mockMessage = {
@@ -70,16 +60,14 @@ describe('readMarkets Action', () => {
         roomId: '123' as UUID
     };
     
-    // Update mockState to include the fully formed mockMessage
     mockState.messages = [mockMessage];
   });
 
   describe('validate function', () => {
     const runValidation = (text: string) => {
-        // Create a new message for each validation run to avoid shared state issues
         const messageWithContent = {
-            ...mockMessage, // Spread the base mockMessage
-            content: { text } as ReadMarketsActionContent as Content, // Override content
+            ...mockMessage, 
+            content: { text } as ReadMarketsActionContent as Content, 
         };
         return readMarkets.validate!(mockRuntime, messageWithContent, mockState);
     };
@@ -105,9 +93,7 @@ describe('readMarkets Action', () => {
     });
 
     it('should handle content missing .text property gracefully', async () => {
-        // This test is for when content.text would cause a runtime error,
-        // which should be caught by the try/catch in validate.
-        const invalidContent = { someOtherProp: 'test' } as unknown as Content; // This content lacks 'text'
+        const invalidContent = { someOtherProp: 'test' } as unknown as Content; 
         const invalidMessage: Memory = {
              ...mockMessage,
              content: invalidContent,
@@ -149,7 +135,7 @@ describe('readMarkets Action', () => {
        (polymarketService.fetchMarkets as ReturnType<typeof vi.fn>).mockResolvedValue({ success: true, markets: [] });
       await readMarkets.handler!(mockRuntime, currentMessage, mockState);
       expect(polymarketService.fetchMarkets).toHaveBeenCalledWith(expect.objectContaining({
-        limit: 5, // Default limit
+        limit: 5, 
         query: 'elections',
       }));
     });

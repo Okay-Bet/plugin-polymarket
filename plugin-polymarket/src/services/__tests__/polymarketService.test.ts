@@ -1,16 +1,12 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { polymarketService, initializePolymarketConfig } from '../polymarketService';
-// Assuming PolymarketMarket type is correctly exported from types.ts
-// import { PolymarketMarket } from '../../types';
 
-// Mock global fetch
 const mockFetch = vi.fn();
 vi.stubGlobal('fetch', mockFetch);
 
 describe('polymarketService', () => {
   beforeEach(() => {
     mockFetch.mockReset();
-    // Reset to default API URL for each test
     initializePolymarketConfig({ apiUrl: "https://gamma-api.polymarket.com/markets" });
   });
 
@@ -57,17 +53,17 @@ describe('polymarketService', () => {
       question: 'Test Question 1?',
       description: 'Desc 1',
       active: true,
-      closed: false, // Expected based on mock or default transformation
-      acceptingOrders: true, // Expected based on mock or default transformation
-      new: false, // Expected based on mock or default transformation
+      closed: false, 
+      acceptingOrders: true, 
+      new: false, 
       volume: 10000,
       liquidity: 6000,
       url: 'https://polymarket.com/market/test-question-1',
-      startDate: '2025-01-01', // Expected based on mock or default transformation
+      startDate: '2025-01-01', 
       endDate: '2025-12-31',
       outcomes: [
         {
-          clobTokenId: 'market1-outcome-0', // Updated to match the new generation logic
+          clobTokenId: 'market1-outcome-0', 
           name: 'Yes',
           price: 0.6,
         },
