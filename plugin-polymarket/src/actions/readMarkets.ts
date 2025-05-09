@@ -6,7 +6,7 @@ import {
     elizaLogger
 } from "@elizaos/core";
 import { polymarketService } from "../services/polymarketService";
-import { ReadMarketsActionContent, ReadMarketsData } from "../types";
+import { ReadMarketsActionContent, ReadMarketsData, ReadMarketsActionParams } from "../types";
 
 export const readMarkets: Action = {
     name: "READ_POLYMARKET_MARKETS",
@@ -94,22 +94,25 @@ export const readMarkets: Action = {
                 }
                 
                 // Extract limit if present
-                let limit = 5; // Default limit
+                let userLimit = 5; // Default limit
                 const limitMatch = text.match(/show\s+(\d+)/i) || text.match(/(\d+)\s+markets/i);
                 if (limitMatch) {
-                limit = parseInt(limitMatch[1], 10);
+                userLimit = parseInt(limitMatch[1], 10);
                 }
                 
                 // Check if we only want active markets
                 const activeOnly = !text.toLowerCase().includes("inactive") && 
                                 !text.toLowerCase().includes("all markets");
 
-                // If not in cache, fetch from service
-                const result = await polymarketService.fetchMarkets({
-                  limit,
+                // Prepare params for the service call
+                const params: ReadMarketsActionParams = {
+                  userLimit,
                   activeOnly,
                   query,
-                });
+                };
+
+                // If not in cache, fetch from service
+                const result = await polymarketService.fetchMarkets(params);
 
                 if (!result.success || !result.markets || result.markets.length === 0) {
                   return `Sorry, I couldn't find any prediction markets${query ? ` about "${query}"` : ""}.${result.error ? ` ${result.error}` : ""}`;
