@@ -1,7 +1,7 @@
 import { describe, expect, it, vi, beforeAll, afterAll } from 'vitest';
 import plugin from '../src/plugin';
-import { ModelType, logger } from '@elizaos/core/v2';
-import type { IAgentRuntime } from '@elizaos/core/v2';
+import { ModelType, logger } from '@elizaos/core';
+import type { IAgentRuntime } from '@elizaos/core';
 import dotenv from 'dotenv';
 import { documentTestResult, createMockRuntime } from './utils/core-test-utils';
 
@@ -104,7 +104,7 @@ const runCoreModelTests = async (
 
 describe('Plugin Models', () => {
   it('should have models defined', () => {
-    expect(plugin.models).toBeDefined(); // change to check if models are defined instead of truthy
+    expect(plugin.models).toBeDefined();
     if (plugin.models) {
       expect(typeof plugin.models).toBe('object');
     }

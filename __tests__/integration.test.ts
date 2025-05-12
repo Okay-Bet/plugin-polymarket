@@ -1,7 +1,8 @@
-import { describe, expect, it, beforeAll, afterAll } from 'vitest';
+import { describe, expect, it, vi, beforeAll, afterAll } from 'vitest';
 import * as fs from 'fs';
 import * as path from 'path';
-import { logger } from '@elizaos/core/v2';
+import { execSync } from 'child_process';
+import { logger } from '@elizaos/core';
 
 // Skip in CI environments or when running automated tests without interaction
 const isCI = process.env.CI === 'true' || process.env.NODE_ENV === 'test';
@@ -114,7 +115,7 @@ describe('Project Scaffolding', () => {
         version: '1.0.0',
         type: 'module',
         dependencies: {
-          '@elizaos/core/v2': 'workspace:*',
+          '@elizaos/core': 'workspace:*',
         },
       };
 

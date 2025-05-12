@@ -1,8 +1,8 @@
-import { describe, expect, it, vi, beforeAll, afterAll } from 'vitest';
-import { ModelType, logger } from '@elizaos/core';
-import { ClobService } from '../src/services/clobService';
-import dotenv from 'dotenv';
+import { describe, expect, it, vi, beforeEach, afterEach, beforeAll, afterAll } from 'vitest';
 import plugin from '../src/plugin';
+import { ModelType, logger } from '@elizaos/core';
+import { StarterService } from '../src/plugin';
+import dotenv from 'dotenv';
 
 // Setup environment variables
 dotenv.config();
@@ -20,7 +20,7 @@ afterAll(() => {
 });
 
 // Helper function to document test results
-function documentTestResult(testName: string, result: any, error: Error | unknown = null) {
+function documentTestResult(testName: string, result: any, error: Error | null = null) {
   logger.info(`TEST: ${testName}`);
   if (result) {
     if (typeof result === 'string') {
@@ -33,8 +33,8 @@ function documentTestResult(testName: string, result: any, error: Error | unknow
       }
     }
   }
-  if (error instanceof Error) {
- logger.error(`ERROR: ${error.message}`);
+  if (error) {
+    logger.error(`ERROR: ${error.message}`);
     if (error.stack) {
       logger.error(`STACK: ${error.stack}`);
     }
@@ -47,8 +47,8 @@ function createRealRuntime() {
 
   // Create a real service instance if needed
   const createService = (serviceType: string) => {
-    if (serviceType === ClobService.serviceType) {
-      return new ClobService({
+    if (serviceType === StarterService.serviceType) {
+      return new StarterService({
         character: {
           name: 'Test Character',
           system: 'You are a helpful assistant for testing.',
@@ -62,13 +62,8 @@ function createRealRuntime() {
     character: {
       name: 'Test Character',
       system: 'You are a helpful assistant for testing.',
-      plugins: [
-        "@elizaos/plugin-polymarket",    
-        ...(process.env.GOOGLE_GENERATIVE_AI_API_KEY
-          ? ["@elizaos/plugin-google-genai"]
-          : []),
-      ],
-        settings: {},
+      plugins: [],
+      settings: {},
     },
     getSetting: (key: string) => null,
     models: plugin.models,
@@ -94,20 +89,28 @@ function createRealRuntime() {
       logger.debug(`Registering service: ${serviceType}`);
       services.set(serviceType, service);
     },
-    registerPlugin: vi.fn(), // Add a mock registerPlugin
   };
 }
 
 describe('Plugin Configuration', () => {
   it('should have correct plugin metadata', () => {
-    expect(plugin.name).toBe('@elizaos/plugin-polymarket');
-            expect(plugin.description).toBe('Plugin for Polymarket integration');
+    expect(plugin.name).toBe('starter');
+    expect(plugin.description).toBe('A starter plugin for Eliza');
     expect(plugin.config).toBeDefined();
 
     documentTestResult('Plugin metadata check', {
       name: plugin.name,
       description: plugin.description,
       hasConfig: !!plugin.config,
+    });
+  });
+
+  it('should include the EXAMPLE_PLUGIN_VARIABLE in config', () => {
+    expect(plugin.config).toHaveProperty('EXAMPLE_PLUGIN_VARIABLE');
+
+    documentTestResult('Plugin config check', {
+      hasExampleVariable: 'EXAMPLE_PLUGIN_VARIABLE' in plugin.config,
+      configKeys: Object.keys(plugin.config || {}),
     });
   });
 
@@ -120,12 +123,12 @@ describe('Plugin Configuration', () => {
       // Initialize with config - using real runtime
       const runtime = createRealRuntime();
 
-      let error: Error | unknown = null;
+      let error = null;
       try {
- await plugin.init?.({ EXAMPLE_PLUGIN_VARIABLE: 'test-value' }, runtime as any);
+        await plugin.init?.({ EXAMPLE_PLUGIN_VARIABLE: 'test-value' }, runtime as any);
         expect(true).toBe(true); // If we got here, init succeeded
       } catch (e) {
-        error = e;
+        error = e as Error;
         logger.error('Plugin initialization error:', e);
       }
 
@@ -139,6 +142,41 @@ describe('Plugin Configuration', () => {
       );
     } finally {
       process.env.EXAMPLE_PLUGIN_VARIABLE = originalEnv;
+    }
+  });
+
+  it('should throw an error on invalid config', async () => {
+    // Test with empty string (less than min length 1)
+    if (plugin.init) {
+      const runtime = createRealRuntime();
+      let error = null;
+
+      try {
+        await plugin.init({ EXAMPLE_PLUGIN_VARIABLE: '' }, runtime as any);
+        // Should not reach here
+        expect(true).toBe(false);
+      } catch (e) {
+        error = e as Error;
+        // This is expected - test passes
+        expect(error).toBeTruthy();
+      }
+
+      documentTestResult(
+        'Plugin invalid config',
+        {
+          errorThrown: !!error,
+          errorMessage: error?.message,
+        },
+        error
+      );
+    }
+  });
+
+  it('should have a valid config', () => {
+    expect(plugin.config).toBeDefined();
+    if (plugin.config) {
+      // Check if the config has expected EXAMPLE_PLUGIN_VARIABLE property
+      expect(Object.keys(plugin.config)).toContain('EXAMPLE_PLUGIN_VARIABLE');
     }
   });
 });
@@ -169,23 +207,22 @@ describe('Plugin Models', () => {
   });
 
   it('should return a response from TEXT_SMALL model', async () => {
-    if(plugin.models){
-      // Ensure TEXT_SMALL model is defined before using it
-      expect(plugin.models).toHaveProperty(ModelType.TEXT_SMALL);
-
+    if (plugin.models && plugin.models[ModelType.TEXT_SMALL]) {
       const runtime = createRealRuntime();
 
       let result = '';
-      let error: Error | unknown = null;
+      let error: Error | null = null;
 
       try {
-        logger.info('Using Google Gen AI for TEXT_SMALL model');
+        logger.info('Using OpenAI for TEXT_SMALL model');
         result = await plugin.models[ModelType.TEXT_SMALL](runtime as any, { prompt: 'test' });
+
         // Check that we get a non-empty string response
         expect(result).toBeTruthy();
         expect(typeof result).toBe('string');
+        expect(result.length).toBeGreaterThan(10);
       } catch (e) {
-        error = e;
+        error = e as Error;
         logger.error('TEXT_SMALL model test failed:', e);
       }
 
@@ -194,35 +231,35 @@ describe('Plugin Models', () => {
   });
 });
 
-describe('ClobService', () => {
+describe('StarterService', () => {
   it('should start the service', async () => {
     const runtime = createRealRuntime();
     let startResult;
-    let error: Error | unknown = null;
+    let error = null;
 
     try {
-      logger.info('Starting ClobService');
-      startResult = await ClobService.start(runtime as any);
+      logger.info('Starting StarterService');
+      startResult = await StarterService.start(runtime as any);
 
       expect(startResult).toBeDefined();
-      expect(startResult.constructor.name).toBe('ClobService');
+      expect(startResult.constructor.name).toBe('StarterService');
 
       // Test real functionality
       const servicePropertyNames = Object.getOwnPropertyNames(startResult);
       expect(servicePropertyNames).toContain('stop');
       expect(typeof startResult.stop).toBe('function');
     } catch (e) {
-      error = e;
+      error = e as Error;
       logger.error('Service start error:', e);
     }
 
     documentTestResult(
-      'ClobService start',
+      'StarterService start',
       {
         success: !!startResult,
         serviceType: startResult?.constructor.name,
       },
-      error,
+      error
     );
   });
 
@@ -230,14 +267,14 @@ describe('ClobService', () => {
     const runtime = createRealRuntime();
 
     // First registration should succeed
-    const result1 = await ClobService.start(runtime as any);
+    const result1 = await StarterService.start(runtime as any);
     expect(result1).toBeTruthy();
 
     let startupError: Error | unknown = null;
 
     try {
       // Second registration should fail
-      await ClobService.start(runtime as any);
+      await StarterService.start(runtime as any);
       expect(true).toBe(false); // Should not reach here
     } catch (e) {
       startupError = e;
@@ -245,7 +282,7 @@ describe('ClobService', () => {
     }
 
     documentTestResult(
-      'ClobService double start',
+      'StarterService double start',
       {
         errorThrown: !!startupError,
         errorMessage: startupError instanceof Error ? startupError.message : String(startupError),
@@ -256,28 +293,28 @@ describe('ClobService', () => {
 
   it('should stop the service', async () => {
     const runtime = createRealRuntime();
-    let error: Error | unknown = null;
+    let error = null;
 
     try {
       // Register a real service first
-      const service = new ClobService(runtime as any);
-      runtime.registerService(ClobService.serviceType, service);
+      const service = new StarterService(runtime as any);
+      runtime.registerService(StarterService.serviceType, service);
 
       // Spy on the real service's stop method
       const stopSpy = vi.spyOn(service, 'stop');
 
       // Call the static stop method
-      await ClobService.stop(runtime as any);
+      await StarterService.stop(runtime as any);
 
       // Verify the service's stop method was called
       expect(stopSpy).toHaveBeenCalled();
     } catch (e) {
-      error = e;
+      error = e as Error;
       logger.error('Service stop error:', e);
     }
 
     documentTestResult(
-      'ClobService stop',
+      'StarterService stop',
       {
         success: !error,
       },
@@ -292,29 +329,32 @@ describe('ClobService', () => {
     let error: Error | unknown = null;
 
     try {
-      // For this specific test, explicitly mock getService to return null for 'ClobService'
-      // to ensure we test the "service not found" path in ClobService.stop
-      vi.spyOn(runtime, 'getService').mockImplementation((serviceType: string) => {
-        if (serviceType === ClobService.serviceType) return null;
-        return services.get(serviceType); // Fallback to original behavior for other services if any
-      });
-      const services = new Map();
-      await ClobService.stop(runtime as any);
+      // We'll patch the getService function to ensure it returns null
+      const originalGetService = runtime.getService;
+      runtime.getService = () => null;
+
+      await StarterService.stop(runtime as any);
       // Should not reach here
       expect(true).toBe(false);
     } catch (e) {
       error = e;
+      // This is expected - verify it's the right error
       expect(error).toBeTruthy();
       if (error instanceof Error) {
-        expect(error.message).toContain('ClobService not found');
-        }
+        expect(error.message).toContain('Starter service not found');
+      }
+    } finally {
+      // Restore original getService function if needed
+      if ('getService' in runtime && typeof runtime.getService !== 'function') {
+        delete runtime.getService;
+      }
     }
 
     documentTestResult(
-      'ClobService non-existent stop',
+      'StarterService non-existent stop',
       {
         errorThrown: !!error,
-        errorMessage: (error as Error).message,
+        errorMessage: error instanceof Error ? error.message : String(error),
       },
       error instanceof Error ? error : null
     );
@@ -324,7 +364,7 @@ describe('ClobService', () => {
     const runtime = createRealRuntime();
 
     // First start the service
-    const startResult = await ClobService.start(runtime as any);
+    const startResult = await StarterService.start(runtime as any);
     expect(startResult).toBeTruthy();
 
     let stopError: Error | unknown = null;
@@ -332,7 +372,7 @@ describe('ClobService', () => {
 
     try {
       // Then stop it
-      await ClobService.stop(runtime as any);
+      await StarterService.stop(runtime as any);
       stopSuccess = true;
     } catch (e) {
       stopError = e;
@@ -340,7 +380,7 @@ describe('ClobService', () => {
     }
 
     documentTestResult(
-      'ClobService stop',
+      'StarterService stop',
       {
         success: stopSuccess,
         errorThrown: !!stopError,

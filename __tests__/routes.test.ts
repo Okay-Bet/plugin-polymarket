@@ -10,9 +10,21 @@ describe('Plugin Routes', () => {
     }
   });
 
-  it('should have a route for /welcome', async () => {
+  it('should have a route for /helloworld', () => {
     if (plugin.routes) {
-      const helloWorldRoute = plugin.routes.find((route) => route.path === '/welcome');
+      const helloWorldRoute = plugin.routes.find((route) => route.path === '/helloworld');
+      expect(helloWorldRoute).toBeDefined();
+
+      if (helloWorldRoute) {
+        expect(helloWorldRoute.type).toBe('GET');
+        expect(typeof helloWorldRoute.handler).toBe('function');
+      }
+    }
+  });
+
+  it('should handle route requests correctly', async () => {
+    if (plugin.routes) {
+      const helloWorldRoute = plugin.routes.find((route) => route.path === '/helloworld');
 
       if (helloWorldRoute && helloWorldRoute.handler) {
         // Create mock request and response objects
@@ -21,17 +33,20 @@ describe('Plugin Routes', () => {
           json: vi.fn(),
         };
 
+        // Mock runtime object as third parameter
+        const mockRuntime = {} as any;
+
         // Call the route handler
-        await helloWorldRoute.handler(mockReq, mockRes, {} as any); // Provide a mock runtime
+        await helloWorldRoute.handler(mockReq, mockRes, mockRuntime);
 
         // Verify response
-        expect(mockRes.json).toHaveBeenCalledWith({ message: 'Polymarket plugin has started and is operational.' });
-        expect(mockRes.json).toHaveBeenCalledTimes(1); // Ensure it's only called once
-      } else {
-        throw new Error("Route or handler not found");
+        expect(mockRes.json).toHaveBeenCalledTimes(1);
+        expect(mockRes.json).toHaveBeenCalledWith({
+          message: 'Hello World!',
+        });
       }
     }
- });
+  });
 
   it('should validate route structure', () => {
     if (plugin.routes) {

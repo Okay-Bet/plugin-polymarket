@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import fs from 'fs';
 import path from 'path';
-import { logger } from '@elizaos/core/v2';
+import { logger } from '@elizaos/core';
 
 // Helper function to check if a file exists
 function fileExists(filePath: string): boolean {
@@ -61,14 +61,14 @@ describe('Project Structure Validation', () => {
       const packageJson = JSON.parse(fs.readFileSync(path.join(rootDir, 'package.json'), 'utf8'));
 
       // Check package name
-      expect(packageJson.name).toBe('@elizaos/plugin-polymarket');
+      expect(packageJson.name).toBe('@elizaos/project-starter');
 
       // Check scripts
       expect(packageJson.scripts).toHaveProperty('build');
       expect(packageJson.scripts).toHaveProperty('test');
       expect(packageJson.scripts).toHaveProperty('test:coverage');
 
-            // Check dependencies
+      // Check dependencies
       expect(packageJson.dependencies).toHaveProperty('@elizaos/core');
 
       // Check dev dependencies - adjusted for actual dev dependencies
@@ -77,7 +77,7 @@ describe('Project Structure Validation', () => {
       expect(packageJson.devDependencies).toHaveProperty('tsup');
     });
 
-    it.skip('should have proper TypeScript configuration', () => {
+    it('should have proper TypeScript configuration', () => {
       const tsConfig = JSON.parse(fs.readFileSync(path.join(rootDir, 'tsconfig.json'), 'utf8'));
 
       // Check essential compiler options
@@ -127,9 +127,9 @@ describe('Project Structure Validation', () => {
 
     it('should have appropriate documentation content', () => {
       const readmeContent = fs.readFileSync(path.join(rootDir, 'README.md'), 'utf8');
-      expect(readmeContent).toContain('# Polymarket Plugin'); // Assuming 'Plugin Clob' is correct for README.md
-      expect(readmeContent).toContain('# Features');
-      expect(readmeContent).toContain('# Getting Started');
+      expect(readmeContent).toContain('Project Starter');
+      expect(readmeContent).toContain('Features');
+      expect(readmeContent).toContain('Getting Started');
 
       const testReadmeContent = fs.readFileSync(path.join(rootDir, 'README-TESTS.md'), 'utf8');
       expect(testReadmeContent).toContain('Test Structure');

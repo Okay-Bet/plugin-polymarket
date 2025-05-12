@@ -1,4 +1,3 @@
-import { BigNumberish } from 'ethers';
 import { z } from 'zod';
 
 // Helper for date strings if you want to validate them as actual dates
@@ -20,7 +19,7 @@ export type PolymarketConfig = z.infer<typeof PolymarketConfigSchema>;
 export const PolymarketOutcomeSchema = z.object({
   clobTokenId: z.string(),
   name: z.string(),
-  price: z.string(),
+  price: z.number(),
 });
 export type PolymarketOutcome = z.infer<typeof PolymarketOutcomeSchema>;
 
@@ -28,10 +27,10 @@ export type PolymarketOutcome = z.infer<typeof PolymarketOutcomeSchema>;
 export const PolymarketConditionOutcomeSchema = z.object({
   name: z.string(),
   address: z.string().optional(),
-  lastPrice: z.string().optional(),
-  priceChange24h: z.string().optional(),
-  yesPrice: z.string().optional(),
-  noPrice: z.string().optional(),
+  lastPrice: z.number().optional(),
+  priceChange24h: z.number().optional(),
+  yesPrice: z.number().optional(),
+  noPrice: z.number().optional(),
 });
 export type PolymarketConditionOutcome = z.infer<typeof PolymarketConditionOutcomeSchema>;
 
@@ -53,18 +52,17 @@ export const PolymarketMarketSchema = z.object({
   question: z.string(),
   description: z.string().optional(),
   active: z.boolean(),
-  category: z.string().optional(),
   closed: z.boolean().optional(),
   acceptingOrders: z.boolean().optional(),
   new: z.boolean().optional(), // 'new' is a reserved keyword, consider renaming if it causes issues in some JS contexts, though fine in TS types/Zod keys
-  volume: z.string(),
-  liquidity: z.string(),
+  volume: z.number(),
+  liquidity: z.number(),
   url: z.string().url().optional(), // Assuming URL should be validated as such
   startDate: z.string().optional(), // Consider dateStringSchema if strict date validation is needed
-  endDate: z.string().optional(), // Consider dateStringSchema
+  endDate: z.string(), // Consider dateStringSchema
   outcomes: z.array(PolymarketOutcomeSchema),
-  orderMinSize: z.number().optional(),
-  orderPriceMinTickSize: z.number().optional(),
+  orderMinSize: z.union([z.string(), z.number()]).optional(),
+  orderPriceMinTickSize: z.union([z.string(), z.number()]).optional(),
   volume24hr: z.number().optional(),
   volume1wk: z.number().optional(),
   volume1mo: z.number().optional(),
@@ -79,6 +77,7 @@ export const PolymarketMarketSchema = z.object({
   resolutionSource: z.string().optional(),
   resolved: z.boolean().optional(),
   archived: z.boolean().optional(),
+  category: z.string().optional(),
   tags: z.array(z.string()).optional(),
   conditions: z.array(PolymarketConditionSchema).optional(),
 });
@@ -165,10 +164,10 @@ export type PolymarketSingleMarketApiResponse = z.infer<typeof PolymarketSingleM
 export const PolymarketRawOutcomeSchema = z.object({
   name: z.string(),
   address: z.string().optional(),
-  last_price: z.string().optional(),
-  price_change_24h: z.string().optional(),
-  yes_price: z.string().optional(),
-  no_price: z.string().optional(),
+  last_price: z.number().optional(),
+  price_change_24h: z.number().optional(),
+  yes_price: z.number().optional(),
+  no_price: z.number().optional(),
 });
 export type PolymarketRawOutcome = z.infer<typeof PolymarketRawOutcomeSchema>;
 
@@ -195,7 +194,7 @@ export const PolymarketRawMarketSchema = z.object({
 
   /* ── lifecycle flags & dates (ISO‑8601) ───────────────────────────── */
   startDate: z.string().optional(), // Consider dateStringSchema
-  endDate: z.string().optional(), // Consider dateStringSchema
+  endDate: z.string(), // Consider dateStringSchema
   active: z.boolean(),
   closed: z.boolean().optional(),
   resolved: z.boolean().optional(),
@@ -204,8 +203,8 @@ export const PolymarketRawMarketSchema = z.object({
   new: z.boolean().optional(),
 
   /* ── liquidity & volume ───────────────────────────────────────────── */
-  liquidity: z.string().optional(),
-  volume: z.string().optional(),
+  liquidity: z.number().optional(),
+  volume: z.number().optional(),
   volume24hr: z.number().optional(),
   volume1wk: z.number().optional(),
   volume1mo: z.number().optional(),
@@ -248,58 +247,3 @@ export type PolymarketRawMarket = z.infer<typeof PolymarketRawMarketSchema>;
 // Type for raw API data from Polymarket API
 export const PolymarketApiDataSchema = z.array(PolymarketRawMarketSchema);
 export type PolymarketApiData = z.infer<typeof PolymarketApiDataSchema>;
-
-// BuySharesActionContent
-export const BuySharesActionContentSchema = z.object({
-  text: z.string(),
-  marketId: z.string().optional(),
-  outcomeId: z.string().optional(),
-  amount: z.string().optional(),
-  price: z.string().optional(),
-});
-export type BuySharesActionContent = z.infer<typeof BuySharesActionContentSchema>;
-
-// SellSharesActionContent
-export const SellSharesActionContentSchema = z.object({
-  text: z.string(),
-  marketId: z.string().optional(),
-  outcomeId: z.string().optional(),
-  amount: z.string().optional(),
-  price: z.string().optional(),
-});
-export type SellSharesActionContent = z.infer<typeof SellSharesActionContentSchema>;
-
-// RedeemWinningsActionContent
-export const RedeemWinningsActionContentSchema = z.object({
-  text: z.string(),
-  marketId: z.string().optional(),
-});
-export type RedeemWinningsActionContent = z.infer<typeof RedeemWinningsActionContentSchema>;
-
-// OrderParams
-export const OrderParamsSchema = z.object({
-  //markertAddress: z.string(),
-  //marketId: z.string(),
-  //outcomeId: z.string(),
-  side: z.enum(['BUY', 'SELL']),
-  amount: z.string(),
-  price: z.string(),
-  orderType: z.enum(['LIMIT', 'MARKET']).optional(),
-});
-export type OrderParams = {marketMakerAddress: string, conditionalTokensAddress: string, returnAmount: BigNumberish, outcomeIndex: BigNumberish, maxOutcomeTokensToSell: BigNumberish};
-
-export type OrderResult = { success: boolean; orderId?: string; message?: string; error?: string };
-
-export interface RedeemParams {
-  conditionalTokensAddress: string;
-  collateralTokenAddress: string;
-  conditionId: string;
-  outcomeSlotCount: number;
-}
-export interface RedeemResult {
-  success: boolean;
-  message?: string;
-  transactionDetails?: any;
-  //transactionHash?: string;
-  error?: string;
-}

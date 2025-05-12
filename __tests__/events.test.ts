@@ -1,10 +1,10 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import plugin from '../src/plugin';
-import { logger } from '@elizaos/core/v2';
+import { logger } from '@elizaos/core';
 
 // Mock logger
-vi.mock('@elizaos/core/v2', async () => {
-  const actual = await vi.importActual('@elizaos/core/v2');
+vi.mock('@elizaos/core', async () => {
+  const actual = await vi.importActual('@elizaos/core');
   return {
     ...actual,
     logger: {
@@ -48,12 +48,8 @@ describe('Plugin Events', () => {
       await messageHandler(mockParams);
 
       // Verify log was called
-      expect(logger.info).toHaveBeenCalledWith(
-        'MESSAGE_RECEIVED event received',
-        expect.objectContaining({
-          message: { id: 'test-id', content: { text: 'Hello!' } },
-        }),
-      );
+      expect(logger.info).toHaveBeenCalledWith('MESSAGE_RECEIVED event received');
+      expect(logger.info).toHaveBeenCalledWith(expect.any(Array));
     }
   });
 
@@ -79,7 +75,8 @@ describe('Plugin Events', () => {
       await voiceHandler(mockParams);
 
       // Verify log was called
-      expect(logger.info).toHaveBeenCalledWith('VOICE_MESSAGE_RECEIVED event received', mockParams);
+      expect(logger.info).toHaveBeenCalledWith('VOICE_MESSAGE_RECEIVED event received');
+      expect(logger.info).toHaveBeenCalledWith(expect.any(Array));
     }
   });
 
@@ -107,10 +104,8 @@ describe('Plugin Events', () => {
       await connectedHandler(mockParams);
 
       // Verify log was called
+      expect(logger.info).toHaveBeenCalledWith('WORLD_CONNECTED event received');
       expect(logger.info).toHaveBeenCalledWith(expect.any(Array));
-      expect(logger.info).toHaveBeenCalledWith(
-        'WORLD_CONNECTED event received', mockParams
-      );
     }
   });
 

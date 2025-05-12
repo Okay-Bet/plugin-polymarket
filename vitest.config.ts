@@ -5,18 +5,11 @@ export default defineConfig({
   test: {
     environment: 'node',
     globals: true,
-    testTimeout: 600000, 
-    include: [
-      '__tests__/**/*.test.ts',
-      //  '__tests__/**/utils/*.ts' // Explicitly include files in utils
-    ],
-},
+    testTimeout: 60000,
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
   },
-  ssr: { // Moved ssr to the root level
-    noExternal: [
-    ]},
 });

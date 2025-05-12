@@ -1,21 +1,13 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import plugin from '../src/plugin';
-import { logger } from '@elizaos/core/v2';
-import type { IAgentRuntime, Memory, State } from '@elizaos/core/v2';
+import { StarterService } from '../src/plugin';
+import { logger } from '@elizaos/core';
+import type { IAgentRuntime, Memory, State } from '@elizaos/core';
 import { v4 as uuidv4 } from 'uuid';
-import { ClobService } from '../src/services/clobService';
-import { buySharesAction } from '../src/actions/trading/buyShares';
-import { redeemSharesAction } from '../src/actions/trading/redeemShares';
-import { sellSharesAction } from '../src/actions/trading/sellShares';
-import { readMarketAction } from '../src/actions/utilites/readMarket';
-import { readMarketsAction } from '../src/actions/utilites/readMarkets';
-import { getUsernameAction, setUserAction } from '../src/actions/utilites/user';
-import { connectWalletAction } from '../src/actions/wallet/connectWallet';
-import { getWalletInfoAction } from '../src/actions/wallet/getWalletInfo';
 
 // Mock logger
-vi.mock('@elizaos/core/v2', async () => {
-  const actual = await vi.importActual('@elizaos/core/v2');
+vi.mock('@elizaos/core', async () => {
+  const actual = await vi.importActual('@elizaos/core');
   return {
     ...actual,
     logger: {
@@ -35,15 +27,15 @@ describe('Error Handling', () => {
     vi.restoreAllMocks();
   });
 
-  describe('Action Error Handling', () => {
+  describe('HELLO_WORLD Action Error Handling', () => {
     it('should log errors in action handlers', async () => {
       // Find the action
-      const action = plugin.actions?.find((a) => a.name === 'READ_POLYMARKET_MARKETS');
+      const action = plugin.actions?.find((a) => a.name === 'HELLO_WORLD');
 
       if (action && action.handler) {
         // Force the handler to throw an error
         const mockError = new Error('Test error in action');
-        //vi.spyOn(console, 'error').mockImplementation(() => {});
+        vi.spyOn(console, 'error').mockImplementation(() => {});
 
         // Create a custom mock runtime
         const mockRuntime = {
@@ -54,7 +46,7 @@ describe('Error Handling', () => {
           entityId: uuidv4(),
           roomId: uuidv4(),
           content: {
-            text: 'Show me list of PolyMarket markets!',
+            text: 'Hello!',
             source: 'test',
           },
         } as Memory;
@@ -75,11 +67,8 @@ describe('Error Handling', () => {
           await action.handler(mockRuntime, mockMessage, mockState, {}, mockCallback, []);
 
           // If we get here, no error was thrown, which is okay
-          expect(logger.error).not.toHaveBeenCalled();
-
-          // We expect the callback to be called (if there's internal error handling)
+          // In a real application, error handling might be internal
           expect(mockCallback).toHaveBeenCalled();
-          expect(mockCallback).toHaveBeenCalledWith(expect.objectContaining({ text: expect.any(String) }));
         } catch (error) {
           // If error is thrown, ensure it's handled correctly
           expect(logger.error).toHaveBeenCalled();
@@ -90,70 +79,47 @@ describe('Error Handling', () => {
 
   describe('Service Error Handling', () => {
     it('should throw an error when stopping non-existent service', async () => {
-      const mockRuntime = createMockRuntimeWithGetService(null);
+      const mockRuntime = {
+        getService: vi.fn().mockReturnValue(null),
+      } as unknown as IAgentRuntime;
 
-      let caughtError;
+      let caughtError = null;
       try {
-        await ClobService.stop(mockRuntime);
- expect(true).toBe(false); // Should not reach here
-      } catch (error) {
-        caughtError = error as Error;
-        expect(error.message).toBe('ClobService not found in runtime for stop');
+        await StarterService.stop(mockRuntime);
+      } catch (error: any) {
+        caughtError = error;
+        expect(error.message).toBe('Starter service not found');
       }
 
-      expect(caughtError).toBeInstanceOf(Error);
-      expect(mockRuntime.getService).toHaveBeenCalledWith('ClobService');
+      expect(caughtError).not.toBeNull();
+      expect(mockRuntime.getService).toHaveBeenCalledWith('starter');
     });
 
-    it('should handle error during service stop', async () => {
+    it('should handle service stop errors gracefully', async () => {
       const mockServiceWithError = {
         stop: vi.fn().mockImplementation(() => {
-          throw new Error('Simulated error during service stop');
+          throw new Error('Error stopping service');
         }),
       };
-      const mockRuntime = createMockRuntimeWithGetService(mockServiceWithError);
 
-      let caughtError: Error | null = null;
+      const mockRuntime = {
+        getService: vi.fn().mockReturnValue(mockServiceWithError),
+      } as unknown as IAgentRuntime;
+
+      // The error should be propagated
+      let caughtError = null;
       try {
-        await ClobService.stop(mockRuntime);
-        expect(true).toBe(false); // Should not reach here
+        await StarterService.stop(mockRuntime);
       } catch (error: any) {
-        caughtError = error as Error;
-        expect(error.message).toBe('Simulated error during service stop');
+        caughtError = error;
+        expect(error.message).toBe('Error stopping service');
       }
 
-      expect(caughtError).toBeInstanceOf(Error);
-      expect(mockRuntime.getService).toHaveBeenCalledWith('ClobService');
+      expect(caughtError).not.toBeNull();
+      expect(mockRuntime.getService).toHaveBeenCalledWith('starter');
       expect(mockServiceWithError.stop).toHaveBeenCalled();
     });
   });
-
-  // Helper function to create a mock runtime with getService
-  const createMockRuntimeWithGetService = (service: any): IAgentRuntime => {
-    const mockRuntime: Partial<IAgentRuntime> = {
-      getService: vi.fn().mockReturnValue(service),
-      // Add any other necessary mocks here
-      character: {
-        name: 'Test Character',
-        system: 'You are a helpful assistant for testing.',
-        bio: ''
-      },
-      actions: [
-          connectWalletAction,
-          getUsernameAction,
-          setUserAction,
-          getWalletInfoAction,
-          readMarketsAction,
-          readMarketAction,
-          buySharesAction,
-          sellSharesAction,
-          redeemSharesAction],
-      db: {} as any,
-    };
-
-    return mockRuntime as IAgentRuntime;
-    
-  };
 
   describe('Plugin Events Error Handling', () => {
     it('should handle errors in event handlers gracefully', async () => {
@@ -188,9 +154,9 @@ describe('Error Handling', () => {
 
   describe('Provider Error Handling', () => {
     it('should handle errors in provider.get method', async () => {
-      const provider = plugin.providers?.find((p) => p.name === 'POLY_MARKET_PROVIDER');
+      const provider = plugin.providers?.find((p) => p.name === 'HELLO_WORLD_PROVIDER');
 
-      if (provider && provider.get) {
+      if (provider) {
         // Create invalid inputs to test error handling
         const mockRuntime = null as unknown as IAgentRuntime;
         const mockMessage = null as unknown as Memory;
@@ -203,7 +169,7 @@ describe('Error Handling', () => {
           expect(true).toBe(true);
         } catch (error) {
           // If it does throw, at least make sure it's a handled error
- expect(logger.error).toHaveBeenCalled();
+          expect(logger.error).toHaveBeenCalled();
         }
       }
     });
