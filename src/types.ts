@@ -19,7 +19,7 @@ export type PolymarketConfig = z.infer<typeof PolymarketConfigSchema>;
 export const PolymarketOutcomeSchema = z.object({
   clobTokenId: z.string(),
   name: z.string(),
-  price: z.number(),
+  price: z.string(),
 });
 export type PolymarketOutcome = z.infer<typeof PolymarketOutcomeSchema>;
 
@@ -27,10 +27,10 @@ export type PolymarketOutcome = z.infer<typeof PolymarketOutcomeSchema>;
 export const PolymarketConditionOutcomeSchema = z.object({
   name: z.string(),
   address: z.string().optional(),
-  lastPrice: z.number().optional(),
-  priceChange24h: z.number().optional(),
-  yesPrice: z.number().optional(),
-  noPrice: z.number().optional(),
+  lastPrice: z.string().optional(),
+  priceChange24h: z.string().optional(),
+  yesPrice: z.string().optional(),
+  noPrice: z.string().optional(),
 });
 export type PolymarketConditionOutcome = z.infer<typeof PolymarketConditionOutcomeSchema>;
 
@@ -52,17 +52,18 @@ export const PolymarketMarketSchema = z.object({
   question: z.string(),
   description: z.string().optional(),
   active: z.boolean(),
+  category: z.string().optional(),
   closed: z.boolean().optional(),
   acceptingOrders: z.boolean().optional(),
   new: z.boolean().optional(), // 'new' is a reserved keyword, consider renaming if it causes issues in some JS contexts, though fine in TS types/Zod keys
-  volume: z.number(),
-  liquidity: z.number(),
+  volume: z.string(),
+  liquidity: z.string(),
   url: z.string().url().optional(), // Assuming URL should be validated as such
   startDate: z.string().optional(), // Consider dateStringSchema if strict date validation is needed
-  endDate: z.string(), // Consider dateStringSchema
+  endDate: z.string().optional(), // Consider dateStringSchema
   outcomes: z.array(PolymarketOutcomeSchema),
-  orderMinSize: z.union([z.string(), z.number()]).optional(),
-  orderPriceMinTickSize: z.union([z.string(), z.number()]).optional(),
+  orderMinSize: z.number().optional(),
+  orderPriceMinTickSize: z.number().optional(),
   volume24hr: z.number().optional(),
   volume1wk: z.number().optional(),
   volume1mo: z.number().optional(),
@@ -77,7 +78,6 @@ export const PolymarketMarketSchema = z.object({
   resolutionSource: z.string().optional(),
   resolved: z.boolean().optional(),
   archived: z.boolean().optional(),
-  category: z.string().optional(),
   tags: z.array(z.string()).optional(),
   conditions: z.array(PolymarketConditionSchema).optional(),
 });
@@ -164,10 +164,10 @@ export type PolymarketSingleMarketApiResponse = z.infer<typeof PolymarketSingleM
 export const PolymarketRawOutcomeSchema = z.object({
   name: z.string(),
   address: z.string().optional(),
-  last_price: z.number().optional(),
-  price_change_24h: z.number().optional(),
-  yes_price: z.number().optional(),
-  no_price: z.number().optional(),
+  last_price: z.string().optional(),
+  price_change_24h: z.string().optional(),
+  yes_price: z.string().optional(),
+  no_price: z.string().optional(),
 });
 export type PolymarketRawOutcome = z.infer<typeof PolymarketRawOutcomeSchema>;
 
@@ -194,7 +194,7 @@ export const PolymarketRawMarketSchema = z.object({
 
   /* ── lifecycle flags & dates (ISO‑8601) ───────────────────────────── */
   startDate: z.string().optional(), // Consider dateStringSchema
-  endDate: z.string(), // Consider dateStringSchema
+  endDate: z.string().optional(), // Consider dateStringSchema
   active: z.boolean(),
   closed: z.boolean().optional(),
   resolved: z.boolean().optional(),
@@ -203,8 +203,8 @@ export const PolymarketRawMarketSchema = z.object({
   new: z.boolean().optional(),
 
   /* ── liquidity & volume ───────────────────────────────────────────── */
-  liquidity: z.number().optional(),
-  volume: z.number().optional(),
+  liquidity: z.string().optional(),
+  volume: z.string().optional(),
   volume24hr: z.number().optional(),
   volume1wk: z.number().optional(),
   volume1mo: z.number().optional(),
