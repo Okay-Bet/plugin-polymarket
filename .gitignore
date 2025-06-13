@@ -5,6 +5,9 @@ build/
 # Dependencies
 node_modules/
 
+*.env
+elizadb
+
 # IDE and editor files
 .vscode/
 *.suo
@@ -34,6 +37,3 @@ elizaos.db-wal
 .qodo/
 .eliza
 .eliza/*
-
-*.env
-elizadb
