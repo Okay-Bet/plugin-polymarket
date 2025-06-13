@@ -4,5 +4,35 @@ build/
 
 # Dependencies
 node_modules/
+
+# IDE and editor files
+.vscode/
+*.suo
+*.njsproj
+*.sln
+*.swp
+.vs
+.vs/*
+.windsurf/rules/
+.windsurf
+
+# Logs and temp files
+*.log
+tmp/
+temp/
+
+# Environment files
 .env
-.elizadb
+
+# Other files
+*.env
+elizadb
+.elizad
+elizaos
+elizaos.db
+elizaos.db-journal
+elizaos.db-shm
+elizaos.db-wal
+.qodo/
+.eliza
+.eliza/*
