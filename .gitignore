@@ -26,8 +26,6 @@ temp/
 
 # Other files
 .elizad
-*.env
-elizadb
 elizaos
 elizaos.db
 elizaos.db-journal
@@ -37,3 +35,5 @@ elizaos.db-wal
 .eliza
 .eliza/*
 
+*.env
+elizadb
