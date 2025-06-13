@@ -276,5 +276,4 @@ async sellShares(marketId: string, outcome: string, quantity: number): Promise<a
 async redeemShares(marketId: string): Promise<any> {
     throw new Error("Method not implemented.");
 }
-
 }
