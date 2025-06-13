@@ -27,7 +27,7 @@ describe('Error Handling', () => {
     vi.restoreAllMocks();
   });
 
-  describe('HELLO_WORLD Action Error Handling', () => {
+  describe('Action Error Handling', () => {
     it('should log errors in action handlers', async () => {
       // Find the action
       const action = plugin.actions?.find((a) => a.name === 'HELLO_WORLD');
@@ -88,7 +88,7 @@ describe('Error Handling', () => {
         await StarterService.stop(mockRuntime);
       } catch (error: any) {
         caughtError = error;
-        expect(error.message).toBe('Starter service not found');
+        expect(error.message).toBe('Starter service not found in runtime for stop');
       }
 
       expect(caughtError).not.toBeNull();

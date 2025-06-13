@@ -1,4 +1,4 @@
-import { 
+import {
   type Action,
   type IAgentRuntime,
   type Memory,
@@ -6,59 +6,50 @@ import {
   type Content,
   logger,
   HandlerCallback,
-} from "@elizaos/core/v2";
-import { ClobService } from "../../../plugin-polymarket/src/services/clobService"; // Import ClobService 
-import { connectWalletExamples } from "../../../plugin-polymarket/src/examples";
+} from "@elizaos/core";
 
 export const connectWalletAction: Action = {
   name: "CONNECT_WALLET",
   similes: ["LINK_WALLET", "AUTHORIZE_WALLET"],
   description: "Connects the user's cryptocurrency wallet to Polymarket.",
-  examples: [...connectWalletExamples],
+  examples: [
+    [
+      {
+        name: "{{user1}}",
+        content: { text: "Connect my wallet to Polymarket." },
+      },
+      {
+        name: "{{agent}}",
+        content: { text: "Connecting your wallet... (In a real app, you'd see a wallet connection prompt)" },
+      },
+    ],
+  ],
+
   validate: async (
     _runtime: IAgentRuntime,
     message: Memory,
-    _state?: State,
+    _state?: State
   ): Promise<boolean> => {
-    const context = (message.content as Content);
-     const text = (context.text) ? context.text.toLowerCase() : "";
-    return (
-      text.includes("connect") &&
-      text.includes("wallet") &&
-      text.includes("polymarket")
-    );
+    const text = (message.content as Content).text.toLowerCase();
+    return text.includes("connect") && text.includes("wallet") && text.includes("polymarket");
   },
+
   handler: async (
     _runtime: IAgentRuntime,
     _message: Memory,
     _state: State,
-    _options: {},
+    _options: any,
     callback: HandlerCallback,
     _responses: Memory[]
-  ): Promise<string> => { 
-    // In a real application, you'd trigger a wallet connection flow here.
-    const clobService = _runtime.getService(ClobService.serviceType) as
-      | ClobService
-      | undefined;
-    if (!clobService) {
-      const errorMsg = "ClobService not available.";
-      logger.error(errorMsg);
-      await callback({ text: errorMsg });
-      return errorMsg;
-    }
-    
+  ): Promise<string> => {
     try {
-      // Check if a wallet is already connected
-      await callback({ text: "Wallet is already connected." });
-      return "Wallet is already connected.";
-    } catch (e: any) {
-      // Wallet not connected, proceed to request connection
-      const eventPayload = { type: "REQUEST_WALLET_CONNECT" };
-      await callback({
-        text: "Please connect your wallet.",
-        metadata: { walletEvent: eventPayload },
-      });
-      return "Requesting wallet connection... Please check your wallet provider for a connection request.";
+      // In a real implementation, this would trigger a wallet connection flow
+      // (e.g., using a library like MetaMask's provider) and interact with the Polymarket API.
+      const responseText = "Connecting your wallet... (In a real app, you'd see a wallet connection prompt and handle the connection)";
+      await callback({ text: responseText });
+      return responseText;
+    } catch (error) {
+      return `Error connecting wallet: ${error instanceof Error ? error.message : "Unknown error"}`;
     }
   },
-}
+};

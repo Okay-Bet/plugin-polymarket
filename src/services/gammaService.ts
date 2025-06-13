@@ -1,13 +1,13 @@
 import {
   PolymarketMarket,
   PolymarketApiResponse,
-  PolymarketApiDataSchema,
   PolymarketRawMarket,
   PolymarketRawMarketSchema,
   PolymarketApiCallParams,
-  PolymarketSingleMarketApiResponse
+  PolymarketSingleMarketApiResponse,
+  PolymarketApiDataSchema
 } from "../types";
-import { Service, IAgentRuntime, logger } from '@elizaos/core';
+import { Service, IAgentRuntime, logger, Memory } from '@elizaos/core';
 
 export class GammaService extends Service {
 static serviceType = 'GammaService';
@@ -52,7 +52,7 @@ static async fetchMarkets(): Promise<PolymarketApiResponse> {
         ascending: false
     };
 
-    const { markets, error } = await this._fetchAllMarketsPaginated(params);
+    const { markets, error } = await GammaService._fetchAllMarketsPaginated(params);
     
     if (error) return { success: false, error, markets: []};
 
@@ -65,7 +65,7 @@ static async fetchMarkets(): Promise<PolymarketApiResponse> {
  * @returns Promise resolving to market data
  */
 static async fetchMarketById(marketId: string): Promise<PolymarketSingleMarketApiResponse> {
-  if (!marketId || typeof marketId !== 'string' || marketId.trim() === '') {
+  if (typeof marketId !== 'string' || marketId.trim() === '') {
     return { success: false, error: "Market ID must be a non-empty string." };
   }
   
@@ -86,7 +86,7 @@ static async fetchMarketById(marketId: string): Promise<PolymarketSingleMarketAp
     
     if (result.success) {
       const rawMarketData = result.data;
-      const market = this._transformMarketData(rawMarketData);
+      const market = GammaService._transformMarketData(rawMarketData);
       return { success: true, market: market };
     }
     return { 
@@ -107,7 +107,7 @@ static async fetchMarketById(marketId: string): Promise<PolymarketSingleMarketAp
  * @param params - Parameters for the API call
  * @returns Constructed API URL
  */
-private static _buildApiUrl(params: PolymarketApiCallParams): string {
+  private static _buildApiUrl(params: PolymarketApiCallParams): string {
   const query = new URLSearchParams();
   
   query.append('limit', params.limit?.toString() ?? '100');
@@ -130,7 +130,7 @@ private static _buildApiUrl(params: PolymarketApiCallParams): string {
  * @param rawMarket - Raw market data from API
  * @returns Transformed market data
  */
-private static _transformMarketData(rawMarket: PolymarketRawMarket): PolymarketMarket {
+  private static _transformMarketData(rawMarket: PolymarketRawMarket): PolymarketMarket {
   let processedOutcomes: { name: string; price: string; clobTokenId: string }[] = [];
   
   try {
@@ -188,7 +188,7 @@ private static _transformMarketData(rawMarket: PolymarketRawMarket): PolymarketM
  * @param apiParams - Parameters for the API call
  * @returns Promise resolving to market data
  */
-private static async _fetchMarketPage(apiParams: PolymarketApiCallParams): Promise<PolymarketApiResponse> {
+  private static async _fetchMarketPage(apiParams: PolymarketApiCallParams): Promise<PolymarketApiResponse> {
   try {
     const url = this._buildApiUrl(apiParams);
     const response = await fetch(url);
@@ -202,7 +202,7 @@ private static async _fetchMarketPage(apiParams: PolymarketApiCallParams): Promi
     
     if (result.success) {
       const resultData = result.data;
-      const markets = resultData.map((market: PolymarketRawMarket) => this._transformMarketData(market));
+      const markets = resultData.map((market: PolymarketRawMarket) => GammaService._transformMarketData(market));
       return { success: true, markets };
     }
     return { 
@@ -226,7 +226,7 @@ private static async _fetchMarketPage(apiParams: PolymarketApiCallParams): Promi
  * @param baseParams - Base parameters for the API call
  * @returns Promise resolving to full set of market data
  */
-private static async _fetchAllMarketsPaginated(baseParams: Omit<PolymarketApiCallParams, 'limit' | 'offset'>): Promise<PolymarketApiResponse> {
+  private static async _fetchAllMarketsPaginated(baseParams: Omit<PolymarketApiCallParams, 'limit' | 'offset'>): Promise<PolymarketApiResponse> {
   const allMarkets: PolymarketMarket[] = [];
   let offset = 0;
   const limit = 100; // Polymarket's typical max limit per page
@@ -261,7 +261,20 @@ private static async _fetchAllMarketsPaginated(baseParams: Omit<PolymarketApiCal
       hasMore = false;
     }
   }
-  
+
   return { success: true, markets: allMarkets };
 }
+
+async buyShares(marketId: string, outcome: string, quantity: number): Promise<any> {
+    throw new Error("Method not implemented.");
+}
+
+async sellShares(marketId: string, outcome: string, quantity: number): Promise<any> {
+    throw new Error("Method not implemented.");
+}
+
+async redeemShares(marketId: string): Promise<any> {
+    throw new Error("Method not implemented.");
+}
+
 }

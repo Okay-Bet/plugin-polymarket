@@ -1,6 +1,6 @@
 {
   "name": "plugin-polymarket",
-  "description": "Project starter for elizaOS",
+  "description": "Polymarket Plugin for ElizaOS",
   "version": "0.1.0",
   "type": "module",
   "private": true,
@@ -13,7 +13,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "github:derekmeegan/plugin-polymarket"
+    "url": "github:JTS-Creates/plugin-polymarket"
   },
   "exports": {
     "./package.json": "./package.json",
@@ -28,20 +28,55 @@
     "dist"
   ],
   "dependencies": {
-    "@elizaos/cli": "beta",
-    "@elizaos/core": "beta",
-    "@elizaos/plugin-bootstrap": "^1.0.0-beta.49",
-    "@elizaos/plugin-openai": "beta",
-    "@elizaos/plugin-sql": "beta",
-    "zod": "^3.24.2"
+    "@elizaos/cli": ">=1.0.8",
+    "@elizaos/core": ">=1.0.8",
+    "@elizaos/plugin-bootstrap": ">=1.0.0",
+    "@elizaos/plugin-local-ai": ">=1.0.4",
+    "@elizaos/plugin-openai": ">=1.0.4",
+    "@elizaos/plugin-sql": ">=1.0.8",
+    "zod": ">=3.24.2",
+    "@polymarket/order-utils": ">=2.1.0",
+    "axios": ">=0.27.2",
+    "browser-or-node": ">=2.1.1",
+    "ethers": ">=5.7.1"
   },
   "devDependencies": {
-    "@vitest/coverage-v8": "2.1.5",
-    "prettier": "3.5.3",
-    "tsup": "8.4.0",
-    "vitest": "2.1.5"
+    "@vitest/coverage-v8": ">=2.1.5",
+    "dotenv": ">=16.3.1",
+    "prettier": ">=3.5.3",
+    "tsup": ">=8.4.0",
+    "uuid": ">=9.0.1",
+    "vitest": ">=2.1.5",
+    "@babel/core": ">=7.23.2",
+    "@babel/traverse": ">=7.23.2",
+    "@types/chai": ">=4.3.3",
+    "@types/mocha": ">=9.1.1",
+    "@types/node": ">=18.7.18",
+    "@types/ws": ">=8.5.3",
+    "@typescript-eslint/eslint-plugin": ">=5.37.0",
+    "@typescript-eslint/parser": ">=5.37.0",
+    "chai": ">=4.3.6",
+    "eslint": ">=8.23.1",
+    "eslint-config-prettier": ">=8.5.0",
+    "eslint-config-love": ">=23.0.0",
+    "eslint-plugin-import": ">=2.26.0",
+    "eslint-plugin-n": ">=15.2.5",
+    "eslint-plugin-node": ">=11.1.0",
+    "eslint-plugin-promise": ">=6.0.1",
+    "eslint-plugin-unused-imports": ">=2.0.0",
+    "esm": ">=3.2.25",
+    "jsdom": ">=20.0.0",
+    "jsdom-global": ">=3.0.2",
+    "mocha": ">=10.0.0",
+    "nyc": ">=15.1.0",
+    "path": ">=0.12.7",
+    "ts-mocha": ">=10.0.0",
+    "ts-node": ">=10.9.1",
+    "typescript": ">=4.9.5",
+    "ws": ">=8.11.0"
   },
   "scripts": {
+    "update": "elizaos update",
     "start": "elizaos start",
     "dev": "elizaos dev",
     "build": "tsup",
@@ -58,10 +93,10 @@
   "gitHead": "b165ad83e5f7a21bc1edbd83374ca087e3cd6b33",
   "packageType": "project",
   "agentConfig": {
-    "pluginType": "elizaos:project:1.0.0",
+    "pluginType": "elizaos:project:1.0.8",
     "projectConfig": {
       "name": "plugin-polymarket",
-      "description": "Project starter for elizaOS"
+      "description": "Polymarket Plugin for elizaOS"
     }
   },
   "platform": "node"

@@ -111,7 +111,7 @@ export const createMockRuntime = (): IAgentRuntime => {
       search: async () => [],
     },
     actions: [],
-    providers: [],
+    //providers: [],
     getService: vi.fn(),
     processActions: vi.fn(),
   } as any as IAgentRuntime;

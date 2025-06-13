@@ -18,8 +18,8 @@ export class StarterTestSuite implements TestSuite {
         }
 
         // Additional character property validations
-        if (character.name !== 'Eliza') {
-          throw new Error(`Expected character name to be 'Eliza', got '${character.name}'`);
+        if (character.name !== 'polydawg') {
+          throw new Error(`Expected character name to be 'polydawg', got '${character.name}'`);
         }
         if (!Array.isArray(character.plugins)) {
           throw new Error('Character plugins should be an array');
@@ -52,15 +52,15 @@ export class StarterTestSuite implements TestSuite {
       },
     },
     {
-      name: 'Hello world action test',
+      name: 'Polymarket plugin ready action test',
       fn: async (runtime: IAgentRuntime) => {
         const message: Memory = {
           entityId: uuidv4() as UUID,
           roomId: uuidv4() as UUID,
           content: {
-            text: 'Can you say hello?',
+            text: 'Is the plugin ready?',
             source: 'test',
-            actions: ['HELLO_WORLD'], // Explicitly request the HELLO_WORLD action
+            actions: [], // No specific action requested in the test message
           },
         };
 
@@ -74,85 +74,20 @@ export class StarterTestSuite implements TestSuite {
         // Test the hello world action
         try {
           await runtime.processActions(message, [], state, async (content: Content) => {
-            if (content.text === 'hello world!' && content.actions?.includes('HELLO_WORLD')) {
+            if (content.text === 'Polymarket plugin has started and is operational.') {
               responseReceived = true;
             }
             return [];
           });
-
+  
           if (!responseReceived) {
-            // Try directly executing the action if processActions didn't work
-            const helloWorldAction = runtime.actions.find((a) => a.name === 'HELLO_WORLD');
-            if (helloWorldAction) {
-              await helloWorldAction.handler(
-                runtime,
-                message,
-                state,
-                {},
-                async (content: Content) => {
-                  if (content.text === 'hello world!' && content.actions?.includes('HELLO_WORLD')) {
-                    responseReceived = true;
-                  }
-                  return [];
-                },
-                []
-              );
-            } else {
-              throw new Error('HELLO_WORLD action not found in runtime.actions');
-            }
-          }
-
-          if (!responseReceived) {
-            throw new Error('Hello world action did not produce expected response');
+            throw new Error('Polymarket plugin started notification not received');
           }
         } catch (error) {
-          throw new Error(`Hello world action test failed: ${error.message}`);
+          throw new Error(`Polymarket plugin started action test failed: ${error.message}`);
         }
       },
-    },
-    {
-      name: 'Hello world provider test',
-      fn: async (runtime: IAgentRuntime) => {
-        const message: Memory = {
-          entityId: uuidv4() as UUID,
-          roomId: uuidv4() as UUID,
-          content: {
-            text: 'What can you provide?',
-            source: 'test',
-          },
-        };
-
-        const state: State = {
-          values: {},
-          data: {},
-          text: '',
-        };
-
-        // Test the hello world provider
-        try {
-          if (!runtime.providers || runtime.providers.length === 0) {
-            throw new Error('No providers found in runtime');
-          }
-
-          // Find the specific provider we want to test
-          const helloWorldProvider = runtime.providers.find(
-            (p) => p.name === 'HELLO_WORLD_PROVIDER'
-          );
-
-          if (!helloWorldProvider) {
-            throw new Error('HELLO_WORLD_PROVIDER not found in runtime providers');
-          }
-
-          const result = await helloWorldProvider.get(runtime, message, state);
-
-          if (result.text !== 'I am a provider') {
-            throw new Error(`Expected provider to return "I am a provider", got "${result.text}"`);
-          }
-        } catch (error) {
-          throw new Error(`Hello world provider test failed: ${error.message}`);
-        }
       },
-    },
     {
       name: 'Starter service test',
       fn: async (runtime: IAgentRuntime) => {
@@ -175,7 +110,7 @@ export class StarterTestSuite implements TestSuite {
           throw new Error(`Starter service test failed: ${error.message}`);
         }
       },
-    },
+    }
   ];
 }
 

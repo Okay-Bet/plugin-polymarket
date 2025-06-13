@@ -61,7 +61,7 @@ describe('Project Structure Validation', () => {
       const packageJson = JSON.parse(fs.readFileSync(path.join(rootDir, 'package.json'), 'utf8'));
 
       // Check package name
-      expect(packageJson.name).toBe('@elizaos/project-starter');
+      expect(packageJson.name).toBe('plugin-polymarket');
 
       // Check scripts
       expect(packageJson.scripts).toHaveProperty('build');
@@ -127,7 +127,7 @@ describe('Project Structure Validation', () => {
 
     it('should have appropriate documentation content', () => {
       const readmeContent = fs.readFileSync(path.join(rootDir, 'README.md'), 'utf8');
-      expect(readmeContent).toContain('Project Starter');
+      expect(readmeContent).toContain('Plugin Starter'); // Assuming 'Plugin Starter' is correct for README.md
       expect(readmeContent).toContain('Features');
       expect(readmeContent).toContain('Getting Started');
 

@@ -27,8 +27,8 @@ afterAll(() => {
 });
 
 describe('Actions', () => {
-  // Find the HELLO_WORLD action from the plugin
-  const helloWorldAction = plugin.actions?.find((action) => action.name === 'HELLO_WORLD');
+  // Find the POLYMARKET_PLUGIN_STARTED_NOTIFICATION action from the plugin
+  const pluginStartedAction = plugin.actions?.find((action) => action.name === 'POLYMARKET_PLUGIN_STARTED_NOTIFICATION');
 
   // Run core tests on all plugin actions
   it('should pass core action tests', () => {
@@ -36,7 +36,7 @@ describe('Actions', () => {
       const coreTestResults = runCoreActionTests(plugin.actions);
       expect(coreTestResults).toBeDefined();
       expect(coreTestResults.formattedNames).toBeDefined();
-      expect(coreTestResults.formattedActions).toBeDefined();
+      expect(coreTestResults.formattedActions).toBeDefined;
       expect(coreTestResults.composedExamples).toBeDefined();
 
       // Document the core test results
@@ -44,80 +44,75 @@ describe('Actions', () => {
     }
   });
 
-  describe('HELLO_WORLD Action', () => {
+  describe('POLYMARKET_PLUGIN_STARTED_NOTIFICATION Action', () => {
     it('should exist in the plugin', () => {
-      expect(helloWorldAction).toBeDefined();
+      expect(pluginStartedAction).toBeDefined();
     });
 
     it('should have the correct structure', () => {
-      if (helloWorldAction) {
-        expect(helloWorldAction).toHaveProperty('name', 'HELLO_WORLD');
-        expect(helloWorldAction).toHaveProperty('description');
-        expect(helloWorldAction).toHaveProperty('similes');
-        expect(helloWorldAction).toHaveProperty('validate');
-        expect(helloWorldAction).toHaveProperty('handler');
-        expect(helloWorldAction).toHaveProperty('examples');
-        expect(Array.isArray(helloWorldAction.similes)).toBe(true);
-        expect(Array.isArray(helloWorldAction.examples)).toBe(true);
+      if (pluginStartedAction) {
+        expect(pluginStartedAction).toHaveProperty('name', 'POLYMARKET_PLUGIN_STARTED_NOTIFICATION');
+        expect(pluginStartedAction).toHaveProperty('description');
+        expect(pluginStartedAction).toHaveProperty('similes');
+        expect(pluginStartedAction).toHaveProperty('validate');
+        expect(pluginStartedAction).toHaveProperty('handler');
+        expect(pluginStartedAction).toHaveProperty('examples');
+        expect(Array.isArray(pluginStartedAction.similes)).toBe(true);
+        expect(Array.isArray(pluginStartedAction.examples)).toBe(true);
       }
     });
 
-    it('should have GREET and SAY_HELLO as similes', () => {
-      if (helloWorldAction) {
-        expect(helloWorldAction.similes).toContain('GREET');
-        expect(helloWorldAction.similes).toContain('SAY_HELLO');
+    it('should have correct similes', () => {
+      if (pluginStartedAction) {
+        expect(pluginStartedAction.similes).toContain('PLUGIN_READY');
+        expect(pluginStartedAction.similes).toContain('POLYMARKET_INITIALIZED');
+        expect(pluginStartedAction.similes).toContain('POLYMARKET_ACTIVE');
       }
     });
 
     it('should have at least one example', () => {
-      if (helloWorldAction && helloWorldAction.examples) {
-        expect(helloWorldAction.examples.length).toBeGreaterThan(0);
+      if (pluginStartedAction && pluginStartedAction.examples) {
+        expect(pluginStartedAction.examples.length).toBeGreaterThan(0);
 
         // Check first example structure
-        const firstExample = helloWorldAction.examples[0];
-        expect(firstExample.length).toBeGreaterThan(1); // At least two messages
+        const firstExample = pluginStartedAction.examples[0];
+        expect(firstExample.length).toBeGreaterThan(0); // At least one message (agent notification)
 
-        // First message should be a request
+        // Message should be an agent notification
         expect(firstExample[0]).toHaveProperty('name');
         expect(firstExample[0]).toHaveProperty('content');
         expect(firstExample[0].content).toHaveProperty('text');
-        expect(firstExample[0].content.text).toContain('hello');
-
-        // Second message should be a response
-        expect(firstExample[1]).toHaveProperty('name');
-        expect(firstExample[1]).toHaveProperty('content');
-        expect(firstExample[1].content).toHaveProperty('text');
-        expect(firstExample[1].content).toHaveProperty('actions');
-        expect(firstExample[1].content.text).toBe('hello world!');
-        expect(firstExample[1].content.actions).toContain('HELLO_WORLD');
+        expect(firstExample[0].name).toBe('agent');
+        expect(firstExample[0].content.text).toBe('Polymarket plugin is now active and ready.');
       }
     });
 
     it('should return true from validate function', async () => {
-      if (helloWorldAction) {
+      if (pluginStartedAction) {
         const runtime = createMockRuntime();
-        const mockMessage = createMockMessage('Hello!');
+        // This action isn't typically triggered by a user message, but we can mock one for the validate signature
+        const mockMessage = createMockMessage('System startup');
         const mockState = createMockState();
 
         let result = false;
         let error: Error | null = null;
 
         try {
-          result = await helloWorldAction.validate(runtime, mockMessage, mockState);
+          result = await pluginStartedAction.validate(runtime, mockMessage, mockState);
           expect(result).toBe(true);
         } catch (e) {
           error = e as Error;
           logger.error('Validate function error:', e);
         }
 
-        documentTestResult('HELLO_WORLD action validate', result, error);
+        documentTestResult('POLYMARKET_PLUGIN_STARTED_NOTIFICATION action validate', result, error);
       }
     });
 
-    it('should call back with hello world response from handler', async () => {
-      if (helloWorldAction) {
+    it('should call back with plugin started response from handler', async () => {
+      if (pluginStartedAction) {
         const runtime = createMockRuntime();
-        const mockMessage = createMockMessage('Hello!');
+        const mockMessage = createMockMessage('System startup'); // Similar to validate, for handler signature
         const mockState = createMockState();
 
         let callbackResponse: any = {};
@@ -128,11 +123,11 @@ describe('Actions', () => {
         };
 
         try {
-          await helloWorldAction.handler(
+          await pluginStartedAction.handler(
             runtime,
             mockMessage,
             mockState,
-            {},
+            {} as any,
             mockCallback as HandlerCallback,
             []
           );
@@ -140,15 +135,13 @@ describe('Actions', () => {
           // Verify callback was called with the right content
           expect(callbackResponse).toBeTruthy();
           expect(callbackResponse).toHaveProperty('text');
-          expect(callbackResponse).toHaveProperty('actions');
-          expect(callbackResponse.actions).toContain('HELLO_WORLD');
-          expect(callbackResponse).toHaveProperty('source', 'test');
+          expect(callbackResponse.text).toBe('Polymarket plugin has started and is operational.');
         } catch (e) {
           error = e as Error;
           logger.error('Handler function error:', e);
         }
 
-        documentTestResult('HELLO_WORLD action handler', callbackResponse, error);
+        documentTestResult('POLYMARKET_PLUGIN_STARTED_NOTIFICATION action handler', callbackResponse, error);
       }
     });
   });

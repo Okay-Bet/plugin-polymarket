@@ -8,19 +8,9 @@ const createMockRuntime = () => {
     registerPlugin: vi.fn().mockResolvedValue(undefined),
     actions: [
       {
-        name: 'HELLO_WORLD',
-        handler: vi
-          .fn()
-          .mockImplementation(async (_runtime, _message, _state, _options, callback) => {
-            await callback({
-              text: 'hello world!',
-              actions: ['HELLO_WORLD'],
-            });
-            return { text: 'hello world!', actions: ['HELLO_WORLD'] };
-          }),
       },
     ],
-    providers: [
+    /*providers: [
       {
         name: 'HELLO_WORLD_PROVIDER',
         get: vi.fn().mockResolvedValue({
@@ -29,18 +19,13 @@ const createMockRuntime = () => {
           data: {},
         }),
       },
-    ],
+    ],*/
     getService: vi.fn().mockReturnValue({
       capabilityDescription:
         'This is a starter service which is attached to the agent through the starter plugin.',
       stop: vi.fn(),
     }),
-    processActions: vi.fn().mockImplementation(async (_message, _responses, _state, callback) => {
-      await callback({
-        text: 'hello world!',
-        actions: ['HELLO_WORLD'],
-      });
-    }),
+    processActions: vi.fn(),
   };
 };
 
@@ -91,30 +76,7 @@ describe('StarterTestSuite', () => {
       assert.fail('Plugin initialization test not found');
     }
   });
-
-  it('should run hello world action test successfully', async () => {
-    const mockRuntime = createMockRuntime();
-    const actionTest = testSuite.tests.find((test) => test.name === 'Hello world action test');
-
-    if (actionTest) {
-      await expect(actionTest.fn(mockRuntime as any)).resolves.not.toThrow();
-      expect(mockRuntime.processActions).toHaveBeenCalled();
-    } else {
-      assert.fail('Hello world action test not found');
-    }
-  });
-
-  it('should run hello world provider test successfully', async () => {
-    const mockRuntime = createMockRuntime();
-    const providerTest = testSuite.tests.find((test) => test.name === 'Hello world provider test');
-
-    if (providerTest) {
-      await expect(providerTest.fn(mockRuntime as any)).resolves.not.toThrow();
-    } else {
-      assert.fail('Hello world provider test not found');
-    }
-  });
-
+  
   it('should run starter service test successfully', async () => {
     const mockRuntime = createMockRuntime();
     const serviceTest = testSuite.tests.find((test) => test.name === 'Starter service test');

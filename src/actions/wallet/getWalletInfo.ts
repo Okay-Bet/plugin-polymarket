@@ -1,76 +1,58 @@
 import {
   type Action,
   type IAgentRuntime,
-  Memory,
+  type Memory,
   type State,
   type Content,
+  logger,
   HandlerCallback,
-} from "@elizaos/core/v2";
-import { getWalletInfoExamples } from "../../../plugin-polymarket/src/examples";
+} from "@elizaos/core";
 
 // Placeholder for actual wallet information type
 interface WalletInfo {
-  chainId: string;
   address: string;
   balance: string;
   // Add other relevant wallet information here
 }
 
-export const getWalletInfoAction: Action = { 
+export const getWalletInfoAction: Action = {
   name: "GET_WALLET_INFO",
   similes: ["CHECK_WALLET_BALANCE", "VIEW_WALLET"],
-  description:
-    "Retrieves and displays information about the connected cryptocurrency wallet.",
-  examples: [...getWalletInfoExamples],
+  description: "Retrieves and displays information about the connected cryptocurrency wallet.",
+  examples: [
+    [
+      {
+        name: "{{user1}}",
+        content: { text: "Show my wallet info." },
+      },
+      {
+        name: "{{agent}}",
+        content: { text: "Your wallet address: 0x123...789\nBalance: 1.23 ETH" },
+      },
+    ],
+  ],
 
   validate: async (
     _runtime: IAgentRuntime,
     message: Memory,
-    _state?: State,
+    _state?: State
   ): Promise<boolean> => {
-    const context = (message.content as Content);
-     const text = (context.text) ? context.text.toLowerCase() : "";
-    return (
-      text.includes("wallet") &&
-      (text.includes("info") ||
-        text.includes("balance") ||
-        text.includes("show"))
-    );
+    const text = (message.content as Content).text.toLowerCase();
+    return text.includes("wallet") && (text.includes("info") || text.includes("balance") || text.includes("show"));
   },
 
   handler: async (
     _runtime: IAgentRuntime,
     _message: Memory,
-    _state: State | undefined,
+    _state: State,
     _options: any,
     callback: HandlerCallback,
     _responses: Memory[]
   ): Promise<string> => {
     try {
-      const clobService = _runtime.getService("ClobService") as any;
-      if (!clobService) {
-        return "Error: ClobService not available.";
-      }
-
-      // Ensure the wallet is connected
-      const privateKey = process.env.PK;
-      if (!privateKey) {
-        return "Error: Private key not found in environment variables.";
-      }
-
-      await clobService.connectWallet(privateKey);
-
-      const wallet = clobService.getClobClient().wallet;
-      const address = await wallet.getAddress();
-      const chainId = await wallet.getChainId();
-
-      // Placeholder balance, needs actual implementation
-      const walletInfo: WalletInfo = {
-        chainId: chainId,
-        address: address,
-        balance: "0.00", // Replace with actual balance fetch logic
-      };
-      const responseText = `Your wallet is connected on chain ID: ${walletInfo.chainId}\nAddress: ${walletInfo.address}\nBalance: ${walletInfo.balance} (Placeholder - replace with actual balance)`;
+      // In a real implementation, this would interact with a wallet provider (e.g., MetaMask)
+      const walletInfo: WalletInfo = { address: "0xYourWalletAddressHere", balance: "0.00" }; // Replace with actual logic
+      const responseText = `Your wallet address: ${walletInfo.address}\nBalance: ${walletInfo.balance} (Replace with actual currency)`;
       await callback({ text: responseText });
       return responseText;
     } catch (error) {
