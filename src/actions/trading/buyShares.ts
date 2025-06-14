@@ -3,25 +3,33 @@ import {
   type Action,
   type Memory,
   type State,
-  HandlerCallback,
-  logger,
-} from "@elizaos/core/v2";
-import { PolymarketService } from "../../services/polymarketService"; // Ensure correct path
-import { buySharesExamples } from "src/examples";
-import { OrderParams } from "src/types";
+  type Content,
+  type HandlerCallback,
+} from "@elizaos/core";
+import { GammaService } from "../../services/gammaService";
 
 export const buySharesAction: Action = {
   name: "BUY_SHARES",
   similes: ["BUY_SHARES"],
   description: "Buys x number of shares in a specified Polymarket market.",
-  examples: [...buySharesExamples],
+  examples: [
+    [
+      {
+        name: "{{user1}}",
+        content: { text: 'Buy 10 shares of "Yes" in market 123' },
+      },
+      {
+        name: "{{agent}}",
+        content: { text: 'Attempting to buy 10 shares of "Yes" in market 123' },
+      },
+    ],
+  ],
   validate: async (params: any) => {
     return (
       params.marketId &&
       params.outcome &&
       typeof params.quantity === "number" &&
-      params.quantity > 0 &&
-      (params.outcome === "Yes" || params.outcome === "No")
+      params.quantity > 0
     );
   },
   handler: async (
@@ -83,4 +91,4 @@ export const buySharesAction: Action = {
       return `Error buying shares: ${error instanceof Error ? error.message : "Unknown error"}`;
     }
   },
-} as Action;
+};

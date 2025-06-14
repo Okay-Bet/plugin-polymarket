@@ -1,6 +1,6 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
-import plugin from '../src/plugin';
-import { logger } from '@elizaos/core/v2';
+import plugin, { init } from '../src/plugin';
+import { logger } from '@elizaos/core';
 
 // Mock logger
 vi.mock('@elizaos/core/v2', async () => {

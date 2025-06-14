@@ -4,16 +4,26 @@ import {
   type Memory,
   type State,
   type HandlerCallback,
-} from "@elizaos/core/v2";
-import { PolymarketService } from "../../services/polymarketService"; // Ensure correct path
-import { redeemSharesExamples } from "src/examples";
+} from "@elizaos/core";
+import { GammaService } from "../../services/gammaService";
 
 export const redeemSharesAction: Action = {
   name: "REDEEM_SHARES",
   similes: ["REDEEM_SHARES"],
   description:
     "Redeems shares in a specified Polymarket market after it has resolved.",
-  examples: [...redeemSharesExamples],
+  examples: [
+    [
+      {
+        name: "{{user1}}",
+        content: { text: "Redeem shares in market 123" },
+      },
+      {
+        name: "{{agent}}",
+        content: { text: "Attempting to redeem shares in market 123." },
+      },
+    ],
+  ],
   validate: async (params: any) => {
     return params && params.marketId;
   },
@@ -50,4 +60,4 @@ export const redeemSharesAction: Action = {
       return `Error redeeming shares: ${e instanceof Error ? e.message : "Unknown error"}`;
     }
   },
-}
+};

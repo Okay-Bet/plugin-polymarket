@@ -1,4 +1,5 @@
-import { describe, expect, it, vi, beforeAll, afterAll } from 'vitest';
+import { describe, expect, it, vi, beforeEach, afterEach, beforeAll, afterAll } from 'vitest';
+import plugin, { init } from '../src/plugin';
 import { ModelType, logger } from '@elizaos/core';
 import { PolymarketService } from '../src/services/polymarketService';
 import dotenv from 'dotenv';

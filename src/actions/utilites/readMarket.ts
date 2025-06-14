@@ -1,20 +1,15 @@
 import {
   type Action,
   type IAgentRuntime,
+  type Memory,
+  type State,
   type Content,
+  elizaLogger,
   HandlerCallback,
   logger,
-  Memory,
-  State,
-} from "@elizaos/core/v2";
-import * as dotenv from "dotenv";
-dotenv.config();
-import { PolymarketService } from "../../services/polymarketService";
-import {
-  GetMarketActionContent,
-  PolymarketMarket,
-} from "../../types";
-import { getMarketByIdExamples } from "src/examples";
+} from "@elizaos/core";
+import { GammaService } from "../../services/gammaService";
+import { GetMarketActionContent, PolymarketMarket } from "../../types";
 
 export const readMarketAction: Action = {
   name: "GET_POLYMARKET_MARKET_BY_ID",
@@ -25,7 +20,60 @@ export const readMarketAction: Action = {
   ],
   description:
     "Fetches and displays details for a specific Polymarket market by its ID",
-  examples: [...getMarketByIdExamples],
+  examples: [
+    [
+      {
+        name: "{{user1}}",
+        content: { text: "Show me details for Polymarket market 138462..." },
+      },
+      {
+        name: "{{agent}}",
+        content: {
+          text: 'Market "Will event X happen by date Y?" (ID: 138462)\nDescription: Detailed description of the market.\nStatus: Active\nVolume: 100000\nLiquidity: 50000\nEnds: 2024-12-31\nOutcomes:\n- Yes: $0.65\n- No: $0.35\nURL: https://polymarket.com/market/event-x-happen-by-date-y',
+        },
+      },
+    ],
+    [
+      {
+        name: "{{user1}}",
+        content: { text: "Get Polymarket data for market 138462..." },
+      },
+      {
+        name: "{{agent}}",
+        content: {
+          text: 'Market "Another interesting question?" (ID: 138462)\nDescription: Some info about this market.\nStatus: Closed\nVolume: 75000\nLiquidity: 20000\nEnds: 2023-01-15\nOutcomes:\n- Option A: $0.80\n- Option B: $0.20\nURL: https://polymarket.com/market/another-interesting-question',
+        },
+      },
+    ],
+  ],
+
+  validate: async (
+    runtime: IAgentRuntime,
+    message: Memory,
+    state?: State,
+  ): Promise<boolean> => {
+    try {
+      const content = message.content as GetMarketActionContent;
+      const text = content.text.toLowerCase();
+
+      const hasPolymarketKeyword = text.includes("polymarket");
+      const hasMarketIdKeyword =
+        text.includes("market id") ||
+        text.includes("id") ||
+        /0x[a-f0-9]{5,}/.test(text); // Basic check for hex-like ID
+
+      const hasActionKeywords =
+        text.includes("show") ||
+        text.includes("get") ||
+        text.includes("find") ||
+        text.includes("fetch") ||
+        text.includes("detail");
+
+      return hasActionKeywords && hasPolymarketKeyword && hasMarketIdKeyword;
+    } catch {
+      return false;
+    }
+  },
 
   handler: async (
     _runtime: IAgentRuntime,
@@ -40,9 +88,9 @@ export const readMarketAction: Action = {
       const text = content.text.trim();
       logger.info("content", content);
 
-      const idPattern = /\b(\d+)\b/;
+      const idPattern = /\b\d{6}\b/;
       const idMatch = text.match(idPattern);
-      const marketId = idMatch ? idMatch[1] : "";
+      const marketId = idMatch ? idMatch[0] : "";
       logger.info("marketId", marketId);
 
       if (!marketId) {
@@ -50,70 +98,23 @@ export const readMarketAction: Action = {
         return "Sorry, I couldn't identify a market ID in your request. Please specify a market ID.";
       }
 
-      const result = await (PolymarketService.fetchMarketById(marketId));
-      logger.debug(result.toString());
+      elizaLogger.log(`Fetching market with ID: ${marketId}`);
+      const result = await GammaService.fetchMarketById(marketId);
+
       if (!result.success || !result.market) {
-        const errorMessage = `Sorry, I couldn't fetch details for market ID "${marketId}".${result.error ? ` Error: ${result.error}` : ""}`;
-        logger.error(errorMessage);
-        await callback({ text: errorMessage }); // Send error message to the user
-        return errorMessage;
+        return `Sorry, I couldn't fetch details for market ID "${marketId}".${result.error ? ` Error: ${result.error}` : ""}`;
       }
 
-      try {
-        const responseContent: Content = {
-          text: formatMarketResponse(result.market),
-        };
+      const responseContent: Content = {
+        text: formatMarketResponse(result.market),
+      };
 
-        await callback(responseContent);
+      await callback(responseContent);
 
-        return responseContent.text;
-      } catch (e: any) {
-        logger.error("Error during response formatting:", e);
-        return `Sorry, I encountered an issue processing the market data: ${e.message}`;
-      }
+      return formatMarketResponse(result.market);
     } catch (error) {
       return `Sorry, there was an error fetching market details: ${error instanceof Error ? error.message : "Unknown error"}`;
     }
-  },
-  validate: async (
-    runtime: IAgentRuntime,
-    message: Memory,
-    state?: State,
-  ): Promise<boolean> => {
-    const content = message.content as GetMarketActionContent;
-    const text = content.text.toLowerCase();
-
-    // Check for keywords related to Polymarket and prediction markets
-    const hasPolymarketKeyword = text.includes("polymarket");
-    const hasPredictionMarketKeywords =
-      text.includes("prediction market") ||
-      text.includes("betting odds") ||
-      text.includes("prediction") ||
-      text.includes("markets");
-
-    // Check for action keywords
-    const hasActionKeywords =
-      text.includes("show") ||
-      text.includes("get") ||
-      text.includes("what") ||
-      text.includes("find") ||
-      text.includes("tell") ||
-      text.includes("retriev") ||
-      text.includes("market") ||
-      text.includes("market prices");
-
-    // Check for invalid action keywords
-    const hasSkipActionKeywords = !(
-      text.includes("lisitngs") ||
-      text.includes("lists") ||
-      text.includes("markets")
-    );
-
-    return true || (
-      hasActionKeywords &&
-      (hasPolymarketKeyword || hasPredictionMarketKeywords) &&
-      hasSkipActionKeywords
-    );
   },
 };
 

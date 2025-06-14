@@ -1,18 +1,17 @@
 import type {
   Content,
-  HandlerCallback,
   IAgentRuntime,
   Memory,
   State,
   TestSuite,
   UUID,
-} from "@elizaos/core/v2";
+} from "@elizaos/core";
 import { v4 as uuidv4 } from "uuid";
-import { character } from "./character";
+import { character } from "./index";
 
-export class ClobTestSuite implements TestSuite {
-  name = "clob";
-  description = "Tests for the clob project";
+export class StarterTestSuite implements TestSuite {
+  name = "starter";
+  description = "Tests for the starter project";
 
   tests = [
     {
@@ -36,9 +35,9 @@ export class ClobTestSuite implements TestSuite {
         }
 
         // Additional character property validations
-        if (character.name !== "agent") {
+        if (character.name !== "polydawg") {
           throw new Error(
-            `Expected character name to be 'agent', got '${character.name}'`,
+            `Expected character name to be 'polydawg', got '${character.name}'`,
           );
         }
         if (!Array.isArray(character.plugins)) {
@@ -61,8 +60,8 @@ export class ClobTestSuite implements TestSuite {
         // Test plugin initialization with empty config
         try {
           await runtime.registerPlugin({
-            name: "clob",
-            description: "A clob plugin for Eliza",
+            name: "starter",
+            description: "A starter plugin for Eliza",
             init: async () => {},
             config: {},
           });
@@ -79,7 +78,7 @@ export class ClobTestSuite implements TestSuite {
           roomId: uuidv4() as UUID,
           content: {
             text: "Is the plugin ready?",
-            source: "agent_response",
+            source: "test",
             actions: [], // No specific action requested in the test message
           },
         };
@@ -123,18 +122,18 @@ export class ClobTestSuite implements TestSuite {
       },
     },
     {
-      name: "PolymarketService test",
+      name: "Starter service test",
       fn: async (runtime: IAgentRuntime) => {
         // Test service registration and lifecycle
         try {
-          const service = runtime.getService("clob");
+          const service = runtime.getService("starter");
           if (!service) {
-            throw new Error("PolymarketService not found");
+            throw new Error("Starter service not found");
           }
 
           if (
             service.capabilityDescription !==
-            "This is a clob service which is attached to the agent through the clob plugin."
+            "This is a starter service which is attached to the agent through the starter plugin."
           ) {
             throw new Error("Incorrect service capability description");
           }

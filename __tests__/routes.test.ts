@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import plugin from '../src/plugin';
+import plugin, { init } from '../src/plugin';
 
 describe('Plugin Routes', () => {
   it('should have routes defined', () => {
