@@ -47,7 +47,7 @@ export const character: Character = {
       {
         name: "polydawg",
         content: {
-          text: "Sure, I can fetch active markets for you. One moment...",
+          text: "I'm retrieving the latest market prices for you. Please hold on for a moment while I gather the data from Polymarket.",
         },
       }
     ],

@@ -10,6 +10,7 @@ import {
   type Content,
   type HandlerCallback,
 } from "@elizaos/core";
+import { ResponseParserService } from "./services/responseParser";
 import { buySharesAction } from "./actions/trading/buyShares";
 import { sellSharesAction } from "./actions/trading/sellShares";
 import { redeemSharesAction } from "./actions/trading/redeemShares";
@@ -17,6 +18,14 @@ import { GammaService } from "./services/gammaService";
 import { readMarketAction } from "./actions/utilites/readMarket";
 import { readMarketsAction } from "./actions/utilites/readMarkets";
 import { setUserAction, getUsernameAction } from "./actions/utilites/user"; // Import user actions
+
+import {
+  buySharesModel,
+  sellSharesModel,
+  readMarketModel,
+  readMarketsModel,
+  redeemSharesModel,
+} from "./models";
 
 // Action to notify that the Polymarket plugin has started
 const polymarketPluginStartedAction: Action = {
@@ -79,6 +88,7 @@ export class StarterService {
 const pluginPolymarket: Plugin = {
   name: "plugin-polymarket",
   description: "Plugin for Polymarket integration",
+  config: {},
   actions: [
     connectWalletAction,
     getUsernameAction,
@@ -91,64 +101,176 @@ const pluginPolymarket: Plugin = {
     redeemSharesAction,
     polymarketPluginStartedAction,
     readMarketAction,
-    setUserAction, // Add setUserAction
-    getUsernameAction, // Add getUsernameAction
+    setUserAction,
+    getUsernameAction,
   ],
   services: [PolymarketService],
   events: {
     VOICE_MESSAGE_RECEIVED: [
-      async (params: any) => {
-        logger.info("VOICE_MESSAGE_RECEIVED event received", params);
-      },
-    ], // Existing event handler
+      async (params: any) =>
+        logger.info("VOICE_MESSAGE_RECEIVED event received", params),
+    ],
     MESSAGE_RECEIVED: [
-      async (params: any) => {
-        // Existing event handler
-        logger.info("MESSAGE_RECEIVED event received", params);
-      },
+      async (params: any) =>
+        logger.info("MESSAGE_RECEIVED event received", params),
     ],
   },
   routes: [
     {
       path: "/welcome",
       type: "GET",
-      handler: async (req, res) => {
+      handler: async (req, res) =>
         res.json({
           message: "Polymarket plugin has started and is operational.",
-        });
-      },
+        }),
     },
   ] as Route[],
-  config: {},
   models: {
-    [ModelType.TEXT_SMALL]: async (runtime, params) =>
-      ({
-        text: `Mock TEXT_SMALL response to: ${params.prompt.substring(0, 50)}`, // Keep the structure for now
-        thought: "This is my mock thought for a small model.",
-        actions: [], // Empty actions array for now
-      }).text, // Return only the text property
+    [ModelType.TEXT_SMALL]: async (runtime, params) => "Simple mock response",
     [ModelType.TEXT_LARGE]: async (runtime, params) =>
-      ({
-        text: `Mock TEXT_LARGE response to: ${params.prompt.substring(0, 50)}`, // Keep the structure for now
-        thought: "This is my mock thought for a large model.",
-        actions: [], // Empty actions array for now
-      }).text, // Return only the text property
+      (
+        await runtime.useModel(ModelType.TEXT_LARGE, {
+          prompt: `Mock TEXT_LARGE response to: ${params.prompt.substring(
+            0,
+            50,
+          )}`,
+        })
+      ).text,
   },
   providers: [
     {
       name: "POLYMARKET_PROVIDER",
       description: "A simple hello world provider.",
-      get: async (runtime, message, state) => {
-        // Unused parameters, but required by the provider interface
-        return {
-          text: "I am a provider",
-          values: {},
-          data: {},
-        };
-      },
+      get: async (runtime, message, state) => ({
+        text: "I am a provider",
+        values: {},
+        data: {},
+      }),
     },
   ],
-  // services: [StarterService] // Uncomment if your plugin should actually register this service
+  services: [ResponseParserService],
+};
+
+// Import the models at the top of the file
+
+// Update action handlers to use models
+readMarketsAction.handler = async (
+  runtime: IAgentRuntime,
+  message: Memory,
+  state: State,
+  _options: any,
+  callback: HandlerCallback,
+  _responses: Memory[],
+) => {
+  try {
+    const content = message.content as Content;
+    const text = content.text;
+
+    const modelResult = await runtime.useModel(ModelType.OBJECT_SMALL, {
+      prompt: readMarketsModel,
+      text,
+    });
+
+    // Use the extracted data from the model to build the response.
+    // This will replace the existing logic for extracting query/limit.
+    return readMarketsAction.originalHandler(
+      runtime,
+      message,
+      state,
+      {
+        query: modelResult.query,
+        limit: modelResult.limit || 10, // Default limit if not specified.
+      },
+      callback,
+      _responses,
+    );
+  } catch (error) {
+    logger.error(error);
+    return `Sorry, there was an error fetching prediction markets: ${
+      error instanceof Error ? error.message : "Unknown error"
+    }`;
+  }
+};
+
+// Store the original handler before overwriting it
+readMarketsAction.originalHandler = readMarketsAction.handler;
+(readMarketsAction as any).formatMarketsResponse = (markets, query) => {
+// Now we can replace the handler with the new logic that uses the model
+(readMarketsAction as any).handler = async (runtime: IAgentRuntime, message: Memory, state?: State, options: { query?: string, limit?: number } = {}, callback: HandlerCallback, responses: Memory[]) => {
+  // Use options passed from the model or defaults.
+  const { query, limit } = options;
+  logger.info(`[readMarketsAction.handler] Query: ${query}, Limit: ${limit}`); // Added logging
+
+
+  try {
+    const result = await GammaService.fetchMarkets();
+
+    if (!result.success || !result.markets || result.markets.length === 0) {
+      return `Sorry, I couldn't find any prediction markets${
+        query ? ` about "${query}"` : ""
+      }.${result.error ? ` ${result.error}` : ""}`;
+    }
+
+    let filteredMarkets = result.markets;
+    if (query && query.trim() !== "") {
+      const escaped = query.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const wordPattern = new RegExp(`\\b${escaped}\\b`, "i");
+
+      filteredMarkets = result.markets.filter(
+        (m) =>
+          (m.question && wordPattern.test(m.question)) ||
+          (m.description && wordPattern.test(m.description)) ||
+          (m.slug && wordPattern.test(m.slug.replace(/-/g, " "))),
+      );
+    }
+
+    const response = readMarketsAction.formatMarketsResponse(
+      filteredMarkets.slice(0, limit),
+      query,
+    );
+    const responseContent: Content = {
+      text: response,
+    };
+
+    await callback(responseContent);
+    return responseContent;
+  } catch (error) {
+    logger.error(error);
+    return `Sorry, there was an error fetching prediction markets: ${
+      error instanceof Error ? error.message : "Unknown error"
+    }`;
+  }
+};}
+
+// Helper function to format markets response
+readMarketsAction.formatMarketsResponse = (markets, query) => {
+  if (markets.length === 0) {
+    return `I couldn't find any prediction markets${
+      query ? ` about "${query}"` : ""
+    }.`;
+  }
+
+  const marketCount = markets.length;
+  const queryText = query ? ` about "${query}"` : "";
+
+  let response = `Here ${marketCount === 1 ? "is" : "are"} the top ${marketCount} prediction market${marketCount === 1 ? "" : "s"}${queryText} on Polymarket:\n`;
+
+  markets.forEach((market, index) => {
+    response += `${index + 1}. "${market.question}" - `;
+
+    if (market.outcomes && market.outcomes.length > 0) {
+      response += market.outcomes
+        .map((outcome) => `${outcome.name}: $${outcome.price}`)
+        .join(", ");
+    } else {
+      response += "No outcome data available";
+    }
+
+    if (index < markets.length - 1) {
+      response += "\n";
+    }
+  });
+  return response;
 };
 
 export const init = async (runtime: IAgentRuntime) => {

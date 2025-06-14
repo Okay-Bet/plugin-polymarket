@@ -1,12 +1,11 @@
 import {
   type Action,
   type IAgentRuntime,
-  type Memory,
-  type State,
   type Content,
-  elizaLogger,
   HandlerCallback,
   logger,
+  Memory,
+  State,
 } from "@elizaos/core";
 import { GammaService } from "../../services/gammaService";
 import { GetMarketActionContent, PolymarketMarket } from "../../types";
@@ -98,7 +97,6 @@ export const readMarketAction: Action = {
         return "Sorry, I couldn't identify a market ID in your request. Please specify a market ID.";
       }
 
-      elizaLogger.log(`Fetching market with ID: ${marketId}`);
       const result = await GammaService.fetchMarketById(marketId);
 
       if (!result.success || !result.market) {

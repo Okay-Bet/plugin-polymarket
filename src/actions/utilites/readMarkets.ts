@@ -331,7 +331,7 @@ export const readMarketsAction: Action = {
     message: Memory,
     state?: State,
   ): Promise<boolean> => {
-    try {
+    // try {
       const content = message.content as ReadMarketsActionContent;
       const text = content.text.toLowerCase();
 
@@ -350,15 +350,17 @@ export const readMarketsAction: Action = {
         text.includes("what") ||
         text.includes("find") ||
         text.includes("list") ||
-        text.includes("tell");
+        text.includes("tell") || 
+        text.includes("retriev") ||
+        text.includes("market") || 
+        text.includes("markets") ||
+        text.includes("market prices");
 
-      return (
-        hasActionKeywords &&
-        (hasPolymarketKeyword || hasPredictionMarketKeywords)
-      );
-    } catch {
-      return false;
-    }
+      return hasActionKeywords && (hasPolymarketKeyword || hasPredictionMarketKeywords);
+    // } catch {
+    //   return false;
+    // }
+    // return true;
   },
 
   handler: async (
@@ -372,6 +374,13 @@ export const readMarketsAction: Action = {
     try {
       const content = message.content as ReadMarketsActionContent;
       const text = content.text;
+
+      // const prompt = composePromptFromState({
+      //   state,
+      //   template: readMarketsTemplate,
+      // });
+      // const reflection = await runtime.useModel(ModelType.OBJECT_SMALL, {
+      //   prompt,
       // });
       // console.log(reflection)
 
@@ -393,24 +402,23 @@ export const readMarketsAction: Action = {
       }
 
       // If not in cache, fetch from service
+      logger.info("Fetching markets from GammaService");
       const result = await GammaService.fetchMarkets();
 
       if (!result.success || !result.markets || result.markets.length === 0) {
-        return await callback({
-          text: `Sorry, I couldn't find any prediction markets${query ? ` about "${query}"` : ""}.${result.error ? ` ${result.error}` : ""}`, // Added await
-        });
+        return `Sorry, I couldn't find any prediction markets${query ? ` about "${query}"` : ""}.${result.error ? ` ${result.error}` : ""}`;
       }
 
-      let filteredMarkets = result.markets as PolymarketMarket[];
+      let filteredMarkets = result.markets;
       if (query && query.trim() !== "") {
         const escaped = query.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
         const wordPattern = new RegExp(`\\b${escaped}\\b`, "i");
 
         filteredMarkets = result.markets.filter(
-          (market: PolymarketMarket) =>
-            (market.question && wordPattern.test(market.question)) ||
-            (market.description && wordPattern.test(market.description)) ||
-            (market.slug && wordPattern.test(market.slug.replace(/-/g, " "))),
+          (m) =>
+            (m.question && wordPattern.test(m.question)) ||
+            (m.description && wordPattern.test(m.description)) ||
+            (m.slug && wordPattern.test(m.slug.replace(/-/g, " "))),
         );
       }
 
@@ -422,7 +430,7 @@ export const readMarketsAction: Action = {
         text: response,
       };
 
-      callback(responseContent);
+      await callback(responseContent);
 
       return responseContent;
     } catch (error) {
@@ -434,7 +442,7 @@ export const readMarketsAction: Action = {
 
 // Helper function to format markets response
 function formatMarketsResponse(
-  markets: PolymarketMarket[],
+  markets: ReadMarketsData["markets"],
   query?: string,
 ): string {
   if (markets.length === 0) {
@@ -448,6 +456,7 @@ function formatMarketsResponse(
 
   markets.forEach((market, index) => {
     response += `${index + 1}. "${market.question}" - `;
+
     if (market.outcomes && market.outcomes.length > 0) {
       response += market.outcomes
         .map((outcome) => `${outcome.name}: $${outcome.price}`)
@@ -455,6 +464,7 @@ function formatMarketsResponse(
     } else {
       response += "No outcome data available";
     }
+
     if (index < markets.length - 1) {
       response += "\n";
     }

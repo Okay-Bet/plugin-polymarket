@@ -1,4 +1,4 @@
-export const buySharesModel = `
+ export const buySharesModel = `
  User wants to buy shares on Polymarket.
  Extract the following information:
  - marketId: The ID of the market.
@@ -8,7 +8,7 @@ export const buySharesModel = `
  User message: "{{text}}"
  `;
 
-export const sellSharesModel = `
+ export const sellSharesModel = `
  User wants to sell shares on Polymarket.
  Extract the following information:
  - marketId: The ID of the market.
@@ -18,7 +18,7 @@ export const sellSharesModel = `
  User message: "{{text}}"
  `;
 
-export const readMarketModel = `
+ export const readMarketModel = `
  User wants to view information about a specific market on Polymarket.
  Extract the following information:
  - marketId: The ID of the market to view.
@@ -26,7 +26,7 @@ export const readMarketModel = `
  User message: "{{text}}"
  `;
 
-export const readMarketsModel = `
+ export const readMarketsModel = `
  User wants to view information about markets on Polymarket.
  Extract the following information:
  - query (optional): Keywords or phrases related to the markets they're interested in.
@@ -35,7 +35,7 @@ export const readMarketsModel = `
  User message: "{{text}}"
  `;
 
-export const redeemSharesModel = `
+ export const redeemSharesModel = `
  User wants to redeem shares on Polymarket for a specific market.
  Extract the following information:
  - marketId: The ID of the market from which to redeem shares.
