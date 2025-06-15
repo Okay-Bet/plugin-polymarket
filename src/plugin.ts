@@ -126,16 +126,40 @@ const pluginPolymarket: Plugin = {
     },
   ] as Route[],
   models: {
-    [ModelType.TEXT_SMALL]: async (runtime, params) => "Simple mock response",
-    [ModelType.TEXT_LARGE]: async (runtime, params) =>
-      (
-        await runtime.useModel(ModelType.TEXT_LARGE, {
-          prompt: `Mock TEXT_LARGE response to: ${params.prompt.substring(
-            0,
-            50,
-          )}`,
-        })
-      ).text,
+    [ModelType.TEXT_SMALL]: async (runtime, params) => {
+      // You should structure the response to include the action you want to trigger.
+      // Assuming you want to use READ_POLYMARKET_MARKETS when a large text model is used.
+      const response = {
+        text: `Mock TEXT_LARGE response to: ${params.prompt.substring(0, 50)}`,
+        thought: "This is my mock thought for a large model.",
+        actions: ["READ_POLYMARKET_MARKETS"], // Specify the action here
+      };
+
+      // Instead of returning just the text, you should return the whole object
+      // or adapt how your system processes model outputs to handle actions.
+      // For now, I'll assume you need to trigger the action separately based on this output.
+      // If your system expects the model to directly trigger the action, you might need
+      // a different mechanism (e.g., having the model return an "actions" array that the
+      // runtime then processes).
+      return response.text; // Return only the text part for now, as per your original structure
+    },
+    [ModelType.TEXT_LARGE]: async (runtime, params) => {
+      // You should structure the response to include the action you want to trigger.
+      // Assuming you want to use READ_POLYMARKET_MARKETS when a large text model is used.
+      const response = {
+        text: `Mock TEXT_LARGE response to: ${params.prompt.substring(0, 50)}`,
+        thought: "This is my mock thought for a large model.",
+        actions: ["READ_POLYMARKET_MARKETS"], // Specify the action here
+      };
+
+      // Instead of returning just the text, you should return the whole object
+      // or adapt how your system processes model outputs to handle actions.
+      // For now, I'll assume you need to trigger the action separately based on this output.
+      // If your system expects the model to directly trigger the action, you might need
+      // a different mechanism (e.g., having the model return an "actions" array that the
+      // runtime then processes).
+      return response.text; // Return only the text part for now, as per your original structure
+    },
   },
   providers: [
     {
@@ -172,7 +196,7 @@ readMarketsAction.handler = async (
     });
 
     // Use the extracted data from the model to build the response.
-    // This will replace the existing logic for extracting query/limit.
+    // This will use the existing logic for extracting query/limit but pass in values from the model
     return readMarketsAction.originalHandler(
       runtime,
       message,
@@ -193,14 +217,20 @@ readMarketsAction.handler = async (
 };
 
 // Store the original handler before overwriting it
-readMarketsAction.originalHandler = readMarketsAction.handler;
-(readMarketsAction as any).formatMarketsResponse = (markets, query) => {
-// Now we can replace the handler with the new logic that uses the model
-(readMarketsAction as any).handler = async (runtime: IAgentRuntime, message: Memory, state?: State, options: { query?: string, limit?: number } = {}, callback: HandlerCallback, responses: Memory[]) => {
+readMarketsAction.originalHandler = readMarketsAction.handler as any;
+
+// Then, update the handler to call the original handler with options
+readMarketsAction.handler = async (
+  runtime: IAgentRuntime,
+  message: Memory,
+  state?: State,
+  options: { query?: string; limit?: number } = {},
+  callback: HandlerCallback,
+  responses: Memory[],
+) => {
   // Use options passed from the model or defaults.
   const { query, limit } = options;
   logger.info(`[readMarketsAction.handler] Query: ${query}, Limit: ${limit}`); // Added logging
-
 
   try {
     const result = await GammaService.fetchMarkets();
@@ -240,7 +270,8 @@ readMarketsAction.originalHandler = readMarketsAction.handler;
       error instanceof Error ? error.message : "Unknown error"
     }`;
   }
-};}
+};
+
 
 // Helper function to format markets response
 readMarketsAction.formatMarketsResponse = (markets, query) => {
@@ -276,4 +307,5 @@ readMarketsAction.formatMarketsResponse = (markets, query) => {
 export const init = async (runtime: IAgentRuntime) => {
   await pluginPolymarket.init?.({}, runtime);
 };
+export { pluginPolymarket };
 export default pluginPolymarket;

@@ -31,10 +31,11 @@
   "dependencies": {
     "@elizaos/cli": ">=1.0.9",
     "@elizaos/core": ">=1.0.9",
-    "@elizaos/plugin-bootstrap": ">=1.0.0",
+    "@elizaos/plugin-bootstrap": "^1.0.9",
     "@elizaos/plugin-local-ai": ">=1.0.4",
+    "@elizaos/plugin-node": "^0.25.6-alpha.1",
     "@elizaos/plugin-openai": ">=1.0.4",
-    "@elizaos/plugin-sql": ">=1.0.8",
+    "@elizaos/plugin-sql": "^1.0.9",
     "@polymarket/clob-client": "^4.18.0",
     "@polymarket/order-utils": ">=2.1.0",
     "axios": ">=0.27.2",

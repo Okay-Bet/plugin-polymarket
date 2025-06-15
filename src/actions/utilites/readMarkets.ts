@@ -307,6 +307,7 @@ export const readMarketsAction: Action = {
         name: "{{agent}}",
         content: {
           text: 'Here are the top 5 prediction markets on Polymarket:\n1. "Will Trump win the 2024 election?" - Yes: $0.52, No: $0.48\n2. "Will Bitcoin exceed $100k in 2024?" - Yes: $0.35, No: $0.65\n3. "Will OpenAI release GPT-5 in 2024?" - Yes: $0.72, No: $0.28\n4. "Will SpaceX reach Mars by 2026?" - Yes: $0.15, No: $0.85\n5. "Will the Fed cut rates in June?" - Yes: $0.62, No: $0.38',
+          action: ["READ_POLYMARKET_MARKETS"],
         },
       },
     ],
@@ -315,12 +316,14 @@ export const readMarketsAction: Action = {
         name: "{{user1}}",
         content: {
           text: "What are the current odds on Polymarket about Bitcoin?",
+          //action: [""]
         },
       },
       {
         name: "{{agent}}",
         content: {
           text: 'I found 3 markets about Bitcoin on Polymarket:\n1. "Will Bitcoin exceed $100k in 2024?" - Yes: $0.35, No: $0.65\n2. "Will Bitcoin drop below $40k in May 2024?" - Yes: $0.22, No: $0.78\n3. "Will a Bitcoin ETF be approved in 2024?" - Yes: $0.89, No: $0.11',
+          action: ["READ_POLYMARKET_MARKETS"],
         },
       },
     ],
@@ -332,31 +335,33 @@ export const readMarketsAction: Action = {
     state?: State,
   ): Promise<boolean> => {
     // try {
-      const content = message.content as ReadMarketsActionContent;
-      const text = content.text.toLowerCase();
+    const content = message.content as ReadMarketsActionContent;
+    const text = content.text.toLowerCase();
 
-      // Check for keywords related to Polymarket and prediction markets
-      const hasPolymarketKeyword = text.includes("polymarket");
-      const hasPredictionMarketKeywords =
-        text.includes("prediction market") ||
-        text.includes("betting odds") ||
-        text.includes("prediction") ||
-        text.includes("markets");
+    // Check for keywords related to Polymarket and prediction markets
+    const hasPolymarketKeyword = text.includes("polymarket");
+    const hasPredictionMarketKeywords =
+      text.includes("prediction market") ||
+      text.includes("betting odds") ||
+      text.includes("prediction") ||
+      text.includes("markets");
 
-      // Check for action keywords
-      const hasActionKeywords =
-        text.includes("show") ||
-        text.includes("get") ||
-        text.includes("what") ||
-        text.includes("find") ||
-        text.includes("list") ||
-        text.includes("tell") || 
-        text.includes("retriev") ||
-        text.includes("market") || 
-        text.includes("markets") ||
-        text.includes("market prices");
+    // Check for action keywords
+    const hasActionKeywords =
+      text.includes("show") ||
+      text.includes("get") ||
+      text.includes("what") ||
+      text.includes("find") ||
+      text.includes("list") ||
+      text.includes("tell") ||
+      text.includes("retriev") ||
+      text.includes("market") ||
+      text.includes("markets") ||
+      text.includes("market prices");
 
-      return hasActionKeywords && (hasPolymarketKeyword || hasPredictionMarketKeywords);
+    return (
+      hasActionKeywords && (hasPolymarketKeyword || hasPredictionMarketKeywords)
+    );
     // } catch {
     //   return false;
     // }

@@ -30,10 +30,15 @@ export const setUserAction: Action = {
     message: Memory,
   ): Promise<boolean> => {
     const text = (message.content as Content).text.toLowerCase();
-    const includesSet = text.includes("set") && text.includes("username") && text.includes("to");
-    const includesEdit = text.includes("edit") && text.includes("username") && text.includes("make") && text.includes("it");
+    const includesSet =
+      text.includes("set") && text.includes("username") && text.includes("to");
+    const includesEdit =
+      text.includes("edit") &&
+      text.includes("username") &&
+      text.includes("make") &&
+      text.includes("it");
     return includesSet || includesEdit;
-    },
+  },
   handler: async (
     _runtime: IAgentRuntime,
     message: Memory,
@@ -45,13 +50,15 @@ export const setUserAction: Action = {
     try {
       const content = message.content as Content;
       const text = content.text;
-      const match = text.match(/(change|set|edit)\s+my\s+username\s+(?:to|and make it)\s+(.+)/i);
+      const match = text.match(
+        /(change|set|edit)\s+my\s+username\s+(?:to|and make it)\s+(.+)/i,
+      );
       if (match && match[2]) {
-          const newUsername = match[2].trim(); // Extract the username (group 2 in the regex)
-          setUsername(newUsername);
-          const responseText = `Username set to ${newUsername}.`;
-          await callback({ text: responseText });
-          return responseText;
+        const newUsername = match[2].trim(); // Extract the username (group 2 in the regex)
+        setUsername(newUsername);
+        const responseText = `Username set to ${newUsername}.`;
+        await callback({ text: responseText });
+        return responseText;
       } else {
         return "Please specify a username after 'to'. Example: Set my username to John";
       }
@@ -114,14 +121,14 @@ export const getUsernameAction: Action = {
 const USERNAME_KEY = "polymarket_username";
 
 export const getDefaultUsername = (): string => {
-    const storedUsername = localStorage.getItem(USERNAME_KEY);
-    return storedUsername || "User";
+  const storedUsername = localStorage.getItem(USERNAME_KEY);
+  return storedUsername || "User";
 };
 
 export const setUsername = (username: string): void => {
-    if (username === null || username === undefined) {
-        localStorage.removeItem(USERNAME_KEY); // Remove the key if null or undefined
-    } else {
-        localStorage.setItem(USERNAME_KEY, username);
-    }
+  if (username === null || username === undefined) {
+    localStorage.removeItem(USERNAME_KEY); // Remove the key if null or undefined
+  } else {
+    localStorage.setItem(USERNAME_KEY, username);
+  }
 };
