@@ -35,9 +35,9 @@ export class StarterTestSuite implements TestSuite {
         }
 
         // Additional character property validations
-        if (character.name !== "polydawg") {
+        if (character.name !== "agent") {
           throw new Error(
-            `Expected character name to be 'polydawg', got '${character.name}'`,
+            `Expected character name to be 'agent', got '${character.name}'`,
           );
         }
         if (!Array.isArray(character.plugins)) {

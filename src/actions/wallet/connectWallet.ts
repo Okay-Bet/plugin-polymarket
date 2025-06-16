@@ -6,9 +6,8 @@ import {
   type Content,
   logger,
   HandlerCallback,
-} from "@elizaos/core/v2";
-import { PolymarketService } from "../../services/polymarketService"; // Import PolymarketService
-import { connectWalletExamples } from "src/examples";
+} from "@elizaos/core";
+import { ClobService } from "../../services/clobService"; // Import ClobService
 
 export const connectWalletAction: Action = {
   name: "CONNECT_WALLET",
@@ -50,26 +49,31 @@ export const connectWalletAction: Action = {
     callback: HandlerCallback,
     _responses: Memory[],
   ): Promise<string> => {
-    // In a real application, you'd trigger a wallet connection flow here.
-    const polymarketService = _runtime.getService(PolymarketService.serviceType) as
-      | PolymarketService
-      | undefined;
-    if (!polymarketService) {
-      const errorMsg = "PolymarketService not available.";
+    // This is a placeholder for the private key. In a real application, this
+    // would be securely obtained from the user, e.g., through a wallet provider.
+    //  NEVER hardcode a private key in your application.
+    const privateKey = process.env.PK as string; //  For testing only!!!  Get from user input in real app
+
+    if (!privateKey) {
+      const errorMsg =
+        "No private key provided.  Set PK env var (testing) or get from user.";
       logger.error(errorMsg);
       await callback({ text: errorMsg });
       return errorMsg;
     }
 
-    try {
-      // In a real implementation, this would trigger a wallet connection flow
-      // (e.g., using a library like MetaMask's provider) and interact with the Polymarket API.
-      const responseText =
-        "Connecting your wallet... (In a real app, you'd see a wallet connection prompt and handle the connection)";
-      await callback({ text: responseText });
-      return responseText;
-    } catch (error) {
-      return `Error connecting wallet: ${error instanceof Error ? error.message : "Unknown error"}`;
+    const clobService = _runtime.getService(
+      ClobService.serviceType,
+    ) as ClobService;
+    if (!clobService) {
+      const errorMsg = "ClobService not available.";
+      logger.error(errorMsg);
+      await callback({ text: errorMsg });
+      return errorMsg;
     }
+    await clobService.connectWallet(privateKey);
+    const successMsg = "Wallet connected successfully!";
+    await callback({ text: successMsg });
+    return successMsg;
   },
 };

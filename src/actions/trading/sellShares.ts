@@ -33,7 +33,7 @@ export const sellSharesAction: Action = {
       typeof params.quantity === "number" &&
       params.quantity > 0 &&
       (params.outcome === "Yes" || params.outcome === "No")
-      );
+    );
   },
   handler: async (
     _runtime: IAgentRuntime,
@@ -49,7 +49,9 @@ export const sellSharesAction: Action = {
       return "Invalid input: Please provide marketId, outcome (Yes/No), and quantity.";
     }
 
-    const clobService = _runtime.getService(ClobService.serviceType) as ClobService;
+    const clobService = _runtime.getService(
+      ClobService.serviceType,
+    ) as ClobService;
     if (!clobService) {
       return "ClobService not available. Please check plugin configuration.";
     }
@@ -74,7 +76,7 @@ export const sellSharesAction: Action = {
       const resp = await clobClient.postOrder(order, OrderType.GTC);
       const responseText = `Successfully placed a sell order for ${quantity} shares of "${outcome}" in market ${marketId}. Order details: ${JSON.stringify(resp)}`;
       await callback({ text: responseText });
-      return responseText
+      return responseText;
     } catch (e) {
       return `Error selling shares: ${e instanceof Error ? e.message : "Unknown error"}`;
     }
