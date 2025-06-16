@@ -6,7 +6,9 @@ import {
   type Content,
   type HandlerCallback,
 } from "@elizaos/core";
-import { GammaService } from "../../services/gammaService";
+import { ClobService } from "../../services/clobService"; // Ensure correct path
+import { Side, OrderType } from "@polymarket/clob-client";
+import { ethers } from "ethers";
 
 export const buySharesAction: Action = {
   name: "BUY_SHARES",
@@ -29,8 +31,9 @@ export const buySharesAction: Action = {
       params.marketId &&
       params.outcome &&
       typeof params.quantity === "number" &&
-      params.quantity > 0
-    );
+      params.quantity > 0 &&
+      (params.outcome === "Yes" || params.outcome === "No")
+      );
   },
   handler: async (
     _runtime: IAgentRuntime,
@@ -46,49 +49,34 @@ export const buySharesAction: Action = {
       return "Invalid input: Please provide marketId, outcome (Yes/No), and quantity.";
     }
 
-    const polymarketService = _runtime.getService(
-      PolymarketService.serviceType,
-    ) as PolymarketService;
-    if (!polymarketService) {
-      return "PolymarketService not available. Please check plugin configuration.";
+    const clobService = _runtime.getService(ClobService.serviceType) as ClobService;
+    if (!clobService) {
+      return "ClobService not available. Please check plugin configuration.";
     }
 
+    const clobClient = clobService.getClobClient();
+
+    // Assume marketId is the token ID for simplicity, needs adjustment for real mapping
+    const tokenID = marketId;
+    const price = 0.5; // Placeholder.  You will likely need to fetch this from market data.
+    const side = outcome === "Yes" ? Side.BUY : Side.BUY; // Assuming buying "Yes". Adapt for "No" if needed.
+
     try {
-      // Assuming you have a way to fetch market data and get the required addresses
-      const marketData = await PolymarketService.fetchMarketById(marketId);
+      const order = await clobClient.createOrder({
+        tokenID,
+        price,
+        side,
+        size: quantity,
+        feeRateBps: 0, // Assuming no fees for now
+        nonce: Math.floor(Math.random() * 1000000),
+      });
 
-      if (!marketData) {
-        return `Could not retrieve market data for market ID: ${marketId}`;
-      }
-
-      logger.info("marketData:", marketData);  // Added logging
-      logger.info("outcome:", outcome);          // Added logging
-
-      // Assuming outcome relates to a condition's humanReadableName
-      const condition = marketData.market.conditions.find(
-        (c) => c.humanReadableName === outcome // Adjust if needed, based on actual relationship
-      );
-
-      if (!condition) {
-        return `Could not find condition matching outcome: ${outcome}`;
-      }
-/*
-      const orderParams: OrderParams = {
-        marketMakerAddress: marketData.market.marketMakerAddress,
-        conditionalTokensAddress: condition.conditionalTokensAddress, // Assuming this is correct
-        returnAmount: quantity,
-        //  NOTE: outcomeIndex might not be directly related to "Yes"/"No" in this structure.
-        outcomeIndex:  outcome === "Yes" ? 0 : 1, //  You likely need logic to determine this from conditions.
-        maxOutcomeTokensToSell: quantity,
-      };
-      const result = await polymarketService.buySharesSDK(orderParams);
-
-      const message = result.message || "Buy order processed.";
-      await callback({ text: message });
-      return message;
-*/
-    } catch (error) {
-      return `Error buying shares: ${error instanceof Error ? error.message : "Unknown error"}`;
+      const resp = await clobClient.postOrder(order, OrderType.GTC);
+      const responseText = `Successfully placed a buy order for ${quantity} shares of "${outcome}" in market ${marketId}. Order details: ${JSON.stringify(resp)}`;
+      await callback({ text: responseText });
+      return responseText
+    } catch (e) {
+      return `Error buying shares: ${e instanceof Error ? e.message : "Unknown error"}`;
     }
   },
 };

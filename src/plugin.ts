@@ -10,6 +10,7 @@ import {
   type Content,
   type HandlerCallback,
 } from "@elizaos/core";
+import { ClobService } from "./services/clobService"; // Ensure correct path
 import { ResponseParserService } from "./services/responseParser";
 import { buySharesAction } from "./actions/trading/buyShares";
 import { sellSharesAction } from "./actions/trading/sellShares";
@@ -38,7 +39,7 @@ const polymarketPluginStartedAction: Action = {
       // This action is typically triggered internally upon plugin initialization.
       // A direct user invocation might not be standard.
       {
-        name: "agent",
+        name: "polydawg",
         content: { text: "Polymarket plugin is now active and ready." },
       },
     ],
@@ -104,7 +105,7 @@ const pluginPolymarket: Plugin = {
     setUserAction,
     getUsernameAction,
   ],
-  services: [PolymarketService],
+  services: [ResponseParserService, ClobService],
   events: {
     VOICE_MESSAGE_RECEIVED: [
       async (params: any) =>
@@ -172,8 +173,6 @@ const pluginPolymarket: Plugin = {
       }),
     },
   ],
-  services: [ResponseParserService],
-};
 
 // Import the models at the top of the file
 
@@ -203,7 +202,7 @@ readMarketsAction.handler = async (
       state,
       {
         query: modelResult.query,
-        limit: modelResult.limit || 10, // Default limit if not specified.
+        limit: modelResult.limit || 10, // Default limit if not specified
       },
       callback,
       _responses,
@@ -214,7 +213,7 @@ readMarketsAction.handler = async (
       error instanceof Error ? error.message : "Unknown error"
     }`;
   }
-};
+}; // Closing brace for the handler
 
 // Store the original handler before overwriting it
 readMarketsAction.originalHandler = readMarketsAction.handler as any;
@@ -259,7 +258,7 @@ readMarketsAction.handler = async (
       query,
     );
     const responseContent: Content = {
-      text: response,
+      text: response
     };
 
     await callback(responseContent);
@@ -270,7 +269,7 @@ readMarketsAction.handler = async (
       error instanceof Error ? error.message : "Unknown error"
     }`;
   }
-};
+}; // Closing brace for the handler
 
 
 // Helper function to format markets response
@@ -301,7 +300,7 @@ readMarketsAction.formatMarketsResponse = (markets, query) => {
       response += "\n";
     }
   });
-  return response;
+  return response; // Ensure there's a return statement here
 };
 
 export const init = async (runtime: IAgentRuntime) => {
