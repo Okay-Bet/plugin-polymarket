@@ -41,7 +41,7 @@ describe('ClobTestSuite', () => {
   });
 
   it('should have name and description', () => {
-    expect(testSuite.name).toBe('clobservice');
+    expect(testSuite.name).toBe('clob');
     expect(testSuite.description).toBe('Tests for the clob project');
   });
 
@@ -80,10 +80,9 @@ describe('ClobTestSuite', () => {
   it('should run clob service test successfully', async () => {
     const mockRuntime = createMockRuntime();
     const serviceTest = testSuite.tests.find((test) => test.name === 'ClobService test');
-
     if (serviceTest) {
       await expect(serviceTest.fn(mockRuntime as any)).resolves.not.toThrow();
-      expect(mockRuntime.getService).toHaveBeenCalledWith('clobservice');
+      expect(mockRuntime.getService).toHaveBeenCalledWith('clob');
     } else {
       assert.fail('ClobService test not found');
     }

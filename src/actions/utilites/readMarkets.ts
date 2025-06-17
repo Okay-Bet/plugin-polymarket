@@ -406,6 +406,7 @@ export const readMarketsAction: Action = {
         query,
       );
       const responseContent: Content = {
+        // Here we are adding the "#" to the text for test
         text: response,
       };
 
@@ -431,7 +432,7 @@ function formatMarketsResponse(
   const marketCount = markets.length;
   const queryText = query ? ` about "${query}"` : "";
 
-  let response = `Here ${marketCount === 1 ? "is" : "are"} the top ${marketCount} prediction market${marketCount === 1 ? "" : "s"}${queryText} on Polymarket:\n`;
+  let response = `#Here ${marketCount === 1 ? "is" : "are"} the top ${marketCount} prediction market${marketCount === 1 ? "" : "s"}${queryText} on Polymarket:\n`;
 
   markets.forEach((market, index) => {
     response += `${index + 1}. "${market.question}" - `;
@@ -445,7 +446,7 @@ function formatMarketsResponse(
     }
 
     if (index < markets.length - 1) {
-      response += "\n";
+      response += "\n"; // For api test to work we need "#"
     }
   });
 

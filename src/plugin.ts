@@ -1,4 +1,11 @@
-import { type Plugin, logger, Memory, IAgentRuntime, State, ModelType } from "@elizaos/core/v2";
+import {
+  type Plugin,
+  logger,
+  Memory,
+  IAgentRuntime,
+  State,
+  ModelType,
+} from "@elizaos/core/v2";
 import { ClobService } from "./services/clobService"; // Ensure correct path
 import { ResponseParserService } from "./services/responseParser";
 import { buySharesAction } from "./actions/trading/buyShares";
@@ -10,10 +17,9 @@ import { setUserAction, getUsernameAction } from "./actions/utilites/user"; // I
 import { connectWalletAction } from "./actions/wallet/connectWallet";
 import { getWalletInfoAction } from "./actions/wallet/getWalletInfo"; // Import user actions
 import { GammaService } from "./services/gammaService";
-import { polymarketPluginStartedAction } from "./actions/polymarketWelcome";
 
 const pluginPolymarket: Plugin = {
-  name: "elizaos/plugin-polymarket",
+  name: "@elizaos/plugin-polymarket",
   description: "Plugin for Polymarket integration",
   config: {},
   actions: [
@@ -26,7 +32,6 @@ const pluginPolymarket: Plugin = {
     buySharesAction,
     sellSharesAction,
     redeemSharesAction,
-    polymarketPluginStartedAction
   ],
   services: [ResponseParserService, ClobService],
   events: {

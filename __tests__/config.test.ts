@@ -39,13 +39,8 @@ describe('Plugin Configuration Schema', () => {
 
     if (initPlugin) {
       let error = null;
-        try {
-          const mockRuntime = {
-              registerPlugin: vi.fn(), // Add mock registerPlugin
-          };
-          
-        await initPlugin(validConfig, mockRuntime as any);
-
+      try {
+        await initPlugin(validConfig, {} as any);
       } catch (e) {
         error = e;
       }
@@ -62,7 +57,7 @@ describe('Plugin Configuration Schema', () => {
     };
       let error = null;
       try {
-        await initPlugin(emptyConfig, mockRuntime as any);
+        await initPlugin(emptyConfig, {} as any);
       } catch (e) {
         error = e;
       }

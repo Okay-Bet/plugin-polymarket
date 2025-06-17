@@ -170,10 +170,8 @@ describe('Plugin Models', () => {
   });
 
   it('should return a response from TEXT_SMALL model', async () => {
+    expect(plugin.models).toHaveProperty(ModelType.TEXT_SMALL);
     if(plugin.models){
-      // Ensure TEXT_SMALL model is defined before using it
-      expect(plugin.models).toHaveProperty(ModelType.TEXT_SMALL);
-
       const runtime = createRealRuntime();
 
       let result = '';
@@ -293,7 +291,7 @@ describe('ClobService', () => {
     let error: Error | unknown = null;
 
     try {
-      // For this specific test, explicitly mock getService to return null for 'starter'
+      // For this specific test, explicitly mock getService to return null for 'ClobService'
       // to ensure we test the "service not found" path in ClobService.stop
       vi.spyOn(runtime, 'getService').mockImplementation((serviceType: string) => {
         if (serviceType === ClobService.serviceType) return null;
@@ -307,7 +305,7 @@ describe('ClobService', () => {
       error = e;
       expect(error).toBeTruthy();
       if (error instanceof Error) {
-        expect(error.message).toContain('PolymarketService not found');
+        expect(error.message).toContain('ClobService not found');
         }
     }
 

@@ -1,61 +1,43 @@
-import { describe, expect, it, vi, afterEach, beforeEach } from 'vitest';
+import { describe, expect, it, vi, afterEach } from 'vitest';
 import { readMarketsAction } from '../src/actions/utilites/readMarkets';
-import { createMockRuntime, createMockMessage, createMockState } from './utils/core-test-utils';
-import { HandlerCallback, logger } from '@elizaos/core/v2';
+import GammaService from '../src/services/gammaService';
+import { createMockRuntime, createMockMessage, createMockState, documentTestResult } from './utils/core-test-utils';
+import { HandlerCallback } from '@elizaos/core/v2';
 const apiUrl = "https://gamma-api.polymarket.com/markets";
 
 describe('readMarketsAction', () => {
   // This test simulates the successful API call within the readMarketsAction handler.
-  it('should successfully handle markets fetched from PolymarketService', async () => {
+  it('should successfully handle markets fetched from GammaService', async () => {
     const runtime = createMockRuntime();
     const message = createMockMessage('Show me Polymarket markets');
-    const state = createMockState();    
-    let callbackResponse: any = null;    
-
+    const state = createMockState();
+    let callbackResponse: any = null;
+    
     afterEach(() => {
       vi.restoreAllMocks();
     });
-
-    beforeEach(() => { callbackResponse = null; });
 
     const mockCallback: HandlerCallback = (response: any) => {
       return callbackResponse = response;
     };
 
-    // Create a mock PolymarketService with a mocked fetchMarkets method
-    const mockPolymarketService = {
-      fetchMarkets: vi.fn().mockResolvedValue({
-          success: true,
-          markets: [{ url: apiUrl, question: "Will this test pass?", outcomes: [{ name: "Yes", price: "0.5", clobTokenId: "123" }] }], // Simulate a market object
-        }),
-      };
-    
-    // Mock the runtime's getService method to return the mock PolymarketService    
-    runtime.getService = vi.fn().mockImplementation((serviceType) => {
-      if (serviceType === 'PolymarketService') {
-        return mockPolymarketService;
+    // Mock GammaService.fetchMarkets to simulate a successful response (adjust as needed)
+  const mockFetchMarkets = vi.fn().mockResolvedValue({
+    success: true,
+    markets: [{ url: apiUrl, question: "Will this test pass?", outcomes: [{ name: "Yes", price: "0.5", clobTokenId: "123" }] }], // Simulate a market object containing the apiUrl
+  });
+  
+  // Set up the mock directly on the runtime's gammaService which breaks everything and needs to be removed.
+  (runtime as any).gammaService.fetchMarkets = mockFetchMarkets;
+  
+    // Mock the useModel function on the runtime object
+    runtime.useModel = vi.fn().mockResolvedValue({}); // Or a more appropriate mock value if needed
 
-      }
-      return undefined; // Or handle other service types as needed
-    });
+    // Execute the action handler
+    await readMarketsAction.handler(runtime, message, state, {}, mockCallback, []);
 
-    // Mock the useModel function on the runtime object    
-    runtime.useModel = vi.fn().mockResolvedValue({}); // Or a more appropriate mock value if needed    
-
-    logger.info("Mocked PolymarketService:", mockPolymarketService);
-    logger.info("Mocked runtime.getService:", runtime.getService);
-
-         // Execute the action handler and assert the callback
-    // Wrap in a try-catch for more robust error handling
-    try {
-        await readMarketsAction.handler(runtime, message, state, {}, mockCallback, []);
-
-        logger.info("Callback response after handler:", callbackResponse);
-      } catch (error) {
-        // If the handler throws, fail the test and log the error
-        console.error("Test failed due to handler error:", error);
-        throw error; 
-      }
+    // Assert that the callback was called with a non-null response
+    expect(callbackResponse).not.toBeNull();
   });
 });
 
@@ -69,7 +51,7 @@ describe('direct_API_call', () => {
       const data = await response.json();
       expect(data).not.toBeNull();
       // Add more specific assertions about the data if needed
-      console.log("Direct API call successful. Data:", data.toString().substring(0,50));
+      console.log("Direct API call successful. Data:", data);
     } catch (error) {
       console.error("Direct API call failed:", error);
       throw error; // Re-throw the error to fail the test

@@ -30,7 +30,7 @@
   ],
   "dependencies": {
     "@elizaos/cli": "latest",
-    "@elizaos/core/v2": "latest",
+    "@elizaos/core": "latest",
     "@elizaos/plugin-bootstrap": "latest",
     "@elizaos/plugin-google-genai": "1.0.0",
     "@elizaos/plugin-node": "^0.25.6-alpha.1",
@@ -42,10 +42,10 @@
   },
   "scripts": {
     "update": "elizaos update",
-    "start": "elizaos start --plugins ./src/plugin.ts",
+    "start": "elizaos start",
     "dev": "elizaos dev",
     "build": "tsup",
-    "lint": "prettier --write ./src && prettier --write src/**/*.ts && prettier --write __tests__/**/*.ts",
+    "lint": "prettier --write ./src && eslint src/**/*.ts && eslint __tests__/**/*.ts",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
@@ -79,7 +79,7 @@
     "protobufjs"
   ],
   "devDependencies": {
-    "mocha": "latest",
+    "@typescript-eslint/eslint-plugin": "latest",
     "vitest": "latest",
     "eslint": "latest",
     "tsup": "latest",

@@ -4,7 +4,14 @@ import type { IAgentRuntime, Memory, State, Provider } from '@elizaos/core/v2';
 import { logger } from '@elizaos/core/v2';
 import { v4 as uuidv4 } from 'uuid';
 import dotenv from 'dotenv';
-import plugin from '../src/plugin';
+import { buySharesAction } from '../src/actions/trading/buyShares';
+import { redeemSharesAction } from '../src/actions/trading/redeemShares';
+import { sellSharesAction } from '../src/actions/trading/sellShares';
+import { readMarketAction } from '../src/actions/utilites/readMarket';
+import { readMarketsAction } from '../src/actions/utilites/readMarkets';
+import { getUsernameAction, setUserAction } from '../src/actions/utilites/user';
+import { connectWalletAction } from '../src/actions/wallet/connectWallet';
+import { getWalletInfoAction } from '../src/actions/wallet/getWalletInfo';
 
 // Setup environment variables
 dotenv.config();
@@ -46,6 +53,35 @@ function documentTestResult(testName: string, result: any, error: Error | null =
 // Create a realistic runtime for testing
 
 // Create realistic memory object
+function createRealMemory(): Memory {
+  const entityId = uuidv4();
+  const roomId = uuidv4();
+
+  return {
+    id: uuidv4(),
+    entityId,
+    roomId,
+    timestamp: Date.now(),
+    content: {
+      text: 'What can you provide?',
+      source: 'test',
+      actions: [
+          connectWalletAction,
+          getUsernameAction,
+          setUserAction,
+          getWalletInfoAction,
+          readMarketsAction,
+          readMarketAction,
+          buySharesAction,
+          sellSharesAction,
+          redeemSharesAction],
+    },
+    metadata: {
+      sessionId: uuidv4(),
+      conversationId: uuidv4(),
+    },
+  } as unknown as Memory;
+}
 
 describe('Provider Tests', () => {
   // Find the POLY_MARKET_PROVIDER from the providers array

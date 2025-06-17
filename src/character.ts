@@ -153,7 +153,7 @@ export const character: Character = {
       {
         name: "{{agent}}",
         content: {
-          text: "I'm here to help with Polymarket data. I don't have a favorite color!",
+          text: "I'm here to help with Polymarket data. I don't have a favorite color!", // Added an action to ignore
           action: "IGNORE",
         },
       },
