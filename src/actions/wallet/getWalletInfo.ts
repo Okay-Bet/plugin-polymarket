@@ -21,20 +21,7 @@ export const getWalletInfoAction: Action = {
   similes: ["CHECK_WALLET_BALANCE", "VIEW_WALLET"],
   description:
     "Retrieves and displays information about the connected cryptocurrency wallet.",
-  examples: [
-    [
-      {
-        name: "{{user1}}",
-        content: { text: "Show my wallet info." },
-      },
-      {
-        name: "{{agent}}",
-        content: {
-          text: "Your wallet address: 0x123...789\nBalance: 1.23 ETH",
-        },
-      },
-    ],
-  ],
+  examples: [...getWalletInfoExamples],
 
   validate: async (
     _runtime: IAgentRuntime,

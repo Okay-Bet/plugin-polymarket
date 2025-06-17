@@ -5,13 +5,13 @@ import type {
   State,
   TestSuite,
   UUID,
-} from "@elizaos/core";
+} from "@elizaos/core/v2";
 import { v4 as uuidv4 } from "uuid";
-import { character } from "./index";
+import { character } from "./character";
 
-export class StarterTestSuite implements TestSuite {
-  name = "starter";
-  description = "Tests for the starter project";
+export class ClobTestSuite implements TestSuite {
+  name = "clob";
+  description = "Tests for the clob project";
 
   tests = [
     {
@@ -60,8 +60,8 @@ export class StarterTestSuite implements TestSuite {
         // Test plugin initialization with empty config
         try {
           await runtime.registerPlugin({
-            name: "starter",
-            description: "A starter plugin for Eliza",
+            name: "clob",
+            description: "A clob plugin for Eliza",
             init: async () => {},
             config: {},
           });
@@ -113,34 +113,35 @@ export class StarterTestSuite implements TestSuite {
             );
           }
 
-          // expect(runtime.processActions).toHaveBeenCalledTimes(1); // Verify it was called
+          expect(runtime.processActions).toHaveBeenCalledTimes(1); // Verify it was called
         } catch (error) {
           throw new Error(
             `Polymarket plugin started action test failed: ${error.message}`,
           );
+          
         }
       },
     },
     {
-      name: "Starter service test",
+      name: "ClobService test",
       fn: async (runtime: IAgentRuntime) => {
         // Test service registration and lifecycle
         try {
-          const service = runtime.getService("starter");
+          const service = runtime.getService("clob");
           if (!service) {
-            throw new Error("Starter service not found");
+            throw new Error("ClobService not found");
           }
 
           if (
             service.capabilityDescription !==
-            "This is a starter service which is attached to the agent through the starter plugin."
+            "This is a clob service which is attached to the agent through the clob plugin."
           ) {
             throw new Error("Incorrect service capability description");
           }
 
           await service.stop();
         } catch (error) {
-          throw new Error(`PolymarketService test failed: ${error.message}`);
+          throw new Error(`ClobService test failed: ${error.message}`);
         }
       },
     },
@@ -230,13 +231,3 @@ export class StarterTestSuite implements TestSuite {
 
 // Export a default instance
 export default new ClobTestSuite();
-function expect(
-  processActions: (
-    message: Memory,
-    responses: Memory[],
-    state?: State,
-    callback?: HandlerCallback,
-  ) => Promise<void>,
-) {
-  throw new Error("Function not implemented.");
-}

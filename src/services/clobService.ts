@@ -1,4 +1,4 @@
-import { Service, IAgentRuntime, logger } from "@elizaos/core";
+import { Service, IAgentRuntime, logger } from "@elizaos/core/v2";
 import { ethers } from "ethers";
 import { Chain, ClobClient } from "@polymarket/clob-client";
 
@@ -28,7 +28,11 @@ export class ClobService extends Service {
   async connectWallet(privateKey: string): Promise<void> {
     try {
       this.wallet = new ethers.Wallet(privateKey);
-      this.clobClient = new ClobClient(this.host, this.chainId, this.wallet);
+      this.clobClient = new ClobClient(
+        this.host,
+        this.chainId,
+        this.wallet as any,
+      );
       logger.info("ClobService wallet connected successfully.");
     } catch (error: any) {
       logger.error(`Failed to connect wallet: ${error.message}`);

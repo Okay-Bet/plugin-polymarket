@@ -6,9 +6,10 @@ import {
   logger,
   Memory,
   State,
-} from "@elizaos/core";
+} from "@elizaos/core/v2";
 import { GammaService } from "../../services/gammaService";
 import { GetMarketActionContent, PolymarketMarket } from "../../types";
+import { getMarketByIdExamples } from "src/examples";
 
 export const readMarketAction: Action = {
   name: "GET_POLYMARKET_MARKET_BY_ID",
@@ -19,60 +20,7 @@ export const readMarketAction: Action = {
   ],
   description:
     "Fetches and displays details for a specific Polymarket market by its ID",
-  examples: [
-    [
-      {
-        name: "{{user1}}",
-        content: { text: "Show me details for Polymarket market 138462..." },
-      },
-      {
-        name: "{{agent}}",
-        content: {
-          text: 'Market "Will event X happen by date Y?" (ID: 138462)\nDescription: Detailed description of the market.\nStatus: Active\nVolume: 100000\nLiquidity: 50000\nEnds: 2024-12-31\nOutcomes:\n- Yes: $0.65\n- No: $0.35\nURL: https://polymarket.com/market/event-x-happen-by-date-y',
-        },
-      },
-    ],
-    [
-      {
-        name: "{{user1}}",
-        content: { text: "Get Polymarket data for market 138462..." },
-      },
-      {
-        name: "{{agent}}",
-        content: {
-          text: 'Market "Another interesting question?" (ID: 138462)\nDescription: Some info about this market.\nStatus: Closed\nVolume: 75000\nLiquidity: 20000\nEnds: 2023-01-15\nOutcomes:\n- Option A: $0.80\n- Option B: $0.20\nURL: https://polymarket.com/market/another-interesting-question',
-        },
-      },
-    ],
-  ],
-
-  validate: async (
-    runtime: IAgentRuntime,
-    message: Memory,
-    state?: State,
-  ): Promise<boolean> => {
-    try {
-      const content = message.content as GetMarketActionContent;
-      const text = content.text.toLowerCase();
-
-      const hasPolymarketKeyword = text.includes("polymarket");
-      const hasMarketIdKeyword =
-        text.includes("market id") ||
-        text.includes("id") ||
-        /0x[a-f0-9]{5,}/.test(text); // Basic check for hex-like ID
-
-      const hasActionKeywords =
-        text.includes("show") ||
-        text.includes("get") ||
-        text.includes("find") ||
-        text.includes("fetch") ||
-        text.includes("detail");
-
-      return hasActionKeywords && hasPolymarketKeyword && hasMarketIdKeyword;
-    } catch {
-      return false;
-    }
-  },
+  examples: [...getMarketByIdExamples],
 
   handler: async (
     _runtime: IAgentRuntime,
@@ -113,6 +61,13 @@ export const readMarketAction: Action = {
     } catch (error) {
       return `Sorry, there was an error fetching market details: ${error instanceof Error ? error.message : "Unknown error"}`;
     }
+  },
+  validate: function (
+    runtime: IAgentRuntime,
+    message: Memory,
+    state?: State,
+  ): Promise<boolean> {
+    throw new Error("Function not implemented.");
   },
 };
 

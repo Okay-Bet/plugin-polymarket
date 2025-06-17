@@ -2,10 +2,12 @@ import { z } from "zod";
 
 // Helper for date strings if you want to validate them as actual dates
 // For now, sticking to z.string() as per original types, but you might refine this:
-// const dateStringSchema = z.string().datetime({ offset: true }); // For ISO 8601 with offset
-// const simpleDateStringSchema = z.string().refine((val) => !isNaN(Date.parse(val)), {
-//   message: "Invalid date string",
-// });
+const dateStringSchema = z.string().datetime({ offset: true }); // For ISO 8601 with offset
+const simpleDateStringSchema = z
+  .string()
+  .refine((val) => !isNaN(Date.parse(val)), {
+    message: "Invalid date string",
+  });
 
 // PolymarketConfig
 export const PolymarketConfigSchema = z.object({

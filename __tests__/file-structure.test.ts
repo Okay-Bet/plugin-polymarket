@@ -68,8 +68,8 @@ describe('Project Structure Validation', () => {
       expect(packageJson.scripts).toHaveProperty('test');
       expect(packageJson.scripts).toHaveProperty('test:coverage');
 
-            // Check dependencies
-      expect(packageJson.dependencies).toHaveProperty('@elizaos/core');
+      // Check dependencies
+      expect(packageJson.dependencies).toHaveProperty('@elizaos/core/v2');
 
       // Check dev dependencies - adjusted for actual dev dependencies
       expect(packageJson.devDependencies).toBeTruthy();

@@ -29,9 +29,10 @@
     "dist"
   ],
   "dependencies": {
-    "@elizaos/cli": "^1.0.9",
-    "@elizaos/core": "^1.0.9",
-    "@elizaos/plugin-bootstrap": "^1.0.9",
+    "@elizaos/cli": "latest",
+    "@elizaos/core/v2": "latest",
+    "@elizaos/plugin-bootstrap": "latest",
+    "@elizaos/plugin-google-genai": "1.0.0",
     "@elizaos/plugin-node": "^0.25.6-alpha.1",
     "@elizaos/plugin-openai": "^1.0.4",
     "@polymarket/clob-client": "latest",
@@ -41,7 +42,7 @@
   },
   "scripts": {
     "update": "elizaos update",
-    "start": "elizaos start",
+    "start": "elizaos start --plugins ./src/plugin.ts",
     "dev": "elizaos dev",
     "build": "tsup",
     "lint": "prettier --write ./src && prettier --write src/**/*.ts && prettier --write __tests__/**/*.ts",
@@ -54,16 +55,16 @@
     "prepublishOnly": "npm run build"
   },
   "peerDependencies": {
-      "whatwg-url": "7.1.0"
+    "whatwg-url": "7.1.0"
   },
   "publishConfig": {
     "access": "restricted"
   },
   "packageType": "project",
   "agentConfig": {
-    "pluginType": "elizaos:project:1.0.9",
+    "pluginType": "elizaos:project:latest",
     "projectConfig": {
-      "name": "@elizaos/plugin-polymarket",
+      "name": "elizaos/plugin-polymarket",
       "description": "Polymarket Plugin for elizaOS"
     },
     "agentConfig": {

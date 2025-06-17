@@ -1,7 +1,7 @@
 import { describe, expect, it, vi, beforeAll, afterAll } from 'vitest';
-import plugin, { init } from '../src/plugin';
-import { ModelType, logger } from '@elizaos/core';
-import type { IAgentRuntime } from '@elizaos/core';
+import plugin from '../src/plugin';
+import { ModelType, logger } from '@elizaos/core/v2';
+import type { IAgentRuntime } from '@elizaos/core/v2';
 import dotenv from 'dotenv';
 import { documentTestResult, createMockRuntime } from './utils/core-test-utils';
 

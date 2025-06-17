@@ -4,11 +4,11 @@ import {
   type Memory,
   type State,
   type Content,
-  // ModelType,
-  // composePromptFromState,
+  ModelType,
+  composePromptFromState,
   HandlerCallback,
   logger,
-} from "@elizaos/core";
+} from "@elizaos/core/v2";
 import { GammaService } from "../../services/gammaService";
 import {
   ReadMarketsActionContent,
@@ -21,6 +21,8 @@ import {
   PolymarketApiCallParams,
   PolymarketSingleMarketApiResponse,
 } from "../../types";
+import { readMarketsModel } from "../../models";
+import { getMarketsExamples } from "src/examples";
 
 const apiUrl = "https://gamma-api.polymarket.com/markets";
 const DEFAULT_LIQUIDITY_MIN = "1000";
@@ -34,7 +36,7 @@ const fetchMarkets = async (): Promise<PolymarketApiResponse> => {
     ascending: false,
   };
 
-  const { markets, error } = await _fetchAllMarketsPaginated(params);
+  const { markets, error } = await fetchAllMarketsPaginated(params);
 
   if (error) return { success: false, error, markets: [] };
 
@@ -203,7 +205,7 @@ const _transformMarketData = (
  * @param apiParams - Parameters for the API call
  * @returns Promise resolving to market data
  */
-const _fetchMarketPage = async (
+const fetchMarketPage = async (
   apiParams: PolymarketApiCallParams,
 ): Promise<PolymarketApiResponse> => {
   try {
@@ -230,13 +232,13 @@ const _fetchMarketPage = async (
       markets: [],
     };
   } catch (error) {
-    console.log("Error in _fetchMarketPage:", error);
+    console.log("Error in fetchMarketPage:", error);
     return {
       success: false,
       error:
         error instanceof Error
           ? error.message
-          : "Unknown error occurred in _fetchMarketPage",
+          : "Unknown error occurred in fetchMarketPage",
       markets: [],
     };
   }
@@ -247,7 +249,7 @@ const _fetchMarketPage = async (
  * @param baseParams - Base parameters for the API call
  * @returns Promise resolving to full set of market data
  */
-const _fetchAllMarketsPaginated = async (
+const fetchAllMarketsPaginated = async (
   baseParams: Omit<PolymarketApiCallParams, "limit" | "offset">,
 ): Promise<PolymarketApiResponse> => {
   const allMarkets: PolymarketMarket[] = [];
@@ -263,7 +265,7 @@ const _fetchAllMarketsPaginated = async (
       offset,
     };
 
-    const pageResponse = await _fetchMarketPage(pageParams);
+    const pageResponse = await fetchMarketPage(pageParams);
 
     if (!pageResponse.success || !pageResponse.markets) {
       // If a page fails, return what we have so far with the error
@@ -297,37 +299,7 @@ export const readMarketsAction: Action = {
     "BETTING_ODDS_CHECKER",
   ],
   description: "Reads prediction markets data from Polymarket",
-  examples: [
-    [
-      {
-        name: "{{user1}}",
-        content: { text: "Show me the top prediction markets on Polymarket" },
-      },
-      {
-        name: "{{agent}}",
-        content: {
-          text: 'Here are the top 5 prediction markets on Polymarket:\n1. "Will Trump win the 2024 election?" - Yes: $0.52, No: $0.48\n2. "Will Bitcoin exceed $100k in 2024?" - Yes: $0.35, No: $0.65\n3. "Will OpenAI release GPT-5 in 2024?" - Yes: $0.72, No: $0.28\n4. "Will SpaceX reach Mars by 2026?" - Yes: $0.15, No: $0.85\n5. "Will the Fed cut rates in June?" - Yes: $0.62, No: $0.38',
-          action: ["READ_POLYMARKET_MARKETS"],
-        },
-      },
-    ],
-    [
-      {
-        name: "{{user1}}",
-        content: {
-          text: "What are the current odds on Polymarket about Bitcoin?",
-          //action: [""]
-        },
-      },
-      {
-        name: "{{agent}}",
-        content: {
-          text: 'I found 3 markets about Bitcoin on Polymarket:\n1. "Will Bitcoin exceed $100k in 2024?" - Yes: $0.35, No: $0.65\n2. "Will Bitcoin drop below $40k in May 2024?" - Yes: $0.22, No: $0.78\n3. "Will a Bitcoin ETF be approved in 2024?" - Yes: $0.89, No: $0.11',
-          action: ["READ_POLYMARKET_MARKETS"],
-        },
-      },
-    ],
-  ],
+  examples: [...getMarketsExamples],
 
   validate: async (
     runtime: IAgentRuntime,
@@ -380,14 +352,14 @@ export const readMarketsAction: Action = {
       const content = message.content as ReadMarketsActionContent;
       const text = content.text;
 
-      // const prompt = composePromptFromState({
-      //   state,
-      //   template: readMarketsTemplate,
-      // });
-      // const reflection = await runtime.useModel(ModelType.OBJECT_SMALL, {
-      //   prompt,
-      // });
-      // console.log(reflection)
+      const prompt = composePromptFromState({
+        state,
+        template: readMarketsModel,
+      });
+      const reflection = await runtime.useModel(ModelType.OBJECT_SMALL, {
+        prompt,
+      });
+      logger.info("Reflection from model:", reflection); // Log the reflection output
 
       // Extract query if present
       let query = "";
@@ -407,7 +379,9 @@ export const readMarketsAction: Action = {
       }
 
       // If not in cache, fetch from service
-      logger.info("Fetching markets from GammaService");
+      logger.info(
+        `Fetching markets from GammaService with query: "${query}" and limit: ${userLimit}`,
+      );
       const result = await GammaService.fetchMarkets();
 
       if (!result.success || !result.markets || result.markets.length === 0) {

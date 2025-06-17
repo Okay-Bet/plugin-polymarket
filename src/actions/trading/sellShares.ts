@@ -5,27 +5,17 @@ import {
   type State,
   type Content,
   type HandlerCallback,
-} from "@elizaos/core";
+} from "@elizaos/core/v2";
 import { ClobService } from "../../services/clobService"; // Ensure correct path
 import { Side, OrderType } from "@polymarket/clob-client";
 import { ethers } from "ethers";
+import { sellSharesExamples } from "src/examples";
 
 export const sellSharesAction: Action = {
   name: "SELL_SHARES",
   similes: ["SELL_SHARES"],
   description: "Sells x number shares in a specified Polymarket market.",
-  examples: [
-    [
-      {
-        name: "{{user1}}",
-        content: { text: 'Sell 5 shares of "Yes" in market 123' },
-      },
-      {
-        name: "{{agent}}",
-        content: { text: 'Attempting to sell 5 shares of "Yes" in market 123' },
-      },
-    ],
-  ],
+  examples: [...sellSharesExamples],
   validate: async (params: any) => {
     return (
       params.marketId &&

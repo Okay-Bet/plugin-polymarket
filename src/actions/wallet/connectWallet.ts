@@ -6,27 +6,15 @@ import {
   type Content,
   logger,
   HandlerCallback,
-} from "@elizaos/core";
+} from "@elizaos/core/v2";
 import { ClobService } from "../../services/clobService"; // Import ClobService
+import { connectWalletExamples } from "src/examples";
 
 export const connectWalletAction: Action = {
   name: "CONNECT_WALLET",
   similes: ["LINK_WALLET", "AUTHORIZE_WALLET"],
   description: "Connects the user's cryptocurrency wallet to Polymarket.",
-  examples: [
-    [
-      {
-        name: "{{user1}}",
-        content: { text: "Connect my wallet to Polymarket." },
-      },
-      {
-        name: "{{agent}}",
-        content: {
-          text: "Connecting your wallet... (In a real app, you'd see a wallet connection prompt)",
-        },
-      },
-    ],
-  ],
+  examples: [...connectWalletExamples],
 
   validate: async (
     _runtime: IAgentRuntime,

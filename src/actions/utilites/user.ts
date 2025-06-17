@@ -6,38 +6,29 @@ import {
   Content,
   HandlerCallback,
   logger,
-} from "@elizaos/core";
+} from "@elizaos/core/v2";
+import { getUsernameExamples, setUserExamples } from "src/examples";
 
 // Action to set the username
 export const setUserAction: Action = {
   name: "SET_USERNAME",
   similes: ["USER_NAME_SETTER", "USERNAME_INITIALIZER"],
   description: "Sets the user's username.",
-  examples: [
-    [
-      {
-        name: "{{user1}}",
-        content: { text: "Set my username to Alice" },
-      },
-      {
-        name: "{{agent}}",
-        content: { text: "Username set to Alice." },
-      },
-    ],
-  ],
+  examples: [...setUserExamples],
   validate: async (
     _runtime: IAgentRuntime,
     message: Memory,
   ): Promise<boolean> => {
     const text = (message.content as Content).text.toLowerCase();
-    const includesSet =
-      text.includes("set") && text.includes("username") && text.includes("to");
-    const includesEdit =
-      text.includes("edit") &&
-      text.includes("username") &&
-      text.includes("make") &&
-      text.includes("it");
-    return includesSet || includesEdit;
+    return (
+      (text.includes("set") &&
+        text.includes("username") &&
+        text.includes("to")) ||
+      (text.includes("edit") &&
+        text.includes("username") &&
+        text.includes("make") &&
+        text.includes("it"))
+    );
   },
   handler: async (
     _runtime: IAgentRuntime,
@@ -74,18 +65,7 @@ export const getUsernameAction: Action = {
   name: "GET_USERNAME",
   similes: ["USERNAME_GETTER", "USERNAME_RETRIEVER"],
   description: "Retrieves the current username.",
-  examples: [
-    [
-      {
-        name: "{{user1}}",
-        content: { text: "What is my username?" },
-      },
-      {
-        name: "{{agent}}",
-        content: { text: "Your username is: User" }, // Replace "User" with actual default
-      },
-    ],
-  ],
+  examples: [...getUsernameExamples],
   validate: async (
     _runtime: IAgentRuntime,
     message: Memory,

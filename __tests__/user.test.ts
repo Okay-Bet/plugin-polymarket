@@ -1,5 +1,5 @@
 import { getDefaultUsername, setUsername } from '../src/actions/utilites/user'; // Assuming the path
-import { expect, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock localStorage
 // Implement a mock localStorage with actual storage

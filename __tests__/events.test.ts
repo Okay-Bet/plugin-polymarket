@@ -1,6 +1,6 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import plugin, { init } from '../src/plugin';
-import { logger } from '@elizaos/core';
+import { logger } from '@elizaos/core/v2';
 
 // Mock logger
 vi.mock('@elizaos/core/v2', async () => {
@@ -48,12 +48,7 @@ describe('Plugin Events', () => {
       await messageHandler(mockParams);
 
       // Verify log was called
-      expect(logger.info).toHaveBeenCalledWith(
-        'MESSAGE_RECEIVED event received',
-        expect.objectContaining({
-          message: { id: 'test-id', content: { text: 'Hello!' } },
-        }),
-      );
+      expect(logger.info).toHaveBeenCalledWith('MESSAGE_RECEIVED event received', mockParams);
     }
   });
 

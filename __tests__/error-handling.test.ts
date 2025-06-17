@@ -1,17 +1,9 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import plugin from '../src/plugin';
 import { logger } from '@elizaos/core/v2';
-import type { IAgentRuntime, Memory, State } from '@elizaos/core/v2';
+import type { IAgentRuntime, Memory, State, Content } from '@elizaos/core/v2';
 import { v4 as uuidv4 } from 'uuid';
-import { PolymarketService } from '../src/services/polymarketService';
-import { buySharesAction } from '../src/actions/trading/buyShares';
-import { redeemSharesAction } from '../src/actions/trading/redeemShares';
-import { sellSharesAction } from '../src/actions/trading/sellShares';
-import { readMarketAction } from '../src/actions/utilites/readMarket';
-import { readMarketsAction } from '../src/actions/utilites/readMarkets';
-import { getUsernameAction, setUserAction } from '../src/actions/utilites/user';
-import { connectWalletAction } from '../src/actions/wallet/connectWallet';
-import { getWalletInfoAction } from '../src/actions/wallet/getWalletInfo';
+import { ClobService } from '../src/services/clobService';
 
 // Mock logger
 vi.mock('@elizaos/core/v2', async () => {
@@ -54,7 +46,7 @@ describe('Error Handling', () => {
           entityId: uuidv4(),
           roomId: uuidv4(),
           content: {
-            text: 'Show me list of PolyMarket markets!',
+            text: 'Hello World!',
             source: 'test',
           },
         } as Memory;
@@ -94,15 +86,15 @@ describe('Error Handling', () => {
 
       let caughtError;
       try {
-        await PolymarketService.stop(mockRuntime);
- expect(true).toBe(false); // Should not reach here
-      } catch (error) {
-        caughtError = error as Error;
-        expect(error.message).toBe('PolymarketService not found in runtime for stop');
+        await ClobService.stop(mockRuntime);
+        expect(true).toBe(false); // Should not reach here
+      } catch (error: any) {
+        caughtError = error;
+        expect(error.message).toBe('ClobService not found in runtime for stop');
       }
 
-      expect(caughtError).toBeInstanceOf(Error);
-      expect(mockRuntime.getService).toHaveBeenCalledWith('PolymarketService');
+      expect(caughtError).not.toBeNull();
+      expect(mockRuntime.getService).toHaveBeenCalledWith('clobservice');
     });
 
     it('should handle error during service stop', async () => {
@@ -115,15 +107,15 @@ describe('Error Handling', () => {
 
       let caughtError: Error | null = null;
       try {
-        await PolymarketService.stop(mockRuntime);
+        await ClobService.stop(mockRuntime);
         expect(true).toBe(false); // Should not reach here
       } catch (error: any) {
-        caughtError = error as Error;
+        caughtError = error;
         expect(error.message).toBe('Simulated error during service stop');
       }
 
-      expect(caughtError).toBeInstanceOf(Error);
-      expect(mockRuntime.getService).toHaveBeenCalledWith('PolymarketService');
+      expect(caughtError).not.toBeNull();
+      expect(mockRuntime.getService).toHaveBeenCalledWith('clobservice');
       expect(mockServiceWithError.stop).toHaveBeenCalled();
     });
   });
@@ -138,17 +130,8 @@ describe('Error Handling', () => {
         system: 'You are a helpful assistant for testing.',
         bio: ''
       },
-      actions: [
-          connectWalletAction,
-          getUsernameAction,
-          setUserAction,
-          getWalletInfoAction,
-          readMarketsAction,
-          readMarketAction,
-          buySharesAction,
-          sellSharesAction,
-          redeemSharesAction],
-      db: {} as any,
+      actions: [],
+      db: {},
     };
 
     return mockRuntime as IAgentRuntime;

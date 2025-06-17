@@ -1,12 +1,8 @@
-import { vi } from "vitest";
-import {
-  composeActionExamples,
-  formatActionNames,
-  formatActions,
-} from "@elizaos/core/v2";
-import type { Action, IAgentRuntime, Memory, State } from "@elizaos/core/v2";
-import { logger } from "@elizaos/core/v2";
-import { v4 as uuidv4 } from "uuid";
+import { vi } from 'vitest';
+import { composeActionExamples, formatActionNames, formatActions } from '@elizaos/core/v2';
+import type { Action, Content, IAgentRuntime, Memory, State } from '@elizaos/core/v2';
+import { logger } from '@elizaos/core/v2';
+import { v4 as uuidv4 } from 'uuid';
 
 /**
  * Utility functions for reusing core package tests in project-starter tests

@@ -1,4 +1,4 @@
-import { Service, IAgentRuntime, logger } from "@elizaos/core";
+import { Service, IAgentRuntime, logger } from "@elizaos/core/v2";
 
 export class ResponseParserService extends Service {
   async stop(): Promise<void> {
