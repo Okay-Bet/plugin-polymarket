@@ -9,7 +9,7 @@ import {
 } from "@elizaos/core/v2";
 import * as dotenv from "dotenv";
 dotenv.config();
-import { GammaService } from "../../services/gammaService";
+import { ClobService } from "../../services/clobService";
 import {
   GetMarketActionContent,
   PolymarketMarket,
@@ -17,6 +17,7 @@ import {
   PolymarketSingleMarketApiResponse,
 } from "../../types";
 import { getMarketByIdExamples } from "src/examples";
+import { GammaService } from "src/services/gammaService";
 
 /**
  * Fetches a specific market by its ID

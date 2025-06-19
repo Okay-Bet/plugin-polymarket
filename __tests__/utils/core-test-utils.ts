@@ -3,7 +3,7 @@ import { composeActionExamples, formatActionNames, formatActions } from '@elizao
 import type { Action, Content, IAgentRuntime, Memory, State } from '@elizaos/core/v2';
 import { logger } from '@elizaos/core/v2';
 import { v4 as uuidv4 } from 'uuid';
-import { GammaService } from '../../src/services/gammaService';
+import { ClobService } from '../../src/services/clobService';
 
 /**
  * Utility functions for reusing core package tests in project-starter tests
@@ -118,7 +118,7 @@ export const createMockRuntime = (): IAgentRuntime => {
       search: async () => [],
     },
     actions: [],
-    gammaService: { // Adding gammaService with a mock fetchMarkets
+    clobService: { // Adding clobService with a mock fetchMarkets
           fetchMarkets: vi.fn(),
           fetchMarketById: vi.fn(),
         },

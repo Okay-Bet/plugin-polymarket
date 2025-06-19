@@ -1,10 +1,8 @@
 import {
   type Plugin,
   logger,
-  IAgentRuntime,
   ModelType,
 } from "@elizaos/core/v2";
-import { ClobService } from "./services/clobService"; // Ensure correct path
 import { ResponseParserService } from "./services/responseParser";
 import { buySharesAction } from "./actions/trading/buyShares";
 import { sellSharesAction } from "./actions/trading/sellShares";
@@ -13,10 +11,8 @@ import { readMarketAction } from "./actions/utilites/readMarket";
 import { readMarketsAction } from "./actions/utilites/readMarkets";
 import { setUserAction, getUsernameAction } from "./actions/utilites/user"; // Import user actions
 import { connectWalletAction } from "./actions/wallet/connectWallet";
-import { getWalletInfoAction } from "./actions/wallet/getWalletInfo"; // Import user actions
+import { ClobService } from "./services/clobService";
 import { GammaService } from "./services/gammaService";
-import { readMarketsModel } from "./models";
-import character from "./character";
 
 const pluginPolymarket: Plugin = {
   name: "@elizaos/plugin-polymarket",
@@ -26,7 +22,6 @@ const pluginPolymarket: Plugin = {
     connectWalletAction,
     getUsernameAction,
     setUserAction,
-    getWalletInfoAction,
     readMarketsAction,
     readMarketAction,
     buySharesAction,
@@ -41,16 +36,14 @@ const pluginPolymarket: Plugin = {
     ],
     MESSAGE_RECEIVED: [
       async (params: any) =>
-        logger.info("MESSAGE_RECEIVED event received", {
-          message: params.message,
-        }),
+        logger.info("MESSAGE_RECEIVED event received", params),
     ],
   },
   routes: [
     {
       path: "/markets", // Example route, adjust as needed
       type: "GET",
-      handler: async (req: any, res: any, runtime: IAgentRuntime) => {
+      handler: async (req: any, res: any, runtime) => {
         try {
           const markets = await GammaService.fetchMarkets();
           res.json(markets);
@@ -63,7 +56,7 @@ const pluginPolymarket: Plugin = {
     {
       path: "/welcome",
       type: "GET",
-      handler: async (req: any, res: any, runtime: IAgentRuntime) => {
+      handler: async (req: any, res: any, runtime) => {
         res.json({
           message: "Polymarket plugin has started and is operational.",
         });
@@ -104,7 +97,13 @@ const pluginPolymarket: Plugin = {
   },
   providers: [],
 
+  async init(config, runtime) {
+    runtime.registerPlugin(pluginPolymarket);
   },
 };
 
+export const init = async (runtime) => {
+  await pluginPolymarket.init;
+};
+export { pluginPolymarket };
 export default pluginPolymarket;

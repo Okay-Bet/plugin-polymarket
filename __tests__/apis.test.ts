@@ -1,13 +1,13 @@
 import { describe, expect, it, vi, afterEach, beforeEach } from 'vitest';
 import { readMarketsAction } from '../src/actions/utilites/readMarkets';
-import GammaService from '../src/services/gammaService';
+import { ClobService } from '../src/services/clobService';
 import { createMockRuntime, createMockMessage, createMockState, documentTestResult } from './utils/core-test-utils';
 import { HandlerCallback } from '@elizaos/core/v2';
 const apiUrl = "https://gamma-api.polymarket.com/markets";
 
 describe('readMarketsAction', () => {
   // This test simulates the successful API call within the readMarketsAction handler.
-  it('should successfully handle markets fetched from GammaService', async () => {
+  it('should successfully handle markets fetched from ClobService', async () => {
     const runtime = createMockRuntime();
     const message = createMockMessage('Show me Polymarket markets');
     const state = createMockState();
@@ -23,18 +23,18 @@ describe('readMarketsAction', () => {
       return callbackResponse = response;
     };
 
-    // Create a mock GammaService with a mocked fetchMarkets method
-    const mockGammaService = {
+    // Create a mock ClobService with a mocked fetchMarkets method
+    const mockClobService = {
       fetchMarkets: vi.fn().mockResolvedValue({
           success: true,
           markets: [{ url: apiUrl, question: "Will this test pass?", outcomes: [{ name: "Yes", price: "0.5", clobTokenId: "123" }] }], // Simulate a market object
         }),
       };
     
-        // Mock the runtime's getService method to return the mock GammaService
+        // Mock the runtime's getService method to return the mock ClobService
     runtime.getService = vi.fn().mockImplementation((serviceType) => {
-      if (serviceType === 'GammaService') {
-        return mockGammaService;
+      if (serviceType === 'ClobService') {
+        return mockClobService;
       }
       return undefined; // Or handle other service types as needed
     });
@@ -48,7 +48,7 @@ describe('readMarketsAction', () => {
     // Execute the action handler
 
   //  documentTestResult('Run Market Action Test ', mockCallback);
-  //  documentTestResult('Run Market Action Test RESPONSE ',mockGammaService.fetchMarkets());
+  //  documentTestResult('Run Market Action Test RESPONSE ',mockClobService.fetchMarkets());
    // documentTestResult('Run Market Action Test MESSAGE ', message);
 
     await readMarketsAction.handler(runtime, message, state, {}, mockCallback, []);
