@@ -1,8 +1,7 @@
 import { describe, expect, it, vi, afterEach, beforeEach } from 'vitest';
 import { readMarketsAction } from '../src/actions/utilites/readMarkets';
-import { ClobService } from '../src/services/clobService';
-import { createMockRuntime, createMockMessage, createMockState, documentTestResult } from './utils/core-test-utils';
-import { HandlerCallback } from '@elizaos/core/v2';
+import { createMockRuntime, createMockMessage, createMockState } from './utils/core-test-utils';
+import { HandlerCallback, logger } from '@elizaos/core/v2';
 const apiUrl = "https://gamma-api.polymarket.com/markets";
 
 describe('readMarketsAction', () => {
@@ -31,7 +30,7 @@ describe('readMarketsAction', () => {
         }),
       };
     
-    // Mock the runtime's getService method to return the mock ClobService
+    // Mock the runtime's getService method to return the mock ClobService    
     runtime.getService = vi.fn().mockImplementation((serviceType) => {
       if (serviceType === 'ClobService') {
         return mockClobService;
@@ -40,14 +39,19 @@ describe('readMarketsAction', () => {
       return undefined; // Or handle other service types as needed
     });
 
-    // Mock the useModel function on the runtime object
-    runtime.useModel = vi.fn().mockResolvedValue({}); // Or a more appropriate mock value if needed
+    // Mock the useModel function on the runtime object    
+    runtime.useModel = vi.fn().mockResolvedValue({}); // Or a more appropriate mock value if needed    
+
+    logger.info("Mocked ClobService:", mockClobService);
+    logger.info("Mocked runtime.getService:", runtime.getService);
 
          // Execute the action handler and assert the callback
     // Wrap in a try-catch for more robust error handling
     try {
         await readMarketsAction.handler(runtime, message, state, {}, mockCallback, []);
-  
+
+        logger.info("Callback response after handler:", callbackResponse);
+
         // Now the callbackResponse should not be null if called correctly.
         expect(callbackResponse).not.toBeNull();
         // Add specific checks on the response content if needed

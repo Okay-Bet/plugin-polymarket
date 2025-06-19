@@ -4,7 +4,6 @@ import {
   IAgentRuntime,
   ModelType,
 } from "@elizaos/core/v2";
-import { ClobService } from "./services/clobService"; // Ensure correct path
 import { ResponseParserService } from "./services/responseParser";
 import { buySharesAction } from "./actions/trading/buyShares";
 import { sellSharesAction } from "./actions/trading/sellShares";
@@ -13,8 +12,9 @@ import { readMarketAction } from "./actions/utilites/readMarket";
 import { readMarketsAction } from "./actions/utilites/readMarkets";
 import { setUserAction, getUsernameAction } from "./actions/utilites/user"; // Import user actions
 import { connectWalletAction } from "./actions/wallet/connectWallet";
-import { getWalletInfoAction } from "./actions/wallet/getWalletInfo"; // Import user actions
-import { GammaService } from "./services/gammaService";
+import { ClobService } from "./services/clobService";
+import { readMarketsModel } from "./models";
+import character from "./character";
 
 const pluginPolymarket: Plugin = {
   name: "@elizaos/plugin-polymarket",
@@ -24,14 +24,13 @@ const pluginPolymarket: Plugin = {
     connectWalletAction,
     getUsernameAction,
     setUserAction,
-    getWalletInfoAction,
     readMarketsAction,
     readMarketAction,
     buySharesAction,
     sellSharesAction,
     redeemSharesAction,
   ],
-  services: [ResponseParserService, ClobService],
+  services: [ResponseParserService, ClobService, ClobService],
   events: {
     VOICE_MESSAGE_RECEIVED: [
       async (params: any) =>
@@ -50,7 +49,7 @@ const pluginPolymarket: Plugin = {
       type: "GET",
       handler: async (req: any, res: any, runtime: IAgentRuntime) => {
         try {
-          const markets = await GammaService.fetchMarkets();
+          const markets = await ClobService.fetchMarkets();
           res.json(markets);
         } catch (error: any) {
           logger.error("Error fetching markets:", error);
@@ -77,12 +76,12 @@ const pluginPolymarket: Plugin = {
         actions: [], // Specify the action bassed on action examples
       };
 
-      return response.text;
+      return response.text; // Return only the text part for now, as per your original structure
     },
     [ModelType.TEXT_LARGE]: async (AgentRuntime, params) => {
       // You should structure the response to include the action you want to trigger.
       const response = {
-        text: `Mock TEXT_LARGE response to: `,
+        text: `Mock TEXT_LARGE response to: ${params.prompt.substring(0, 5000)}`,
         thought: "This is my mock thought for a large model.",
         actions: [], // Specify the action bassed on action examples
       };
@@ -90,16 +89,16 @@ const pluginPolymarket: Plugin = {
       return response.text; // Return only the text part for now, as per your original structure
     },
     [ModelType.TEXT_EMBEDDING]: async (AgentRuntime, params) => {
+      // You should structure the response to include the action you want to trigger.
       const response = {
         text: `Mock TEXT_EMBEDDING response to: `,
         thought: "This is my mock thought for a text embedding model.",
-        actions: [],
+        actions: [], // Specify the action bassed on action examples
       };
 
-      return response.text;
+      return response.text; // Return only the text part for now, as per your original structure
     },
   },
-
   providers: [],
 
   async init(config, runtime) {

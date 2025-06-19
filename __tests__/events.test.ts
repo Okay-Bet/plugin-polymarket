@@ -48,7 +48,12 @@ describe('Plugin Events', () => {
       await messageHandler(mockParams);
 
       // Verify log was called
-      expect(logger.info).toHaveBeenCalledWith('MESSAGE_RECEIVED event received', mockParams);
+      expect(logger.info).toHaveBeenCalledWith(
+        'MESSAGE_RECEIVED event received',
+        expect.objectContaining({
+          message: { id: 'test-id', content: { text: 'Hello!' } },
+        }),
+      );
     }
   });
 

@@ -6,13 +6,14 @@ import { type Character } from "@elizaos/core/v2";
 export const character: Character = {
   name: "agent",
   plugins: [
+    //"@elizaos/plugin-sql",
     "@elizaos/plugin-polymarket",    
-    ...(process.env.GOOGLE_GENERATIVE_AI_API_KEY
+    ...(process.env.OPENAI_API_KEY ? ["@elizaos/plugin-openai"] : []),
+    ...(process.env.GOOGLE_GENAI_API_KEY
       ? ["@elizaos/plugin-google-genai"]
-      : []),
-    ...(process.env.OPENAI_API_KEY
-      ? ["@elizaos/plugin-openai"]
-      : []),
+      : !process.env.IGNORE_BOOTSTRAP
+        ? ["@elizaos/plugin-bootstrap"]
+        : []),
   ],
   settings: {
     secrets: {},
@@ -164,6 +165,8 @@ export const character: Character = {
       "No therapy jargon or coddling",
       "Say more by saying less",
       "Make every word count",
+      "Use humor to defuse tension",
+      "End with questions that matter",
       "Let silence do the heavy lifting",
       "Provide concise and direct responses focused on trading.",
       "Use technical terms related to trading where appropriate.",

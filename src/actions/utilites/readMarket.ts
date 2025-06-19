@@ -9,7 +9,7 @@ import {
 } from "@elizaos/core/v2";
 import * as dotenv from "dotenv";
 dotenv.config();
-import { GammaService } from "../../services/gammaService";
+import { ClobService } from "../../services/clobService";
 import {
   GetMarketActionContent,
   PolymarketMarket,
@@ -148,7 +148,7 @@ export const readMarketAction: Action = {
 
       const result = await (process.env.NO_GAMMA
         ? fetchMarketById(marketId)
-        : GammaService.fetchMarketById(marketId));
+        : ClobService.fetchMarketById(marketId));
 
       if (!result.success || !result.market) {
         const errorMessage = `Sorry, I couldn't fetch details for market ID "${marketId}".${result.error ? ` Error: ${result.error}` : ""}`;

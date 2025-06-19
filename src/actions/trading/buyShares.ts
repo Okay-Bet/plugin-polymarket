@@ -1,4 +1,4 @@
-  import {
+import {
   type IAgentRuntime,
   type Action,
   type Memory,
@@ -36,9 +36,7 @@ export const buySharesAction: Action = {
     const { marketId, outcome, quantity } = _options;
 
     if (!marketId || !outcome || !quantity) {
-      const errorMsg =  "Invalid input: Please provide marketId, outcome (Yes/No), and quantity.";
-      await callback({ text: errorMsg });
-      return errorMsg
+      return "Invalid input: Please provide marketId, outcome (Yes/No), and quantity.";
     }
 
     const clobService = _runtime.getService(
@@ -73,11 +71,6 @@ export const buySharesAction: Action = {
         feeRateBps: 0, // Assuming no fees for now
         nonce: Math.floor(Math.random() * 1000000),
       });
-
-      // Add logging to inspect the order object
-      console.log("Order object before posting:", JSON.stringify(order, null, 2));
-      if (!order)
-        return 'order does not exist';
 
       const resp = await clobClient.postOrder(order, OrderType.GTC);
       const responseText = `Successfully placed a buy order for ${quantity} shares of "${outcome}" in market ${marketId}. Order details: ${JSON.stringify(resp)}`;

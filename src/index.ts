@@ -1,5 +1,6 @@
 import {
   logger,
+  Plugin,
   type IAgentRuntime,
   type Project,
   type ProjectAgent,
@@ -23,7 +24,7 @@ const initCharacter = ({ runtime }: { runtime: IAgentRuntime }) => {
 export const projectAgent: ProjectAgent = {
   character: character,
   init: async (runtime: IAgentRuntime) => await initCharacter({ runtime }),
-  plugins: [pluginPolymarket, googleGenAIPlugin as any],
+  plugins: [pluginPolymarket, ...(process.env.GOOGLE_GENAI_API_KEY ? [googleGenAIPlugin as unknown as Plugin] : [])],
 };
 const project: Project = {
   agents: [projectAgent],
