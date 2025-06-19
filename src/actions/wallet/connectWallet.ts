@@ -38,9 +38,10 @@ export const connectWalletAction: Action = {
     _responses: Memory[],
   ): Promise<string> => {
     // In a real application, you'd trigger a wallet connection flow here.
-    const clobService = _runtime.getService(ClobService.serviceType) as
-      | ClobService
-      | undefined;
+    // This involves interacting with a wallet provider (e.g., MetaMask)
+    // in the UI, not directly within the action handler.
+    // For now, we'll just emit an event to signal that the UI should connect.
+    const clobService = _runtime.getService(ClobService.serviceType) as ClobService;
     if (!clobService) {
       const errorMsg = "ClobService not available.";
       logger.error(errorMsg);
@@ -48,19 +49,14 @@ export const connectWalletAction: Action = {
       return errorMsg;
     }
 
-    try {
-      // Check if a wallet is already connected
-      clobService.getClobClient(); // This will throw an error if not connected
-      await callback({ text: "Wallet is already connected." });
-      return "Wallet is already connected.";
-    } catch (e: any) {
-      // Wallet not connected, proceed to request connection
-      const eventPayload = { type: "REQUEST_WALLET_CONNECT" };
-      await callback({
-        text: "Please connect your wallet.",
-        metadata: { walletEvent: eventPayload },
-      });
-      return "Requesting wallet connection...";
-    }
+    // Emit an event to notify the UI that a wallet connection is needed.
+    const eventPayload = { type: "REQUEST_WALLET_CONNECT" };
+    await callback({
+      text: "Please connect your wallet.",
+      // You might need a way to pass the event payload to the UI.  This depends on how your UI is structured.
+      // For instance, you could add the payload to the content metadata, or have a separate event system.
+      metadata: { walletEvent: eventPayload },
+    });
+    return "Requesting wallet connection...";
   },
 };

@@ -10,7 +10,7 @@ describe('readMarketsAction', () => {
   it('should successfully handle markets fetched from ClobService', async () => {
     const runtime = createMockRuntime();
     const message = createMockMessage('Show me Polymarket markets');
-    const state = createMockState();
+    const state = createMockState();    
     let callbackResponse: any = null;    
 
     afterEach(() => {
@@ -31,10 +31,11 @@ describe('readMarketsAction', () => {
         }),
       };
     
-        // Mock the runtime's getService method to return the mock ClobService
+    // Mock the runtime's getService method to return the mock ClobService
     runtime.getService = vi.fn().mockImplementation((serviceType) => {
       if (serviceType === 'ClobService') {
         return mockClobService;
+
       }
       return undefined; // Or handle other service types as needed
     });
@@ -44,17 +45,18 @@ describe('readMarketsAction', () => {
 
          // Execute the action handler and assert the callback
     // Wrap in a try-catch for more robust error handling
-
-    // Execute the action handler
-
-  //  documentTestResult('Run Market Action Test ', mockCallback);
-  //  documentTestResult('Run Market Action Test RESPONSE ',mockClobService.fetchMarkets());
-   // documentTestResult('Run Market Action Test MESSAGE ', message);
-
-    await readMarketsAction.handler(runtime, message, state, {}, mockCallback, []);
-
-    // Now the callbackResponse should not be null if called correctly.
- expect(callbackResponse).not.toBeNull();
+    try {
+        await readMarketsAction.handler(runtime, message, state, {}, mockCallback, []);
+  
+        // Now the callbackResponse should not be null if called correctly.
+        expect(callbackResponse).not.toBeNull();
+        // Add specific checks on the response content if needed
+        expect(callbackResponse.text).toContain("1. \"Will this test pass?\"");
+      } catch (error) {
+        // If the handler throws, fail the test and log the error
+        console.error("Test failed due to handler error:", error);
+        throw error; 
+      }
   });
 });
 

@@ -10,6 +10,9 @@ export const character: Character = {
     ...(process.env.GOOGLE_GENERATIVE_AI_API_KEY
       ? ["@elizaos/plugin-google-genai"]
       : []),
+    ...(process.env.OPENAI_API_KEY
+      ? ["@elizaos/plugin-openai"]
+      : []),
   ],
   settings: {
     secrets: {},

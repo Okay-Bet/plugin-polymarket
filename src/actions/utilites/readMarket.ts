@@ -9,7 +9,7 @@ import {
 } from "@elizaos/core/v2";
 import * as dotenv from "dotenv";
 dotenv.config();
-import { ClobService } from "../../services/clobService";
+import { GammaService } from "../../services/gammaService";
 import {
   GetMarketActionContent,
   PolymarketMarket,
@@ -17,7 +17,6 @@ import {
   PolymarketSingleMarketApiResponse,
 } from "../../types";
 import { getMarketByIdExamples } from "src/examples";
-import { GammaService } from "src/services/gammaService";
 
 /**
  * Fetches a specific market by its ID
@@ -152,7 +151,10 @@ export const readMarketAction: Action = {
         : GammaService.fetchMarketById(marketId));
 
       if (!result.success || !result.market) {
-        return `Sorry, I couldn't fetch details for market ID "${marketId}".${result.error ? ` Error: ${result.error}` : ""}`;
+        const errorMessage = `Sorry, I couldn't fetch details for market ID "${marketId}".${result.error ? ` Error: ${result.error}` : ""}`;
+        logger.error(errorMessage);
+        await callback({ text: errorMessage }); // Send error message to the user
+        return errorMessage;
       }
 
       try {
@@ -203,15 +205,12 @@ export const readMarketAction: Action = {
       text.includes("lisitng") ||
       text.includes("list") ||
       text.includes("markets") ||
-      text.includes("all")
-    );
+      text.includes("all"));
 
     return (
-      hasActionKeywords &&
-      (hasPolymarketKeyword || hasPredictionMarketKeywords) &&
-      hasSkipActionKeywords
+      hasActionKeywords && (hasPolymarketKeyword || hasPredictionMarketKeywords) && hasSkipActionKeywords
     );
-  },
+  }
 };
 
 function formatMarketResponse(market: PolymarketMarket): string {
