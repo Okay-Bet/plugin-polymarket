@@ -9,6 +9,8 @@ import {
   HandlerCallback,
   logger,
 } from "@elizaos/core/v2";
+import * as dotenv from "dotenv";
+dotenv.config();
 import { GammaService } from "../../services/gammaService";
 import {
   ReadMarketsActionContent,
@@ -22,10 +24,10 @@ import {
   PolymarketSingleMarketApiResponse,
 } from "../../types";
 import { readMarketsModel } from "../../models";
-import { getMarketsExamples } from "src/examples";
+import { getMarketsExamples } from "../../examples";
 
-const apiUrl = "https://gamma-api.polymarket.com/markets";
 const DEFAULT_LIQUIDITY_MIN = "1000";
+
 const DEFAULT_VOLUME_MIN = "1000";
 
 const fetchMarkets = async (): Promise<PolymarketApiResponse> => {
@@ -41,51 +43,6 @@ const fetchMarkets = async (): Promise<PolymarketApiResponse> => {
   if (error) return { success: false, error, markets: [] };
 
   return { success: true, markets };
-};
-
-/**
- * Fetches a specific market by its ID
- * @param marketId - The ID of the market to fetch
- * @returns Promise resolving to market data
- */
-const fetchMarketById = async (
-  marketId: string,
-): Promise<PolymarketSingleMarketApiResponse> => {
-  if (!marketId || typeof marketId !== "string" || marketId.trim() === "") {
-    return { success: false, error: "Market ID must be a non-empty string." };
-  }
-
-  try {
-    const response = await fetch(`${apiUrl}/${marketId.trim()}`);
-
-    if (!response.ok) {
-      if (response.status === 404)
-        return {
-          success: false,
-          error: `Market with ID "${marketId}" not found.`,
-        };
-      throw new Error(`API request failed with status ${response.status}`);
-    }
-
-    const rawMarketData = await response.json();
-    const result = PolymarketRawMarketSchema.safeParse(rawMarketData);
-
-    if (result.success) {
-      const rawMarketData = result.data;
-      const market = _transformMarketData(rawMarketData);
-      return { success: true, market: market };
-    }
-    return {
-      success: false,
-      error: `Invalid response format: ${result.error.message}`,
-    };
-  } catch (error) {
-    console.log(`Error fetching market by ID "${marketId}":`, error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error occurred.",
-    };
-  }
 };
 
 /**
@@ -114,7 +71,7 @@ const _buildApiUrl = (params: PolymarketApiCallParams): string => {
   if (params.liquidity_num_min)
     query.append("liquidity_num_min", params.liquidity_num_min);
 
-  return `${apiUrl}?${query.toString()}`;
+  return `${process.env.API_URL}?${query.toString()}`;
 };
 
 /**
@@ -356,9 +313,13 @@ export const readMarketsAction: Action = {
         state,
         template: readMarketsModel,
       });
-      const reflection = await runtime.useModel(ModelType.OBJECT_SMALL, {
-        prompt,
-      });
+      let reflection = "";
+      if (!process.env.NO_GAMMA) {
+        reflection = await runtime.useModel(ModelType.OBJECT_SMALL, {
+          prompt,
+        });
+      }
+
       logger.info("Reflection from model:", reflection); // Log the reflection output
 
       // Extract query if present
@@ -382,10 +343,17 @@ export const readMarketsAction: Action = {
       logger.info(
         `Fetching markets from GammaService with query: "${query}" and limit: ${userLimit}`,
       );
-      const result = await GammaService.fetchMarkets();
+
+      const result = await (process.env.NO_GAMMA
+        ? fetchMarkets()
+        : GammaService.fetchMarkets());
 
       if (!result.success || !result.markets || result.markets.length === 0) {
-        return `Sorry, I couldn't find any prediction markets${query ? ` about "${query}"` : ""}.${result.error ? ` ${result.error}` : ""}`;
+        const errorMessage = `Sorry, I couldn't find any prediction markets${query ? ` about "${query}"` : ""}.${result.error ? ` ${result.error}` : ""}`;
+        logger.error(errorMessage);
+        throw new Error(errorMessage);
+        //return errorMessage;
+        //  return `Sorry, I couldn't find any prediction markets${query ? ` about "${query}"` : ""}.${result.error ? ` ${result.error}` : ""}`;
       }
 
       let filteredMarkets = result.markets;
@@ -408,13 +376,12 @@ export const readMarketsAction: Action = {
       const responseContent: Content = {
         // Here we are adding the "#" to the text for test
         text: response,
-      };
+      } as Content;
 
       await callback(responseContent);
 
-      return response; // Return the formatted string here, but the callback handles sending.
+      return response;
     } catch (error) {
-      logger.error(error);
       return `Sorry, there was an error fetching prediction markets: ${error instanceof Error ? error.message : "Unknown error"}`;
     }
   },

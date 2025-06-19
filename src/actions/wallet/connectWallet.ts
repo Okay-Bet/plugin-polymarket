@@ -37,31 +37,30 @@ export const connectWalletAction: Action = {
     callback: HandlerCallback,
     _responses: Memory[],
   ): Promise<string> => {
-    // This is a placeholder for the private key. In a real application, this
-    // would be securely obtained from the user, e.g., through a wallet provider.
-    //  NEVER hardcode a private key in your application.
-    const privateKey = process.env.PK as string; //  For testing only!!!  Get from user input in real app
-
-    if (!privateKey) {
-      const errorMsg =
-        "No private key provided.  Set PK env var (testing) or get from user.";
-      logger.error(errorMsg);
-      await callback({ text: errorMsg });
-      return errorMsg;
-    }
-
-    const clobService = _runtime.getService(
-      ClobService.serviceType,
-    ) as ClobService;
+    // In a real application, you'd trigger a wallet connection flow here.
+    const clobService = _runtime.getService(ClobService.serviceType) as
+      | ClobService
+      | undefined;
     if (!clobService) {
       const errorMsg = "ClobService not available.";
       logger.error(errorMsg);
       await callback({ text: errorMsg });
       return errorMsg;
     }
-    await clobService.connectWallet(privateKey);
-    const successMsg = "Wallet connected successfully!";
-    await callback({ text: successMsg });
-    return successMsg;
+
+    try {
+      // Check if a wallet is already connected
+      clobService.getClobClient(); // This will throw an error if not connected
+      await callback({ text: "Wallet is already connected." });
+      return "Wallet is already connected.";
+    } catch (e: any) {
+      // Wallet not connected, proceed to request connection
+      const eventPayload = { type: "REQUEST_WALLET_CONNECT" };
+      await callback({
+        text: "Please connect your wallet.",
+        metadata: { walletEvent: eventPayload },
+      });
+      return "Requesting wallet connection...";
+    }
   },
 };

@@ -41,7 +41,7 @@ export const redeemSharesAction: Action = {
     const clobClient = clobService.getClobClient();
 
     try {
-      // Replace this with the actual logic for redeeming/settling shares in the CLOB
+      // Replace this with the actual logic for redeeming/settling shares in the CLOB.
       // It might involve interacting with the CLOB API in a specific way after a market resolves.
       // The current implementation is a placeholder and likely needs significant adjustment.
       const responseText = `Simulated redemption of shares in market ${marketId}.  You need to implement the actual CLOB redemption logic here.`;

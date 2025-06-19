@@ -6,16 +6,16 @@ export default defineConfig({
   tsconfig: './tsconfig.json', // Use build-specific tsconfig
   sourcemap: true,
   clean: true,
-  format: ['esm'], // Ensure you're targeting CommonJS
-  dts: true, // Skip DTS generation to avoid external import issues // Ensure you're targeting CommonJS
+  format: ['esm'],
+  dts: true,
   external: [
-      'dotenv',           // Externalize dotenv
-      'fs',               // Externalize Node.js built-in 'fs'
-      'path',             // Externalize Node.js built-in 'path'
-      'https',            // Externalize Node.js built-in 'https'
-      'http',             // Externalize Node.js built-in 'http'
-      'zod',              // Externalize zod
-      '@elizaos/plugin-google-genai',  //  Crucially, externalize the plugins
-      '@elizaos/plugin-polymarket',    //   So they aren't bundled
+    'dotenv', // Externalize dotenv to prevent bundling
+    'fs', // Externalize fs to use Node.js built-in module
+    'path', // Externalize other built-ins if necessary
+    'https',
+    'http',
+    'zod',
+    '@elizaos/plugin-google-genai',  //  Crucially, externalize the plugins
+    '@elizaos/plugin-polymarket',  //   So they aren't bundled
   ],
 });

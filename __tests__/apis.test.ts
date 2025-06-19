@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, afterEach } from 'vitest';
+import { describe, expect, it, vi, afterEach, beforeEach } from 'vitest';
 import { readMarketsAction } from '../src/actions/utilites/readMarkets';
 import GammaService from '../src/services/gammaService';
 import { createMockRuntime, createMockMessage, createMockState, documentTestResult } from './utils/core-test-utils';
@@ -11,33 +11,50 @@ describe('readMarketsAction', () => {
     const runtime = createMockRuntime();
     const message = createMockMessage('Show me Polymarket markets');
     const state = createMockState();
-    let callbackResponse: any = null;
-    
+    let callbackResponse: any = null;    
+
     afterEach(() => {
       vi.restoreAllMocks();
     });
+
+    beforeEach(() => { callbackResponse = null; });
 
     const mockCallback: HandlerCallback = (response: any) => {
       return callbackResponse = response;
     };
 
-    // Mock GammaService.fetchMarkets to simulate a successful response (adjust as needed)
-  const mockFetchMarkets = vi.fn().mockResolvedValue({
-    success: true,
-    markets: [{ url: apiUrl, question: "Will this test pass?", outcomes: [{ name: "Yes", price: "0.5", clobTokenId: "123" }] }], // Simulate a market object containing the apiUrl
-  });
-  
-  // Set up the mock directly on the runtime's gammaService which breaks everything and needs to be removed.
-  (runtime as any).gammaService.fetchMarkets = mockFetchMarkets;
-  
+    // Create a mock GammaService with a mocked fetchMarkets method
+    const mockGammaService = {
+      fetchMarkets: vi.fn().mockResolvedValue({
+          success: true,
+          markets: [{ url: apiUrl, question: "Will this test pass?", outcomes: [{ name: "Yes", price: "0.5", clobTokenId: "123" }] }], // Simulate a market object
+        }),
+      };
+    
+        // Mock the runtime's getService method to return the mock GammaService
+    runtime.getService = vi.fn().mockImplementation((serviceType) => {
+      if (serviceType === 'GammaService') {
+        return mockGammaService;
+      }
+      return undefined; // Or handle other service types as needed
+    });
+
     // Mock the useModel function on the runtime object
     runtime.useModel = vi.fn().mockResolvedValue({}); // Or a more appropriate mock value if needed
 
+         // Execute the action handler and assert the callback
+    // Wrap in a try-catch for more robust error handling
+
     // Execute the action handler
+
+  //  documentTestResult('Run Market Action Test ', mockCallback);
+  //  documentTestResult('Run Market Action Test RESPONSE ',mockGammaService.fetchMarkets());
+   // documentTestResult('Run Market Action Test MESSAGE ', message);
+
     await readMarketsAction.handler(runtime, message, state, {}, mockCallback, []);
 
-    // Assert that the callback was called with a non-null response
-    expect(callbackResponse).not.toBeNull();
+    // Now the callbackResponse should not be null if called correctly.
+ expect(callbackResponse).not.toBeNull();
   });
 });
 
@@ -51,7 +68,7 @@ describe('direct_API_call', () => {
       const data = await response.json();
       expect(data).not.toBeNull();
       // Add more specific assertions about the data if needed
-      console.log("Direct API call successful. Data:", data);
+      console.log("Direct API call successful. Data:", data.toString().substring(0,50));
     } catch (error) {
       console.error("Direct API call failed:", error);
       throw error; // Re-throw the error to fail the test

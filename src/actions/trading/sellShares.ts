@@ -52,7 +52,7 @@ export const sellSharesAction: Action = {
     const tokenID = marketId;
     const price = 0.5; // Placeholder.  You will likely need to fetch this from market data.
     const side = outcome === "Yes" ? Side.SELL : Side.SELL; // Assuming selling "Yes". Adapt for "No" if needed.
-
+    // Placeholder to see if I can avoid a compilation issue
     try {
       const order = await clobClient.createOrder({
         tokenID,

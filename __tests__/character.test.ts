@@ -20,7 +20,12 @@ describe('Character Configuration', () => {
 
   it('should have conditionally included plugins based on environment variables', () => {    
     // Verify if plugins array includes the core plugin
-    expect(character.plugins).not.toContain('@elizaos/plugin-sql');
+    // Expect the plugins array to conditionally include the Google Generative AI plugin
+    if (process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
+      expect(character.plugins).toContain('@elizaos/plugin-google-genai');
+    } else {
+      expect(character.plugins).not.toContain('@elizaos/plugin-google-genai');
+    }
   });
 
   it('should have a non-empty system prompt', () => {

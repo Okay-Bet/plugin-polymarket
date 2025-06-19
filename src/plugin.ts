@@ -1,9 +1,7 @@
 import {
   type Plugin,
   logger,
-  Memory,
   IAgentRuntime,
-  State,
   ModelType,
 } from "@elizaos/core/v2";
 import { ClobService } from "./services/clobService"; // Ensure correct path
@@ -17,6 +15,8 @@ import { setUserAction, getUsernameAction } from "./actions/utilites/user"; // I
 import { connectWalletAction } from "./actions/wallet/connectWallet";
 import { getWalletInfoAction } from "./actions/wallet/getWalletInfo"; // Import user actions
 import { GammaService } from "./services/gammaService";
+import { readMarketsModel } from "./models";
+import character from "./character";
 
 const pluginPolymarket: Plugin = {
   name: "@elizaos/plugin-polymarket",
@@ -33,7 +33,7 @@ const pluginPolymarket: Plugin = {
     sellSharesAction,
     redeemSharesAction,
   ],
-  services: [ResponseParserService, ClobService],
+  services: [ResponseParserService, ClobService, GammaService],
   events: {
     VOICE_MESSAGE_RECEIVED: [
       async (params: any) =>
@@ -41,7 +41,9 @@ const pluginPolymarket: Plugin = {
     ],
     MESSAGE_RECEIVED: [
       async (params: any) =>
-        logger.info("MESSAGE_RECEIVED event received", params),
+        logger.info("MESSAGE_RECEIVED event received", {
+          message: params.message,
+        }),
     ],
   },
   routes: [
@@ -101,10 +103,8 @@ const pluginPolymarket: Plugin = {
     },
   },
   providers: [],
+
+  },
 };
 
-export const init = async (runtime: IAgentRuntime) => {
-  await pluginPolymarket.init;
-};
-export { pluginPolymarket };
 export default pluginPolymarket;

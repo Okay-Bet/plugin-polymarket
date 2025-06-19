@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
-import plugin, { init } from '../src/plugin';
+import plugin from '../src/plugin';
 import { logger } from '@elizaos/core/v2';
 
 // Mock logger

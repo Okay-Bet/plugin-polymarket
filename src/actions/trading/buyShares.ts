@@ -47,12 +47,21 @@ export const buySharesAction: Action = {
     }
 
     const clobClient = clobService.getClobClient();
+    
+    //  THIS SHOULD BE ADDED TO ALL THE ACTIONS THAT REQUIRE WALLET
+    // Ensure wallet is connected
+    /*if (!clobService.isWalletConnected()) {
+      // Assuming there's a way to check if the wallet is connected
+      //  You'll need to implement this in ClobService
+      await clobService.connectWallet(userProvidedPrivateKey); // Get from user input
+    }
+     */
 
     // Assume marketId is the token ID for simplicity, needs adjustment for real mapping
     const tokenID = marketId;
     const price = 0.5; // Placeholder.  You will likely need to fetch this from market data.
     const side = outcome === "Yes" ? Side.BUY : Side.BUY; // Assuming buying "Yes". Adapt for "No" if needed.
-
+    // Placeholder to see if I can avoid a compilation issue
     try {
       const order = await clobClient.createOrder({
         tokenID,

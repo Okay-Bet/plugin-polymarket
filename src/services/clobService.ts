@@ -1,6 +1,6 @@
 import { Service, IAgentRuntime, logger } from "@elizaos/core/v2";
 import { ethers } from "ethers";
-import { Chain, ClobClient } from "@polymarket/clob-client";
+import { ClobClient, AssetType } from "@polymarket/clob-client";
 
 export class ClobService extends Service {
   static serviceType = "ClobService";
@@ -11,34 +11,30 @@ export class ClobService extends Service {
     // Initialize the ClobClient here, using environment variables
     // Assuming IWallet is now called something else or needs a different import
     logger.info(`Loading ClobService with PK: ${process.env.PK}`);
-    this.wallet = null;
-    // Assuming AMOY is renamed or needs a different way to access.  Replace with the correct value.
-    const chainId = parseInt(`${process.env.CHAIN_ID || 80001}`); // Using a numeric chain ID
-    const host = process.env.CLOB_API_URL || "http://localhost:8080";
 
-    this.chainId = chainId;
-    this.host = host;
-    this.clobClient = null; // Initialize as null, to be created upon wallet connection
   }
-
-  private wallet: ethers.Wallet | null;
-  private chainId: number;
-  private host: string;
 
   async connectWallet(privateKey: string): Promise<void> {
     try {
-      this.wallet = new ethers.Wallet(privateKey);
-      this.clobClient = new ClobClient(
-        this.host,
-        this.chainId,
-        this.wallet as any,
+      if (!privateKey) {
+        throw new Error(
+          "Private key not provided in environment or function argument.",
+        );
+      }
+
+      const wallet = new ethers.Wallet(privateKey);
+      const chainId = parseInt(process.env.CHAIN_ID || "80001", 10); // Default to 80001
+      const host = process.env.CLOB_API_URL || "http://localhost:8080";
+      const clobClient = new ClobClient(host, chainId, wallet as any);
+
+      this.clobClient = clobClient;
+      logger.info(
+        `ClobService wallet connected successfully for address: ${await wallet.getAddress()}`,
       );
-      logger.info("ClobService wallet connected successfully.");
     } catch (error: any) {
       logger.error(`Failed to connect wallet: ${error.message}`);
-      throw new Error(
-        `Invalid private key or connection error: ${error.message}`,
-      );
+      this.clobClient = null; // Ensure client is null if connection fails
+      throw new Error(`Wallet connection error: ${error.message}`);
     }
   }
 
@@ -51,23 +47,53 @@ export class ClobService extends Service {
     return runtime;
   }
 
-  get capabilityDescription() {
-    return "Provides access to the Polymarket CLOB client for trading operations.";
-  }
-
-  async stop() {
-    logger.info("ClobService stopped");
-  }
+  capabilityDescription =
+    "Provides access to the Polymarket CLOB client for trading operations.";
 
   getClobClient(): ClobClient {
     if (!this.clobClient) {
       throw new Error(
-        "ClobClient not initialized. Please connect a wallet first.",
+        "ClobClient not initialized. Ensure the wallet is connected. Call connectWallet() if needed.",
       );
     }
-    return this.clobClient!;
+    return this.clobClient;
   }
 
+  async updateBalanceAllowance(
+    assetType: AssetType,
+    tokenId?: string,
+  ): Promise<void> {
+    try {
+      if (!this.clobClient) {
+        throw new Error(
+          "ClobClient not initialized. Ensure the wallet is connected.",
+        );
+      }
+      const params = { asset_type: assetType };
+      if (tokenId) {
+        params["token_id"] = tokenId;
+      }
+
+      // The updateBalanceAllowance function can only take the above object, or a single string for token ID
+      if (tokenId) {
+        // Conditional token
+        await this.clobClient.updateBalanceAllowance(params);
+      } else {
+        // Collateral token
+        await this.clobClient.updateBalanceAllowance(params);
+      }
+
+      logger.info(
+        `Successfully updated balance allowance for asset type: ${assetType}, token ID: ${tokenId || "N/A"}`,
+      );
+    } catch (error: any) {
+      logger.error(`Failed to update balance allowance: ${error.message}`);
+      throw new Error(`Failed to update balance allowance: ${error.message}`);
+    }
+  }
+  async stop() {
+    logger.info("ClobService stopped");
+  }
   static async stop(runtime: IAgentRuntime): Promise<void> {
     const service = runtime.getService(ClobService.serviceType);
     if (!service) throw new Error("ClobService not found in runtime for stop");

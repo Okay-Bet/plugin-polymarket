@@ -1,5 +1,4 @@
-import { describe, expect, it, vi, beforeEach, afterEach, beforeAll, afterAll } from 'vitest';
-import plugin, { init } from '../src/plugin';
+import { describe, expect, it, vi, beforeAll, afterAll } from 'vitest';
 import { ModelType, logger } from '@elizaos/core';
 import { ClobService } from '../src/services/clobService';
 import dotenv from 'dotenv';
@@ -170,8 +169,10 @@ describe('Plugin Models', () => {
   });
 
   it('should return a response from TEXT_SMALL model', async () => {
-    expect(plugin.models).toHaveProperty(ModelType.TEXT_SMALL);
     if(plugin.models){
+      // Ensure TEXT_SMALL model is defined before using it
+      expect(plugin.models).toHaveProperty(ModelType.TEXT_SMALL);
+
       const runtime = createRealRuntime();
 
       let result = '';

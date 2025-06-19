@@ -122,6 +122,8 @@ export const createMockRuntime = (): IAgentRuntime => {
           fetchMarkets: vi.fn(),
           fetchMarketById: vi.fn(),
         },
+    useModel: vi.fn(),
+    registerPlugin: vi.fn(), // Add a mock registerPlugin
     getService: vi.fn(),
     processActions: vi.fn(),
   } as any as IAgentRuntime;

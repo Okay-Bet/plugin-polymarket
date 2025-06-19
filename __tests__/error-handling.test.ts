@@ -96,7 +96,7 @@ describe('Error Handling', () => {
       try {
         await ClobService.stop(mockRuntime);
  expect(true).toBe(false); // Should not reach here
-      } catch (error: any) {
+      } catch (error) {
         caughtError = error as Error;
         expect(error.message).toBe('ClobService not found in runtime for stop');
       }

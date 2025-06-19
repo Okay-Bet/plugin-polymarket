@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeAll, afterAll } from 'vitest';
-import plugin from '../src/plugin';
+import pluginPolymarket from '../src/plugin';
 import type { IAgentRuntime, Memory, State, Provider } from '@elizaos/core/v2';
 import { logger } from '@elizaos/core/v2';
 import { v4 as uuidv4 } from 'uuid';
@@ -12,6 +12,7 @@ import { readMarketsAction } from '../src/actions/utilites/readMarkets';
 import { getUsernameAction, setUserAction } from '../src/actions/utilites/user';
 import { connectWalletAction } from '../src/actions/wallet/connectWallet';
 import { getWalletInfoAction } from '../src/actions/wallet/getWalletInfo';
+import plugin from '../src/plugin';
 
 // Setup environment variables
 dotenv.config();
@@ -51,6 +52,70 @@ function documentTestResult(testName: string, result: any, error: Error | null =
 }
 
 // Create a realistic runtime for testing
+function createRealRuntime(): IAgentRuntime {
+  return {
+    character: {
+      name: 'Test Character',
+      system: 'You are a helpful assistant for testing.',
+      plugins: [
+        "@elizaos/plugin-polymarket",    
+        ...(process.env.GOOGLE_GENERATIVE_AI_API_KEY
+          ? ["@elizaos/plugin-google-genai"]
+          : []),
+      ],
+      settings: {},
+    },
+    getSetting: (key: string) => null,
+    models: plugin.models,
+    db: {
+      get: async (key: string) => {
+        logger.info(`DB Get: ${key}`);
+        return null;
+      },
+      set: async (key: string, value: any) => {
+        logger.info(`DB Set: ${key} = ${JSON.stringify(value)}`);
+        return true;
+      },
+      delete: async (key: string) => {
+        logger.info(`DB Delete: ${key}`);
+        return true;
+      },
+      getKeys: async (pattern: string) => {
+        logger.info(`DB GetKeys: ${pattern}`);
+        return [];
+      },
+    },
+    memory: {
+      add: async (memory: any) => {
+        logger.info(`Memory Add: ${JSON.stringify(memory).substring(0, 100)}`);
+      },
+      get: async (id: string) => {
+        logger.info(`Memory Get: ${id}`);
+        return null;
+      },
+      getByEntityId: async (entityId: string) => {
+        logger.info(`Memory GetByEntityId: ${entityId}`);
+        return [];
+      },
+      getLatest: async (entityId: string) => {
+        logger.info(`Memory GetLatest: ${entityId}`);
+        return null;
+      },
+      getRecentMessages: async (options: any) => {
+        logger.info(`Memory GetRecentMessages: ${JSON.stringify(options)}`);
+        return [];
+      },
+      search: async (query: string) => {
+        logger.info(`Memory Search: ${query}`);
+        return [];
+      },
+    },
+    getService: (serviceType: string) => {
+      logger.info(`GetService: ${serviceType}`);
+      return null;
+    },
+  } as unknown as IAgentRuntime;
+}
 
 // Create realistic memory object
 function createRealMemory(): Memory {

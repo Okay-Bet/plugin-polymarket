@@ -3,10 +3,10 @@ import {
   type IAgentRuntime,
   type Project,
   type ProjectAgent,
-  type Character,
 } from "@elizaos/core/v2";
 import character from "./character";
 import pluginPolymarket from "./plugin";
+import googleGenAIPlugin from "@elizaos/plugin-google-genai";
 
 /**
  * Represents the default character (Eliza) with her specific attributes and behaviors.
@@ -23,7 +23,7 @@ const initCharacter = ({ runtime }: { runtime: IAgentRuntime }) => {
 export const projectAgent: ProjectAgent = {
   character: character,
   init: async (runtime: IAgentRuntime) => await initCharacter({ runtime }),
-  plugins: [],
+  plugins: [pluginPolymarket, googleGenAIPlugin as any],
 };
 const project: Project = {
   agents: [projectAgent],

@@ -87,7 +87,7 @@ export const getUsernameAction: Action = {
     _responses: Memory[],
   ): Promise<string> => {
     try {
-      const currentUsername = getDefaultUsername();
+      const currentUsername = getDefaultUsername() || "User"; // Provide a fallback default
       const responseText = `Your username is: ${currentUsername}`;
       await callback({ text: responseText });
       return responseText;
