@@ -29,11 +29,12 @@
     "dist"
   ],
   "dependencies": {
-    "@elizaos/cli": "^1.0.13",
-    "@elizaos/core": "^1.0.13",
-    "@elizaos/plugin-bootstrap": "^1.0.13",
-    "@elizaos/plugin-google-genai": "^1.0.0",
-    "@elizaos/plugin-openai": "^1.0.6",
+    "@elizaos/cli": "^1.0.11",
+    "@elizaos/core": "^1.0.11",
+    "@elizaos/plugin-bootstrap": "^1.0.11",
+    "@elizaos/plugin-google-genai": "1.0.0",
+    "@elizaos/plugin-node": "^0.25.6-alpha.1",
+    "@elizaos/plugin-openai": "^1.0.4",
     "@polymarket/clob-client": "latest",
     "@polymarket/order-utils": "latest",
     "@polymarket/sdk": "latest",
