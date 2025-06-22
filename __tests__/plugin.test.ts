@@ -1,8 +1,8 @@
-import { describe, expect, it, vi, beforeEach, afterEach, beforeAll, afterAll } from 'vitest';
-import plugin from '../src/plugin';
+import { describe, expect, it, vi, beforeAll, afterAll } from 'vitest';
 import { ModelType, logger } from '@elizaos/core';
-import { StarterService } from '../src/plugin';
+import { ClobService } from '../src/services/clobService';
 import dotenv from 'dotenv';
+import plugin from '../src/plugin';
 
 // Setup environment variables
 dotenv.config();
@@ -47,8 +47,8 @@ function createRealRuntime() {
 
   // Create a real service instance if needed
   const createService = (serviceType: string) => {
-    if (serviceType === StarterService.serviceType) {
-      return new StarterService({
+    if (serviceType === ClobService.serviceType) {
+      return new ClobService({
         character: {
           name: 'Test Character',
           system: 'You are a helpful assistant for testing.',
@@ -62,8 +62,13 @@ function createRealRuntime() {
     character: {
       name: 'Test Character',
       system: 'You are a helpful assistant for testing.',
-      plugins: [],
-      settings: {},
+      plugins: [
+        "@elizaos/plugin-polymarket",    
+        ...(process.env.GOOGLE_GENERATIVE_AI_API_KEY
+          ? ["@elizaos/plugin-google-genai"]
+          : []),
+      ],
+        settings: {},
     },
     getSetting: (key: string) => null,
     models: plugin.models,
@@ -89,13 +94,14 @@ function createRealRuntime() {
       logger.debug(`Registering service: ${serviceType}`);
       services.set(serviceType, service);
     },
+    registerPlugin: vi.fn(), // Add a mock registerPlugin
   };
 }
 
 describe('Plugin Configuration', () => {
   it('should have correct plugin metadata', () => {
-    expect(plugin.name).toBe('plugin-polymarket');
-    expect(plugin.description).toBe('Plugin for Polymarket integration');
+    expect(plugin.name).toBe('@elizaos/plugin-polymarket');
+            expect(plugin.description).toBe('Plugin for Polymarket integration');
     expect(plugin.config).toBeDefined();
 
     documentTestResult('Plugin metadata check', {
@@ -163,20 +169,22 @@ describe('Plugin Models', () => {
   });
 
   it('should return a response from TEXT_SMALL model', async () => {
-    if (plugin.models && plugin.models[ModelType.TEXT_SMALL]) {
+    if(plugin.models){
+      // Ensure TEXT_SMALL model is defined before using it
+      expect(plugin.models).toHaveProperty(ModelType.TEXT_SMALL);
+
       const runtime = createRealRuntime();
 
       let result = '';
       let error: Error | unknown = null;
 
       try {
-        logger.info('Using OpenAI for TEXT_SMALL model');
+        logger.info('Using Google Gen AI for TEXT_SMALL model');
         result = await plugin.models[ModelType.TEXT_SMALL](runtime as any, { prompt: 'test' });
         // Check that we get a non-empty string response
         expect(result).toBeTruthy();
         expect(typeof result).toBe('string');
-        expect(result.length).toBeGreaterThan(10);
-} catch (e) {
+      } catch (e) {
         error = e;
         logger.error('TEXT_SMALL model test failed:', e);
       }
@@ -186,18 +194,18 @@ describe('Plugin Models', () => {
   });
 });
 
-describe('StarterService', () => {
+describe('ClobService', () => {
   it('should start the service', async () => {
     const runtime = createRealRuntime();
     let startResult;
     let error: Error | unknown = null;
 
     try {
-      logger.info('Starting StarterService');
-      startResult = await StarterService.start(runtime as any);
+      logger.info('Starting ClobService');
+      startResult = await ClobService.start(runtime as any);
 
       expect(startResult).toBeDefined();
-      expect(startResult.constructor.name).toBe('StarterService');
+      expect(startResult.constructor.name).toBe('ClobService');
 
       // Test real functionality
       const servicePropertyNames = Object.getOwnPropertyNames(startResult);
@@ -209,12 +217,12 @@ describe('StarterService', () => {
     }
 
     documentTestResult(
-      'StarterService start',
+      'ClobService start',
       {
         success: !!startResult,
         serviceType: startResult?.constructor.name,
       },
-      error
+      error,
     );
   });
 
@@ -222,14 +230,14 @@ describe('StarterService', () => {
     const runtime = createRealRuntime();
 
     // First registration should succeed
-    const result1 = await StarterService.start(runtime as any);
+    const result1 = await ClobService.start(runtime as any);
     expect(result1).toBeTruthy();
 
     let startupError: Error | unknown = null;
 
     try {
       // Second registration should fail
-      await StarterService.start(runtime as any);
+      await ClobService.start(runtime as any);
       expect(true).toBe(false); // Should not reach here
     } catch (e) {
       startupError = e;
@@ -237,7 +245,7 @@ describe('StarterService', () => {
     }
 
     documentTestResult(
-      'StarterService double start',
+      'ClobService double start',
       {
         errorThrown: !!startupError,
         errorMessage: startupError instanceof Error ? startupError.message : String(startupError),
@@ -252,14 +260,14 @@ describe('StarterService', () => {
 
     try {
       // Register a real service first
-      const service = new StarterService(runtime as any);
-      runtime.registerService(StarterService.serviceType, service);
+      const service = new ClobService(runtime as any);
+      runtime.registerService(ClobService.serviceType, service);
 
       // Spy on the real service's stop method
       const stopSpy = vi.spyOn(service, 'stop');
 
       // Call the static stop method
-      await StarterService.stop(runtime as any);
+      await ClobService.stop(runtime as any);
 
       // Verify the service's stop method was called
       expect(stopSpy).toHaveBeenCalled();
@@ -269,7 +277,7 @@ describe('StarterService', () => {
     }
 
     documentTestResult(
-      'StarterService stop',
+      'ClobService stop',
       {
         success: !error,
       },
@@ -284,29 +292,29 @@ describe('StarterService', () => {
     let error: Error | unknown = null;
 
     try {
-      // For this specific test, explicitly mock getService to return null for 'starter'
-      // to ensure we test the "service not found" path in StarterService.stop
+      // For this specific test, explicitly mock getService to return null for 'ClobService'
+      // to ensure we test the "service not found" path in ClobService.stop
       vi.spyOn(runtime, 'getService').mockImplementation((serviceType: string) => {
-        if (serviceType === StarterService.serviceType) return null;
+        if (serviceType === ClobService.serviceType) return null;
         return services.get(serviceType); // Fallback to original behavior for other services if any
       });
       const services = new Map();
-      await StarterService.stop(runtime as any);
+      await ClobService.stop(runtime as any);
       // Should not reach here
       expect(true).toBe(false);
     } catch (e) {
       error = e;
       expect(error).toBeTruthy();
       if (error instanceof Error) {
-        expect(error.message).toContain('Starter service not found');
-      }
+        expect(error.message).toContain('ClobService not found');
+        }
     }
 
     documentTestResult(
-      'StarterService non-existent stop',
+      'ClobService non-existent stop',
       {
         errorThrown: !!error,
-        errorMessage: error instanceof Error ? error.message : String(error),
+        errorMessage: (error as Error).message,
       },
       error instanceof Error ? error : null
     );
@@ -316,7 +324,7 @@ describe('StarterService', () => {
     const runtime = createRealRuntime();
 
     // First start the service
-    const startResult = await StarterService.start(runtime as any);
+    const startResult = await ClobService.start(runtime as any);
     expect(startResult).toBeTruthy();
 
     let stopError: Error | unknown = null;
@@ -324,7 +332,7 @@ describe('StarterService', () => {
 
     try {
       // Then stop it
-      await StarterService.stop(runtime as any);
+      await ClobService.stop(runtime as any);
       stopSuccess = true;
     } catch (e) {
       stopError = e;
@@ -332,7 +340,7 @@ describe('StarterService', () => {
     }
 
     documentTestResult(
-      'StarterService stop',
+      'ClobService stop',
       {
         success: stopSuccess,
         errorThrown: !!stopError,

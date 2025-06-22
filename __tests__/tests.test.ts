@@ -1,6 +1,5 @@
 import { describe, expect, it, vi, beforeEach, assert } from 'vitest';
-import { StarterTestSuite } from '../src/tests';
-import { v4 as uuidv4 } from 'uuid';
+import { ClobTestSuite } from '../src/tests';
 
 // Mock runtime
 const createMockRuntime = () => {
@@ -10,19 +9,19 @@ const createMockRuntime = () => {
       {
       },
     ],
-    /*providers: [
+    providers: [
       {
-        name: 'HELLO_WORLD_PROVIDER',
+        name: 'POLY_MARKET_PROVIDER',
         get: vi.fn().mockResolvedValue({
           text: 'I am a provider',
           values: {},
           data: {},
         }),
       },
-    ],*/
+    ],
     getService: vi.fn().mockReturnValue({
       capabilityDescription:
-        'This is a starter service which is attached to the agent through the starter plugin.',
+        'This is a clob service which is attached to the agent through the clob plugin.',
       stop: vi.fn(),
     }),
     processActions: vi.fn(),
@@ -33,16 +32,16 @@ vi.mock('uuid', () => ({
   v4: () => '00000000-0000-0000-0000-000000000000',
 }));
 
-describe('StarterTestSuite', () => {
-  let testSuite: StarterTestSuite;
+describe('ClobTestSuite', () => {
+  let testSuite: ClobTestSuite;
 
   beforeEach(() => {
-    testSuite = new StarterTestSuite();
+    testSuite = new ClobTestSuite();
   });
 
   it('should have name and description', () => {
-    expect(testSuite.name).toBe('starter');
-    expect(testSuite.description).toBe('Tests for the starter project');
+    expect(testSuite.name).toBe('clob');
+    expect(testSuite.description).toBe('Tests for the clob project');
   });
 
   it('should have at least one test', () => {
@@ -77,15 +76,14 @@ describe('StarterTestSuite', () => {
     }
   });
   
-  it('should run starter service test successfully', async () => {
+  it('should run clob service test successfully', async () => {
     const mockRuntime = createMockRuntime();
-    const serviceTest = testSuite.tests.find((test) => test.name === 'Starter service test');
-
+    const serviceTest = testSuite.tests.find((test) => test.name === 'ClobService test');
     if (serviceTest) {
       await expect(serviceTest.fn(mockRuntime as any)).resolves.not.toThrow();
-      expect(mockRuntime.getService).toHaveBeenCalledWith('starter');
+      expect(mockRuntime.getService).toHaveBeenCalledWith('clob');
     } else {
-      assert.fail('Starter service test not found');
+      assert.fail('ClobService test not found');
     }
   });
 });

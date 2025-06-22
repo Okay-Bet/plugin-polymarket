@@ -7,14 +7,13 @@ export const character: Character = {
   name: "agent",
   plugins: [
     //"@elizaos/plugin-sql",
-    ...["@elizaos/plugin-polymarket"],
-    ...(process.env.GOOGLE_GENERATIVE_AI_API_KEY
+    "@elizaos/plugin-polymarket",
+    ...(process.env.OPENAI_API_KEY ? ["@elizaos/plugin-openai"] : []),
+    ...(process.env.GOOGLE_GENAI_API_KEY
       ? ["@elizaos/plugin-google-genai"]
-      : (process.env.OPENAI_API_KEY ? ["@elizaos/plugin-openai"] 
-        : [])),
-    ...(!process.env.IGNORE_BOOTSTRAP
-      ? ["@elizaos/plugin-bootstrap"]
-      : [])
+      : !process.env.IGNORE_BOOTSTRAP
+        ? ["@elizaos/plugin-bootstrap"]
+        : []),
   ],
   settings: {
     secrets: {},
@@ -38,7 +37,7 @@ export const character: Character = {
         name: "{{agent}}",
         content: {
           text: "Fetching the most active markets...",
-          actions: ["READ_POLYMARKET_MARKETS", "REPLY"],
+          actions: ["READ_POLYMARKET_MARKETS"],
         },
       },
     ],
@@ -53,7 +52,7 @@ export const character: Character = {
         name: "{{agent}}",
         content: {
           text: "Checking the odds for the election market...",
-          actions: ["READ_POLYMARKET_MARKETS", "REPLY"],
+          actions: ["READ_POLYMARKET_MARKETS"],
         },
       },
     ],
@@ -68,7 +67,7 @@ export const character: Character = {
         name: "{{agent}}",
         content: {
           text: "Placing a buy order for 10 shares of 'Yes' in market 123456...",
-          actions: ["BUY_SHARES", "REPLY"],
+          actions: ["BUY_SHARES"],
         },
       },
     ],
@@ -83,7 +82,7 @@ export const character: Character = {
         name: "agent",
         content: {
           text: "Executing a sell order for 5 shares of 'No' in market 789012...",
-          actions: ["SELL_SHARES", "REPLY"],
+          actions: ["SELL_SHARES"],
         },
       },
     ],
@@ -98,7 +97,7 @@ export const character: Character = {
         name: "{{agent}}",
         content: {
           text: "Analyzing the liquidity in the crypto market...",
-          actions: ["READ_POLYMARKET_MARKETS", "REPLY"],
+          actions: ["READ_POLYMARKET_MARKETS"],
         },
       },
     ],
@@ -113,7 +112,7 @@ export const character: Character = {
         name: "{{agent}}",
         content: {
           text: "Redeeming shares from market 345678...",
-          actions: ["REDEEM_SHARES", "REPLY"],
+          actions: ["REDEEM_SHARES"],
         },
       },
     ],
@@ -128,7 +127,7 @@ export const character: Character = {
         name: "{{agent}}",
         content: {
           text: "Fetching details for market 987654...",
-          actions: ["GET_POLYMARKET_MARKET_BY_ID", "REPLY"],
+          actions: ["GET_POLYMARKET_MARKET_BY_ID"],
         },
       },
     ],
@@ -141,7 +140,7 @@ export const character: Character = {
         name: "{{agent}}",
         content: {
           text: "I'm fetching the current markets for you.",
-          actions: ["READ_POLYMARKET_MARKETS", "REPLY"],
+          actions: ["READ_POLYMARKET_MARKETS"],
         },
       },
     ],

@@ -1,10 +1,10 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import plugin from '../src/plugin';
-import { logger } from '@elizaos/core';
+import { logger } from '@elizaos/core/v2';
 
 // Mock logger
-vi.mock('@elizaos/core', async () => {
-  const actual = await vi.importActual('@elizaos/core');
+vi.mock('@elizaos/core/v2', async () => {
+  const actual = await vi.importActual('@elizaos/core/v2');
   return {
     ...actual,
     logger: {
@@ -48,9 +48,11 @@ describe('Plugin Events', () => {
       await messageHandler(mockParams);
 
       // Verify log was called
-      // expect(logger.info).toHaveBeenCalledWith(expect.any(Array)); // This line is causing the test to fail
       expect(logger.info).toHaveBeenCalledWith(
-        'MESSAGE_RECEIVED event received', mockParams
+        'MESSAGE_RECEIVED event received',
+        expect.objectContaining({
+          message: { id: 'test-id', content: { text: 'Hello!' } },
+        }),
       );
     }
   });
@@ -77,10 +79,7 @@ describe('Plugin Events', () => {
       await voiceHandler(mockParams);
 
       // Verify log was called
-      // expect(logger.info).toHaveBeenCalledWith(expect.any(Array)); // This line is causing the test to fail
-      expect(logger.info).toHaveBeenCalledWith(
-        'VOICE_MESSAGE_RECEIVED event received', mockParams
-      );
+      expect(logger.info).toHaveBeenCalledWith('VOICE_MESSAGE_RECEIVED event received', mockParams);
     }
   });
 

@@ -5,11 +5,12 @@ export default defineConfig({
   test: {
     environment: 'node',
     globals: true,
-    testTimeout: 600000,
-    deps: {
-      inline: ['dotenv', 'uuid'], // Revert to deprecated 'inline'
-    },
-  },
+    testTimeout: 600000, 
+    include: [
+      '__tests__/**/*.test.ts',
+      //  '__tests__/**/utils/*.ts' // Explicitly include files in utils
+    ],
+},
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
@@ -17,7 +18,5 @@ export default defineConfig({
   },
   ssr: { // Moved ssr to the root level
     noExternal: [
-     /^(dotenv|uuid)$/,
-    ],
-  },
+    ]},
 });

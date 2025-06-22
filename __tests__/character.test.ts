@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { character } from '../src/index';
+import { character } from '../src/character';
 
 describe('Character Configuration', () => {
   it('should have all required fields', () => {
@@ -11,41 +11,20 @@ describe('Character Configuration', () => {
   });
 
   it('should have the correct name', () => {
-    expect(character.name).toBe('polydawg');
+    expect(character.name).toBe('agent');
   });
 
   it('should have plugins defined as an array', () => {
     expect(Array.isArray(character.plugins)).toBe(true);
   });
 
-  it('should have conditionally included plugins based on environment variables', () => {
-    // This test is a simple placeholder since we can't easily test dynamic imports in vitest
-    // The actual functionality is tested at runtime by the starter test suite
-
-    // Save the original env values
-    const originalOpenAIKey = process.env.OPENAI_API_KEY;
-    const originalAnthropicKey = process.env.ANTHROPIC_API_KEY;
-
-    try {
-      // Verify if plugins array includes the core plugin
-      expect(character.plugins).toContain('@elizaos/plugin-sql');
-
-      // Plugins array should have conditional plugins based on environment variables
-      if (process.env.OPENAI_API_KEY) {
-        expect(character.plugins).toContain('@elizaos/plugin-openai');
-      }
-
-      if (process.env.ANTHROPIC_API_KEY) {
-        expect(character.plugins).toContain('@elizaos/plugin-anthropic');
-      }
-
-      if (!process.env.OPENAI_API_KEY && !process.env.ANTHROPIC_API_KEY) {
-        expect(character.plugins).toContain('@elizaos/plugin-local-ai');
-      }
-    } finally {
-      // Restore original env values
-      process.env.OPENAI_API_KEY = originalOpenAIKey;
-      process.env.ANTHROPIC_API_KEY = originalAnthropicKey;
+  it('should have conditionally included plugins based on environment variables', () => {    
+    // Verify if plugins array includes the core plugin
+    // Expect the plugins array to conditionally include the Google Generative AI plugin
+    if (process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
+      expect(character.plugins).toContain('@elizaos/plugin-google-genai');
+    } else {
+      expect(character.plugins).not.toContain('@elizaos/plugin-google-genai');
     }
   });
 

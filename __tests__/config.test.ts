@@ -1,10 +1,9 @@
-import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
-import plugin from '../src/plugin';
-import { z } from 'zod';
+import { vi, describe, beforeEach, afterEach, it, expect } from "vitest";
+import plugin from "../src/plugin";
 
 // Mock logger
-vi.mock('@elizaos/core', async () => {
-  const actual = await vi.importActual('@elizaos/core');
+vi.mock('@elizaos/core/v2', async () => {
+  const actual = await vi.importActual('@elizaos/core/v2');
   return {
     ...actual,
     logger: {
@@ -40,8 +39,13 @@ describe('Plugin Configuration Schema', () => {
 
     if (initPlugin) {
       let error = null;
-      try {
-        await initPlugin(validConfig, {} as any); // Pass a mock runtime
+        try {
+          const mockRuntime = {
+              registerPlugin: vi.fn(), // Add mock registerPlugin
+          };
+          
+        await initPlugin(validConfig, mockRuntime as any);
+
       } catch (e) {
         error = e;
       }
@@ -52,10 +56,13 @@ describe('Plugin Configuration Schema', () => {
   it('should accept empty configuration', async () => {
     const emptyConfig = {};
 
-    if (initPlugin) {
+    if (initPlugin) {      
+      const mockRuntime = {
+        registerPlugin: vi.fn(), // Add mock registerPlugin
+    };
       let error = null;
       try {
-        await initPlugin(emptyConfig, {} as any); // Pass a mock runtime
+        await initPlugin(emptyConfig, mockRuntime as any);
       } catch (e) {
         error = e;
       }
