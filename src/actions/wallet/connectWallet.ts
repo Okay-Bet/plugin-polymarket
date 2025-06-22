@@ -38,7 +38,9 @@ export const connectWalletAction: Action = {
     _responses: Memory[],
   ): Promise<string> => {
     // In a real application, you'd trigger a wallet connection flow here.
-    const clobService = _runtime.getService(ClobService.serviceType) as ClobService | undefined;
+    const clobService = _runtime.getService(ClobService.serviceType) as
+      | ClobService
+      | undefined;
     if (!clobService) {
       const errorMsg = "ClobService not available.";
       logger.error(errorMsg);

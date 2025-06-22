@@ -1,6 +1,5 @@
 import { describe, expect, it, vi, beforeEach, assert } from 'vitest';
 import { ClobTestSuite } from '../src/tests';
-import { v4 as uuidv4 } from 'uuid';
 
 // Mock runtime
 const createMockRuntime = () => {

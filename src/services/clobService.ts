@@ -1,8 +1,4 @@
-import {
-  Service,
-  IAgentRuntime,
-  logger,
-} from "@elizaos/core/v2";
+import { Service, IAgentRuntime, logger } from "@elizaos/core/v2";
 import { ethers } from "ethers";
 import { ClobClient, AssetType } from "@polymarket/clob-client";
 import {
@@ -11,7 +7,7 @@ import {
   PolymarketSingleMarketApiResponse,
 } from "../types";
 
-export class ClobService extends Service  {
+export class ClobService extends Service {
   static serviceType = "ClobService";
   private clobClient: ClobClient;
 
@@ -20,7 +16,6 @@ export class ClobService extends Service  {
     // Initialize the ClobClient here, using environment variables
     // Assuming IWallet is now called something else or needs a different import
     logger.info(`Loading ClobService with PK: ${process.env.PK}`);
-
   }
 
   // Include ClobService functions here, prefixed with 'static' as needed or adjusted
@@ -122,14 +117,14 @@ export class ClobService extends Service  {
       if (!response.ok) {
         throw new Error(`Failed to fetch markets: ${response.statusText}`);
       }
-      const data = await response.json() as any[];
+      const data = (await response.json()) as any[];
       // Assuming the API returns an array of raw market objects
       const markets: PolymarketMarket[] = data.map((rawMarket: any) =>
-        ClobService._transformMarketData(rawMarket)
+        ClobService._transformMarketData(rawMarket),
       );
       return { success: true, markets };
     } catch (error: any) {
-      return { success: false, error: error.message, markets: [] }; 
+      return { success: false, error: error.message, markets: [] };
     }
   }
 
@@ -199,7 +194,7 @@ export class ClobService extends Service  {
     return `${this.apiUrl}?${query.toString()}`;
   }
 
-   /**
+  /**
    * Transforms raw market data from the Polymarket API into a `PolymarketMarket` object.
    * @param rawMarket The raw market data object from the API.
    * @returns A `PolymarketMarket` object representing the transformed market data.
@@ -209,7 +204,7 @@ export class ClobService extends Service  {
    * @param rawMarket - Raw market data from API
    * @returns Transformed market data
    */
-   private static _transformMarketData(rawMarket: any): PolymarketMarket {
+  private static _transformMarketData(rawMarket: any): PolymarketMarket {
     // Example transformation, adjust according to actual API response structure
     // and the fields defined in PolymarketMarket type
     if (!rawMarket) {
@@ -231,7 +226,7 @@ export class ClobService extends Service  {
         // ... other required fields with defaults or proper handling
       };
     }
-  
+
     // TODO: Implement the transformation logic here.
     //       For now, it returns a placeholder.
     return {
@@ -252,7 +247,9 @@ export class ClobService extends Service  {
    * @param apiParams - Parameters for the API call
    * @returns Promise resolving to market data
    */
-  private static async fetchMarketPage(apiParams: any): Promise<PolymarketApiResponse> {
+  private static async fetchMarketPage(
+    apiParams: any,
+  ): Promise<PolymarketApiResponse> {
     try {
       const url = this._buildApiUrl(apiParams);
       const response = await fetch(url);
@@ -261,7 +258,7 @@ export class ClobService extends Service  {
         throw new Error(`API request failed with status ${response.status}`);
       }
 
-      const data = await response.json() as PolymarketMarket[];
+      const data = (await response.json()) as PolymarketMarket[];
       // No schema parsing yet, assuming PolymarketApiResponse format for raw data
       return { success: true, markets: data };
     } catch (error) {

@@ -7,7 +7,7 @@ export const character: Character = {
   name: "agent",
   plugins: [
     //"@elizaos/plugin-sql",
-    "@elizaos/plugin-polymarket",    
+    "@elizaos/plugin-polymarket",
     ...(process.env.OPENAI_API_KEY ? ["@elizaos/plugin-openai"] : []),
     ...(process.env.GOOGLE_GENAI_API_KEY
       ? ["@elizaos/plugin-google-genai"]

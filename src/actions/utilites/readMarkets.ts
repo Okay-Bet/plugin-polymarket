@@ -1,11 +1,19 @@
-import { Action, IAgentRuntime, Memory, State, HandlerCallback, Content, logger, UUID, composePromptFromState, ModelType } from '@elizaos/core/v2';
+import {
+  Action,
+  IAgentRuntime,
+  Memory,
+  State,
+  HandlerCallback,
+  Content,
+  logger,
+  UUID,
+  composePromptFromState,
+  ModelType,
+} from "@elizaos/core/v2";
 import * as dotenv from "dotenv";
 dotenv.config();
 import { ClobService } from "../../services/clobService";
-import {
-  ReadMarketsActionContent,
-  ReadMarketsData,
-} from "../../types";
+import { ReadMarketsActionContent, ReadMarketsData } from "../../types";
 import { readMarketsModel } from "../../models";
 import { getMarketsExamples } from "../../examples";
 

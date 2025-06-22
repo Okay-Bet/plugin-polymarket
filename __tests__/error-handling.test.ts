@@ -1,7 +1,7 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import plugin from '../src/plugin';
 import { logger } from '@elizaos/core/v2';
-import type { IAgentRuntime, Memory, State, Content } from '@elizaos/core/v2';
+import type { IAgentRuntime, Memory, State } from '@elizaos/core/v2';
 import { v4 as uuidv4 } from 'uuid';
 import { ClobService } from '../src/services/clobService';
 import { buySharesAction } from '../src/actions/trading/buyShares';

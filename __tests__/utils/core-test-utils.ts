@@ -1,9 +1,12 @@
-import { vi } from 'vitest';
-import { composeActionExamples, formatActionNames, formatActions } from '@elizaos/core/v2';
-import type { Action, Content, IAgentRuntime, Memory, State } from '@elizaos/core/v2';
-import { logger } from '@elizaos/core/v2';
-import { v4 as uuidv4 } from 'uuid';
-import { ClobService } from '../../src/services/clobService';
+import { vi } from "vitest";
+import {
+  composeActionExamples,
+  formatActionNames,
+  formatActions,
+} from "@elizaos/core/v2";
+import type { Action, IAgentRuntime, Memory, State } from "@elizaos/core/v2";
+import { logger } from "@elizaos/core/v2";
+import { v4 as uuidv4 } from "uuid";
 
 /**
  * Utility functions for reusing core package tests in project-starter tests
@@ -118,10 +121,11 @@ export const createMockRuntime = (): IAgentRuntime => {
       search: async () => [],
     },
     actions: [],
-    clobService: { // Adding clobService with a mock fetchMarkets
-          fetchMarkets: vi.fn(),
-          fetchMarketById: vi.fn(),
-        },
+    clobService: {
+      // Adding clobService with a mock fetchMarkets
+      fetchMarkets: vi.fn(),
+      fetchMarketById: vi.fn(),
+    },
     useModel: vi.fn(),
     registerPlugin: vi.fn(), // Add a mock registerPlugin
     getService: vi.fn(),

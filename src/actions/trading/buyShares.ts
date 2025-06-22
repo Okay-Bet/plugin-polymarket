@@ -3,12 +3,10 @@ import {
   type Action,
   type Memory,
   type State,
-  type Content,
   type HandlerCallback,
 } from "@elizaos/core/v2";
 import { ClobService } from "../../services/clobService"; // Ensure correct path
 import { Side, OrderType } from "@polymarket/clob-client";
-import { ethers } from "ethers";
 import { buySharesExamples } from "src/examples";
 
 export const buySharesAction: Action = {
@@ -47,7 +45,7 @@ export const buySharesAction: Action = {
     }
 
     const clobClient = clobService.getClobClient();
-    
+
     //  THIS SHOULD BE ADDED TO ALL THE ACTIONS THAT REQUIRE WALLET
     // Ensure wallet is connected
     /*if (!clobService.isWalletConnected()) {

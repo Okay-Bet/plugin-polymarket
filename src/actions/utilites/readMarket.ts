@@ -205,12 +205,15 @@ export const readMarketAction: Action = {
       text.includes("lisitng") ||
       text.includes("list") ||
       text.includes("markets") ||
-      text.includes("all"));
+      text.includes("all")
+    );
 
     return (
-      hasActionKeywords && (hasPolymarketKeyword || hasPredictionMarketKeywords) && hasSkipActionKeywords
+      hasActionKeywords &&
+      (hasPolymarketKeyword || hasPredictionMarketKeywords) &&
+      hasSkipActionKeywords
     );
-  }
+  },
 };
 
 function formatMarketResponse(market: PolymarketMarket): string {

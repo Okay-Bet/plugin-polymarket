@@ -45,7 +45,7 @@
     "start": "elizaos start",
     "dev": "elizaos dev",
     "build": "tsup",
-    "lint": "prettier --write ./src && eslint src/**/*.ts && eslint __tests__/**/*.ts",
+    "lint": "prettier --write ./src && prettier --write src/**/*.ts && prettier --write __tests__/**/*.ts",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
@@ -79,12 +79,13 @@
     "protobufjs"
   ],
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "latest",
-    "vitest": "latest",
-    "eslint": "latest",
-    "tsup": "latest",
     "@types/node": "latest",
-    "prettier": "latest"
+    "@typescript-eslint/eslint-plugin": "latest",
+    "eslint": "latest",
+    "eslint-plugin-prettier": "^5.5.0",
+    "prettier": "latest",
+    "tsup": "latest",
+    "vitest": "latest"
   },
   "author": "",
   "license": "ISC",

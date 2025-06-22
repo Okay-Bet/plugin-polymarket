@@ -3,12 +3,10 @@ import {
   type Action,
   type Memory,
   type State,
-  type Content,
   type HandlerCallback,
 } from "@elizaos/core/v2";
 import { ClobService } from "../../services/clobService"; // Ensure correct path
 import { Side, OrderType } from "@polymarket/clob-client";
-import { ethers } from "ethers";
 import { sellSharesExamples } from "src/examples";
 
 export const sellSharesAction: Action = {
@@ -62,9 +60,12 @@ export const sellSharesAction: Action = {
         feeRateBps: 0, // Assuming no fees for now
         nonce: Math.floor(Math.random() * 1000000),
       });
-       // Add logging to inspect the order object
-      console.log("Order object before posting:", JSON.stringify(order, null, 2));
-      if (!order) return 'order does not exist'
+      // Add logging to inspect the order object
+      console.log(
+        "Order object before posting:",
+        JSON.stringify(order, null, 2),
+      );
+      if (!order) return "order does not exist";
 
       const resp = await clobClient.postOrder(order, OrderType.GTC);
       const responseText = `Successfully placed a sell order for ${quantity} shares of "${outcome}" in market ${marketId}. Order details: ${JSON.stringify(resp)}`;

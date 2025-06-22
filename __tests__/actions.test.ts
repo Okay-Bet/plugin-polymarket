@@ -1,7 +1,5 @@
 import { describe, expect, it, vi, beforeAll, afterAll } from 'vitest';
-import pluginPolymarket from '../src/plugin';
-import { type Action, type IAgentRuntime, type Memory, type State, type HandlerCallback, logger } from '@elizaos/core/v2';
-import { v4 as uuidv4 } from 'uuid';
+import { logger } from '@elizaos/core/v2';
 import dotenv from 'dotenv';
 import {
   runCoreActionTests,
@@ -24,8 +22,6 @@ afterAll(() => {
 });
 
 describe('Actions', () => {
-  // Find the POLYMARKET_PLUGIN_STARTED_NOTIFICATION action from the plugin
-  const pluginStartedAction = pluginPolymarket.actions?.find((action) => action.name === 'POLYMARKET_PLUGIN_STARTED_NOTIFICATION');
 
   // Run core tests on all plugin actions
   it('should pass core action tests', () => {
@@ -40,107 +36,4 @@ describe('Actions', () => {
       documentTestResult('Core Action Tests', coreTestResults);
     }
   });
-/*
-  describe('POLYMARKET_PLUGIN_STARTED_NOTIFICATION Action', () => {
-    it('should exist in the plugin', () => {
-      expect(pluginStarteAction).toBeDefined();
-    });
-
-    it('should have the correct structure', () => {
-      if (pluginStartedAction) {
-        expect(pluginStartedAction).toHaveProperty('name', 'POLYMARKET_PLUGIN_STARTED_NOTIFICATION');
-        expect(pluginStartedAction).toHaveProperty('description');
-        expect(pluginStartedAction).toHaveProperty('similes');
-        expect(pluginStartedAction).toHaveProperty('validate');
-        expect(pluginStartedAction).toHaveProperty('handler');
-        expect(pluginStartedAction).toHaveProperty('examples');
-        expect(Array.isArray(pluginStartedAction.similes)).toBe(true);
-        expect(Array.isArray(pluginStartedAction.examples)).toBe(true);
-      }
-    });
-
-    it('should have correct similes', () => {
-      if (pluginStartedAction) {
-        expect(pluginStartedAction.similes).toContain('PLUGIN_READY');
-        expect(pluginStartedAction.similes).toContain('POLYMARKET_INITIALIZED');
-        expect(pluginStartedAction.similes).toContain('POLYMARKET_ACTIVE');
-      }
-    });
-
-    it('should have at least one example', () => {
-      if (pluginStartedAction && pluginStartedAction.examples) {
-        expect(pluginStartedAction.examples.length).toBeGreaterThan(0);
-
-        // Check first example structure
-        const firstExample = pluginStartedAction.examples[0];
-        expect(firstExample.length).toBeGreaterThan(0); // At least one message (agent notification)
-
-        // Message should be an agent notification
-        expect(firstExample[0]).toHaveProperty('name');
-        expect(firstExample[0]).toHaveProperty('content');
-        expect(firstExample[0].content).toHaveProperty('text');
-        expect(firstExample[0].name).toBe('agent');
-        expect(firstExample[0].content.text).toBe('Polymarket plugin is now active and ready.');
-      }
-    });
-
-    it('should return true from validate function', async () => {
-      if (pluginStartedAction) {
-        const runtime = createMockRuntime();
-        // This action isn't typically triggered by a user message, but we can mock one for the validate signature
-        const mockMessage = createMockMessage('System startup');
-        const mockState = createMockState();
-
-        let result = false;
-        let error: Error | null = null;
-
-        try {
-          result = await pluginStartedAction.validate(runtime, mockMessage, mockState);
-          expect(result).toBe(true);
-        } catch (e) {
-          error = e as Error;
-          logger.error('Validate function error:', e);
-        }
-
-        documentTestResult('POLYMARKET_PLUGIN_STARTED_NOTIFICATION action validate', result, error);
-      }
-    });
-
-    it('should call back with plugin started response from handler', async () => {
-      if (pluginStartedAction) {
-        const runtime = createMockRuntime();
-        const mockMessage = createMockMessage('System startup'); // Similar to validate, for handler signature
-        const mockState = createMockState();
-
-        let callbackResponse: any = {};
-        let error: Error | null = null;
-
-        const mockCallback = (response: any) => {
-          callbackResponse = response;
-        };
-
-        try {
-          await pluginStartedAction.handler(
-            runtime,
-            mockMessage,
-            mockState,
-            {} as any,
-            mockCallback as HandlerCallback,
-            []
-          );
-          
-          // Verify callback was called with the right content
-          expect(callbackResponse).toBeTruthy();
-          expect(callbackResponse).toHaveProperty('text');
-          expect(callbackResponse.text).toBe('Polymarket plugin has started and is operational.');
-        } catch (e) {
-          error = e as Error;
-          logger.error('Handler function error:', e);
-        }
-
-        documentTestResult('POLYMARKET_PLUGIN_STARTED_NOTIFICATION action handler', callbackResponse, error);
-      }
-    });
-  });
-  */
 });

@@ -1,7 +1,6 @@
 import { describe, expect, it, beforeAll, afterAll } from 'vitest';
 import * as fs from 'fs';
 import * as path from 'path';
-import { execSync } from 'child_process';
 import { logger } from '@elizaos/core/v2';
 
 // Skip in CI environments or when running automated tests without interaction

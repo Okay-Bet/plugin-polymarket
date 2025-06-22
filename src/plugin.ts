@@ -13,8 +13,6 @@ import { readMarketsAction } from "./actions/utilites/readMarkets";
 import { setUserAction, getUsernameAction } from "./actions/utilites/user"; // Import user actions
 import { connectWalletAction } from "./actions/wallet/connectWallet";
 import { ClobService } from "./services/clobService";
-import { readMarketsModel } from "./models";
-import character from "./character";
 
 const pluginPolymarket: Plugin = {
   name: "@elizaos/plugin-polymarket",
