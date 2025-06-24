@@ -5,11 +5,224 @@ import {
   PolymarketMarket,
   PolymarketApiResponse,
   PolymarketSingleMarketApiResponse,
-} from "../types";
+  OrderParams,
+  OrderResult,
+  RedeemParams,
+  RedeemResult
+} from '../types';
 
+/**
+ * Service for interacting with Polymarket's Central Limit Order Book (CLOB) API
+ * Handles trading operations like buying, selling and redeeming winnings
+ */
 export class ClobService extends Service {
-  static serviceType = "ClobService";
+  static serviceType = 'ClobService';
+
+  static apiUrl = "https://gamma-api.polymarket.com"; // Base URL for CLOB API
+
+  static DEFAULT_LIQUIDITY_MIN = "5000";
+  static DEFAULT_VOLUME_MIN = "5000";
+
+  static register(runtime: IAgentRuntime): IAgentRuntime {
+    return runtime;
+  }
+
   private clobClient: ClobClient;
+  capabilityDescription = "Enables the agent to trade on Polymarket's CLOB API";// @Author: Tony363
+
+  // capabilityDescription = "Provides access to the Polymarket CLOB client for trading operations."; // @Author: JT-Creates
+
+  static async start(runtime: IAgentRuntime): Promise<ClobService> {
+    const service = new ClobService(runtime);
+    return service;
+  }
+
+  static async stop(runtime: IAgentRuntime): Promise<void> {
+    const service = runtime.getService(ClobService.serviceType);
+    if (!service) {
+      throw new Error('ClobService not found');
+    }
+    service.stop();
+  }
+
+  /**
+   * Places an order to buy or sell shares
+   * @param params - Parameters for the order
+   * @returns Order result with success status and details
+   */
+  static async placeOrder(params: OrderParams): Promise<OrderResult> {
+    // Get API key from environment variables
+    const apiKey = process.env.POLYMARKET_API_KEY;
+
+    if (!apiKey) {
+      return {
+        success: false,
+        error: "API key not configured. Please set POLYMARKET_API_KEY in your environment."
+      };
+    }
+
+    // Construct the order payload
+    const payload = {
+      marketId: params.marketId,
+      outcomeId: params.outcomeId,
+      side: params.side, // 'BUY' or 'SELL'
+      size: params.amount,
+      price: params.price,
+      type: params.orderType || 'LIMIT' // Default to limit order
+    };
+
+    // Send the request
+    let response;
+    let data;
+
+    response = await fetch(`${this.apiUrl}/orders`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
+      body: JSON.stringify(payload)
+    }).catch(error => {
+      logger.error("Network error in placeOrder:", error);
+      return null;
+    });
+
+    if (!response) {
+      return {
+        success: false,
+        error: "Network error while connecting to Polymarket API"
+      };
+    }
+
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => "Unknown error");
+      return {
+        success: false,
+        error: `Order placement failed: ${response.status} ${errorText}`
+      };
+    }
+
+    data = await response.json().catch(() => null);
+    if (!data) {
+      return {
+        success: false,
+        error: "Failed to parse API response"
+      };
+    }
+
+    return {
+      success: true,
+      orderId: data.orderId,
+      message: `Successfully placed ${params.side.toLowerCase()} order for ${params.amount} shares at $${params.price}`
+    };
+  }
+
+  /**
+   * Cancels an existing order
+   * @param orderId - ID of the order to cancel
+   * @returns Order cancellation result
+   */
+  static async cancelOrder(orderId: string): Promise<OrderResult> {
+    const apiKey = process.env.POLYMARKET_API_KEY;
+
+    if (!apiKey) {
+      return {
+        success: false,
+        error: "API key not configured. Please set POLYMARKET_API_KEY in your environment."
+      };
+    }
+
+    let response = await fetch(`${this.apiUrl}/orders/${orderId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`
+      }
+    }).catch(error => {
+      logger.error("Network error in cancelOrder:", error);
+      return null;
+    });
+
+    if (!response) {
+      return {
+        success: false,
+        error: "Network error while connecting to Polymarket API"
+      };
+    }
+
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => "Unknown error");
+      return {
+        success: false,
+        error: `Order cancellation failed: ${response.status} ${errorText}`
+      };
+    }
+
+    return {
+      success: true,
+      orderId: orderId,
+      message: `Successfully cancelled order ${orderId}`
+    };
+  }
+
+  /**
+   * Redeems winnings from resolved markets
+   * @param params - Parameters for redemption
+   * @returns Redemption result
+   */
+  static async redeemWinnings(params: RedeemParams): Promise<RedeemResult> {
+    const apiKey = process.env.POLYMARKET_API_KEY;
+
+    if (!apiKey) {
+      return {
+        success: false,
+        error: "API key not configured. Please set POLYMARKET_API_KEY in your environment."
+      };
+    }
+
+    // Construct the redeem payload
+    const payload = params.marketId ? { marketId: params.marketId } : {};
+
+    let response = await fetch(`${this.apiUrl}/redeem`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
+      body: JSON.stringify(payload)
+    }).catch(error => {
+      logger.error("Network error in redeemWinnings:", error);
+      return null;
+    });
+
+    if (!response) {
+      return {
+        success: false,
+        error: "Network error while connecting to Polymarket API"
+      };
+    }
+
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => "Unknown error");
+      return {
+        success: false,
+        error: `Redemption failed: ${response.status} ${errorText}`
+      };
+    }
+
+    const data = await response.json().catch(() => null);
+    if (!data) {
+      return {
+        success: false,
+        error: "Failed to parse API response"
+      };
+    }
+
+    return {
+      success: true,
+      amount: data.amount,
+      message: `Successfully redeemed winnings: ${data.amount} USDC`
+    };
+  }
 
   constructor(runtime: IAgentRuntime) {
     super(runtime);
@@ -44,18 +257,6 @@ export class ClobService extends Service {
       throw new Error(`Wallet connection error: ${error.message}`);
     }
   }
-
-  static async start(runtime: IAgentRuntime): Promise<ClobService> {
-    const service = new ClobService(runtime);
-    return service;
-  }
-
-  static register(runtime: IAgentRuntime): IAgentRuntime {
-    return runtime;
-  }
-
-  capabilityDescription =
-    "Provides access to the Polymarket CLOB client for trading operations.";
 
   getClobClient(): ClobClient {
     if (!this.clobClient) {
@@ -101,15 +302,6 @@ export class ClobService extends Service {
   async stop() {
     logger.info("ClobService stopped");
   }
-  static async stop(runtime: IAgentRuntime): Promise<void> {
-    const service = runtime.getService(ClobService.serviceType);
-    if (!service) throw new Error("ClobService not found in runtime for stop");
-    await service.stop();
-  }
-  static apiUrl = "https://gamma-api.polymarket.com/";
-  static DEFAULT_LIQUIDITY_MIN = "5000";
-  static DEFAULT_VOLUME_MIN = "5000";
-
   static async fetchMarkets(): Promise<PolymarketApiResponse> {
     try {
       const apiUrl = `${this.apiUrl}markets?active=true&closed=false&archived=false&liquidity_num_min=${this.DEFAULT_LIQUIDITY_MIN}&volume_num_min=${this.DEFAULT_VOLUME_MIN}&ascending=false`;
@@ -195,11 +387,6 @@ export class ClobService extends Service {
   }
 
   /**
-   * Transforms raw market data from the Polymarket API into a `PolymarketMarket` object.
-   * @param rawMarket The raw market data object from the API.
-   * @returns A `PolymarketMarket` object representing the transformed market data.
-   */
-  /**
    * Transforms raw market data into the PolymarketMarket structure
    * @param rawMarket - Raw market data from API
    * @returns Transformed market data
@@ -237,8 +424,10 @@ export class ClobService extends Service {
       description: rawMarket.description || "",
       // Ensure 'active' is always a boolean
       active: rawMarket.active || false,
-      volume: rawMarket.volume || "0",
-      liquidity: rawMarket.liquidity || "0",
+      // Ensure volume and liquidity are always strings with default "0"
+      // (or another appropriate default for your application)
+      volume: String(rawMarket.volume || "0"),
+      liquidity: String(rawMarket.liquidity || "0"),
     };
   }
 

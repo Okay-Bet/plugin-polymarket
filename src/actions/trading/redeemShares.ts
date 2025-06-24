@@ -25,7 +25,7 @@ export const redeemSharesAction: Action = {
     callback: HandlerCallback,
     _responses: Memory[],
   ): Promise<string> => {
-    const { marketId } = _options;
+    const { marketId, userProvidedPrivateKey } = _options;
 
     if (!marketId) {
       return "Invalid input: Please provide marketId.";
@@ -40,11 +40,23 @@ export const redeemSharesAction: Action = {
 
     const clobClient = clobService.getClobClient();
 
+    // If not connected, try to connect
+    /*if (!clobService.isWalletConnected()) {
+      await clobService.connectWallet(userProvidedPrivateKey); // Get from user input
+    }*/
+
     try {
-      // Replace this with the actual logic for redeeming/settling shares in the CLOB.
-      // It might involve interacting with the CLOB API in a specific way after a market resolves.
-      // The current implementation is a placeholder and likely needs significant adjustment.
-      const responseText = `Simulated redemption of shares in market ${marketId}.  You need to implement the actual CLOB redemption logic here.`;
+      const result = await clobService.redeemShares(marketId);
+      if (!result.success) {
+        throw new Error(
+          result.error || "Unknown error during simulated redemption",
+        );
+      }
+      const responseText = `Successfully redeemed shares in market ${marketId}. Transaction details: ${JSON.stringify(
+        result,
+      )}`;
+
+      //const responseText = `Simulated redemption of shares in market ${marketId}.  You need to implement the actual CLOB redemption logic here.`;
       await callback({ text: responseText });
       return responseText;
     } catch (e) {

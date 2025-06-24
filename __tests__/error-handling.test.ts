@@ -12,6 +12,7 @@ import { readMarketsAction } from '../src/actions/utilites/readMarkets';
 import { getUsernameAction, setUserAction } from '../src/actions/utilites/user';
 import { connectWalletAction } from '../src/actions/wallet/connectWallet';
 import { getWalletInfoAction } from '../src/actions/wallet/getWalletInfo';
+import { redeemWinningsAction } from '../src/actions/trading/redeemWinnings';
 
 // Mock logger
 vi.mock('@elizaos/core/v2', async () => {
@@ -98,7 +99,7 @@ describe('Error Handling', () => {
  expect(true).toBe(false); // Should not reach here
       } catch (error) {
         caughtError = error as Error;
-        expect(error.message).toBe('ClobService not found in runtime for stop');
+        expect(error.message).toBe('ClobService not found');
       }
 
       expect(caughtError).toBeInstanceOf(Error);
@@ -147,7 +148,9 @@ describe('Error Handling', () => {
           readMarketAction,
           buySharesAction,
           sellSharesAction,
-          redeemSharesAction],
+          redeemSharesAction,
+          redeemWinningsAction
+      ],
       db: {} as any,
     };
 

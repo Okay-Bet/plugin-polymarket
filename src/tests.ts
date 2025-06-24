@@ -9,10 +9,11 @@ import type {
 } from "@elizaos/core/v2";
 import { v4 as uuidv4 } from "uuid";
 import { character } from "./character";
+import { setUserAction } from "./actions/utilites/user";
 
-export class ClobTestSuite implements TestSuite {
-  name = "clob";
-  description = "Tests for the clob project";
+export class PolyMarketTestSuite implements TestSuite {
+  name = "PolyMarket";
+  description = "Tests for the PolyMarket project";
 
   tests = [
     {
@@ -61,8 +62,8 @@ export class ClobTestSuite implements TestSuite {
         // Test plugin initialization with empty config
         try {
           await runtime.registerPlugin({
-            name: "clob",
-            description: "A clob plugin for Eliza",
+            name: "PolyMarket",
+            description: "A PolyMarket plugin for Eliza",
             init: async () => {},
             config: {},
           });
@@ -127,14 +128,14 @@ export class ClobTestSuite implements TestSuite {
       fn: async (runtime: IAgentRuntime) => {
         // Test service registration and lifecycle
         try {
-          const service = runtime.getService("clob");
+          const service = runtime.getService("ClobService");
           if (!service) {
             throw new Error("ClobService not found");
           }
 
           if (
             service.capabilityDescription !==
-            "This is a clob service which is attached to the agent through the clob plugin."
+            "This is a ClobService which is attached to the agent through the PolyMarket plugin."
           ) {
             throw new Error("Incorrect service capability description");
           }
@@ -155,7 +156,7 @@ export class ClobTestSuite implements TestSuite {
           content: {
             text: `Set my username to ${testUsername}`,
             source: "test",
-            actions: [],
+            actions: ["setUserAction"],
           },
         };
 
@@ -194,7 +195,7 @@ export class ClobTestSuite implements TestSuite {
             content: {
               text: "What is my username?",
               source: "test",
-              actions: [],
+              actions: ["getUsernameAction"],
             },
           };
 
@@ -230,7 +231,7 @@ export class ClobTestSuite implements TestSuite {
 }
 
 // Export a default instance
-export default new ClobTestSuite();
+export default new PolyMarketTestSuite();
 function expect(
   processActions: (
     message: Memory,

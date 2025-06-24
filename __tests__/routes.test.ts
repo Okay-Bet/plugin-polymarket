@@ -12,9 +12,9 @@ describe('Plugin Routes', () => {
 
   it('should have a route for /welcome', async () => {
     if (plugin.routes) {
-      const helloWorldRoute = plugin.routes.find((route) => route.path === '/welcome');
+      const PolyMarketRoute = plugin.routes.find((route) => route.path === '/welcome');
 
-      if (helloWorldRoute && helloWorldRoute.handler) {
+      if (PolyMarketRoute && PolyMarketRoute.handler) {
         // Create mock request and response objects
         const mockReq = {};
         const mockRes = {
@@ -22,7 +22,7 @@ describe('Plugin Routes', () => {
         };
 
         // Call the route handler
-        await helloWorldRoute.handler(mockReq, mockRes, {} as any); // Provide a mock runtime
+        await PolyMarketRoute.handler(mockReq, mockRes, {} as any); // Provide a mock runtime
 
         // Verify response
         expect(mockRes.json).toHaveBeenCalledWith({ message: 'Polymarket plugin has started and is operational.' });

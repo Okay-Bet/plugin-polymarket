@@ -4,78 +4,123 @@ import {
   type Memory,
   type State,
   type HandlerCallback,
+  logger,
+  Content,
 } from "@elizaos/core/v2";
 import { ClobService } from "../../services/clobService"; // Ensure correct path
-import { Side, OrderType } from "@polymarket/clob-client";
+import { Side } from "@polymarket/order-utils";
+import { OrderType, AssetType } from "@polymarket/clob-client";
 import { buySharesExamples } from "src/examples";
+import { GammaService } from "src/services/gammaService";
+import { BuySharesActionContent, OrderParams } from "src/types";
 
 export const buySharesAction: Action = {
   name: "BUY_SHARES",
   similes: ["BUY_SHARES"],
   description: "Buys x number of shares in a specified Polymarket market.",
   examples: [...buySharesExamples],
-  validate: async (params: any) => {
-    return (
-      params.marketId &&
-      params.outcome &&
-      typeof params.quantity === "number" &&
-      params.quantity > 0 &&
-      (params.outcome === "Yes" || params.outcome === "No")
-    );
+  validate: async (
+    runtime: IAgentRuntime,
+    message: Memory,
+    state?: State,
+  ): Promise<boolean> => {
+    const content = message.content as BuySharesActionContent;
+    if (!content || !content.text) {
+      return false;
+    }
+    
+    const text = content.text.toLowerCase();
+    
+    const hasBuyKeywords = 
+      text.includes("buy") || 
+      text.includes("purchase") || 
+      text.includes("invest");
+    
+    const hasMarketKeywords =
+      text.includes("market") ||
+      text.includes("shares") ||
+      text.includes("outcome") ||
+      /\d{6}/.test(text); // Checks for market ID pattern
+    
+    return hasBuyKeywords && hasMarketKeywords;
   },
+
   handler: async (
     _runtime: IAgentRuntime,
-    _message: Memory,
+    message: Memory,
     _state: State,
     _options: any,
     callback: HandlerCallback,
-    _responses: Memory[],
+    _responses: Memory[]
   ): Promise<string> => {
-    const { marketId, outcome, quantity } = _options;
-
-    if (!marketId || !outcome || !quantity) {
-      return "Invalid input: Please provide marketId, outcome (Yes/No), and quantity.";
+    const content = message.content as BuySharesActionContent;
+    const text = content.text.trim();
+    
+    // Extract market ID
+    const marketIdPattern = /\b\d{6}\b/;
+    const marketIdMatch = text.match(marketIdPattern);
+    const marketId = marketIdMatch ? marketIdMatch[0] : content.marketId;
+    
+    if (!marketId) {
+      return "Sorry, I couldn't identify a market ID in your request. Please specify a market ID.";
     }
-
-    const clobService = _runtime.getService(
-      ClobService.serviceType,
-    ) as ClobService;
-    if (!clobService) {
-      return "ClobService not available. Please check plugin configuration.";
+    
+    // First fetch market details to verify market exists and to display details later
+    const marketResult = await GammaService.fetchMarketById(marketId);
+    if (!marketResult.success || !marketResult.market) {
+      return `Sorry, I couldn't find a market with ID ${marketId}. ${marketResult.error || ''}`;
     }
-
-    const clobClient = clobService.getClobClient();
-
-    //  THIS SHOULD BE ADDED TO ALL THE ACTIONS THAT REQUIRE WALLET
-    // Ensure wallet is connected
-    /*if (!clobService.isWalletConnected()) {
-      // Assuming there's a way to check if the wallet is connected
-      //  You'll need to implement this in ClobService
-      await clobService.connectWallet(userProvidedPrivateKey); // Get from user input
+    
+    // Extract outcome (YES/NO)
+    const outcomePattern = /\b(yes|no)\b/i;
+    const outcomeMatch = text.match(outcomePattern);
+    const outcome = outcomeMatch ? outcomeMatch[0].toUpperCase() : content.outcomeId;
+    
+    if (!outcome) {
+      return `Please specify which outcome you want to buy (YES or NO) for market "${marketResult.market.question}".`;
     }
-     */
-
-    // Assume marketId is the token ID for simplicity, needs adjustment for real mapping
-    const tokenID = marketId;
-    const price = 0.5; // Placeholder.  You will likely need to fetch this from market data.
-    const side = outcome === "Yes" ? Side.BUY : Side.BUY; // Assuming buying "Yes". Adapt for "No" if needed.
-    // Placeholder to see if I can avoid a compilation issue
-    try {
-      const order = await clobClient.createOrder({
-        tokenID,
+    
+    // Extract amount
+    const amountPattern = /\b(\d+(?:\.\d+)?)\s*(?:USD|USDC|dollars|$)?\b/;
+    const amountMatch = text.match(amountPattern);
+    const amount = amountMatch ? amountMatch[1] : content.amount;
+    
+    if (!amount) {
+      return `Please specify the amount you want to invest in ${outcome} shares for market "${marketResult.market.question}".`;
+    }
+    
+    // Extract price
+    const pricePattern = /(?:price|at)\s*(?:\$)?(\d+(?:\.\d+)?)/i;
+    const priceMatch = text.match(pricePattern);
+    const price = priceMatch ? priceMatch[1] : content.price;
+    
+    if (!price) {
+      return `Please specify the price at which you want to buy ${outcome} shares for market "${marketResult.market.question}".`;
+    }
+    
+    // Log the extracted parameters for debugging
+    logger.info(`Buying ${amount} USD of ${outcome} in market ${marketId} at price ${price}`);
+    
+    // Place the order through the CLOB API
+    const result = await ClobService.placeOrder(
+      {
+        marketId,
+        outcomeId: outcome,
+        side: "BUY",
+        amount,
         price,
-        side,
-        size: quantity,
-        feeRateBps: 0, // Assuming no fees for now
-        nonce: Math.floor(Math.random() * 1000000),
-      });
-
-      const resp = await clobClient.postOrder(order, OrderType.GTC);
-      const responseText = `Successfully placed a buy order for ${quantity} shares of "${outcome}" in market ${marketId}. Order details: ${JSON.stringify(resp)}`;
-      await callback({ text: responseText });
-      return responseText;
-    } catch (e) {
-      return `Error buying shares: ${e instanceof Error ? e.message : "Unknown error"}`;
-    }
-  },
+        orderType: "LIMIT",
+      } as OrderParams,
+    );
+    
+    const responseContent: Content = {
+      text: result.success 
+        ? `Order placed successfully! You have bought ${amount} USD worth of ${outcome} shares in market "${marketResult.market.question}" (ID: ${marketId}) at price $${price} per share. ${result.message || ''}`
+        : `Sorry, there was an error placing your order: ${result.error}`
+    };
+    
+    await callback(responseContent);
+    
+    return responseContent.text;
+  }
 };

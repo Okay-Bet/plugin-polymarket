@@ -9,9 +9,9 @@ import {
 } from "../types";
 import { Service, IAgentRuntime, logger, Memory } from "@elizaos/core/v2";
 
-export class ClobService extends Service {
-  static serviceType = "ClobService";
-  static apiUrl = "https://gamma-api.polymarket.com/";
+export class GammaService extends Service {
+  static serviceType = "GammaService";
+  static apiUrl = "https://gamma-api.polymarket.com/markets";
   static DEFAULT_LIQUIDITY_MIN = "5000";
   static DEFAULT_VOLUME_MIN = "5000";
 
@@ -28,15 +28,13 @@ export class ClobService extends Service {
     super(runtime);
   }
 
-  static async start(runtime: IAgentRuntime): Promise<ClobService> {
-    const service = new ClobService(runtime);
-    console.log("ClobService starting...");
-    console.log("ClobService started successfully.");
+  static async start(runtime: IAgentRuntime): Promise<GammaService> {
+    const service = new GammaService(runtime);
     return service;
   }
 
   static async stop(runtime: IAgentRuntime): Promise<void> {
-    const service = runtime.getService(ClobService.serviceType);
+    const service = runtime.getService(GammaService.serviceType);
     if (!service) {
       throw new Error("Gamma service not found");
     }
@@ -44,30 +42,21 @@ export class ClobService extends Service {
   }
 
   static async fetchMarkets(): Promise<PolymarketApiResponse> {
-    try {
-      const apiUrl = `${this.apiUrl}markets?active=true&closed=false&archived=false&liquidity_num_min=${this.DEFAULT_LIQUIDITY_MIN}&volume_num_min=${this.DEFAULT_VOLUME_MIN}&ascending=false`;
-      const response = await fetch(apiUrl);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch markets: ${response.statusText}`);
-      }
-      const data = await response.json();
-      const result = PolymarketApiDataSchema.safeParse(data);
-      if (!result.success) {
-        const errorMessage = `Invalid response format: ${result.error.message}`;
-        logger.error(errorMessage);
-        return {
-          success: false,
-          error: errorMessage,
-          markets: [],
-        };
-      }
-      const markets = result.data.map((rawMarket: PolymarketRawMarket) =>
-        this._transformMarketData(rawMarket),
-      );
-      return { success: true, markets };
-    } catch (error: any) {
-      return { success: false, error: error.message, markets: [] };
-    }
+    const params: Omit<PolymarketApiCallParams, "limit" | "offset"> = {
+      active: true,
+      closed: false,
+      archived: false,
+      liquidity_num_min: this.DEFAULT_LIQUIDITY_MIN,
+      volume_num_min: this.DEFAULT_VOLUME_MIN,
+      ascending: false,
+    };
+
+    const { markets, error } =
+      await GammaService.fetchAllMarketsPaginated(params);
+
+    if (error) return { success: false, error, markets: [] };
+
+    return { success: true, markets };
   }
 
   /**
@@ -83,12 +72,10 @@ export class ClobService extends Service {
     }
 
     try {
-      const response = await fetch(`${this.apiUrl}/${marketId.trim()}`);
+      const response = await fetch(`${this.apiUrl}/${marketId.trim()}`); 
 
       if (!response.ok) {
-        logger.error(
-          `API request failed for market ID "${marketId}" with status: ${response.status}`,
-        );
+        logger.info("response not ok", response);
         if (response.status === 404)
           return {
             success: false,
@@ -102,17 +89,15 @@ export class ClobService extends Service {
 
       if (result.success) {
         const rawMarketData = result.data;
-        const market = ClobService._transformMarketData(rawMarketData);
+        const market = GammaService._transformMarketData(rawMarketData);
         return { success: true, market: market };
       }
-      const errorMessage = `Invalid response format: ${result.error.message}`;
-      logger.error(errorMessage);
       return {
         success: false,
-        error: errorMessage,
+        error: `Invalid response format: ${result.error.message}`,
       };
     } catch (error) {
-      logger.error(`Error fetching market by ID "${marketId}":`, error);
+      console.log(`Error fetching market by ID "${marketId}":`, error);
       return {
         success: false,
         error:
@@ -249,13 +234,13 @@ export class ClobService extends Service {
         throw new Error(`API request failed with status ${response.status}`);
       }
 
-      const data = await response.json();
+      const data = await response.json();logger.info(`Response from Gamma API: ${JSON.stringify(data)}`);
       const result = PolymarketApiDataSchema.safeParse(data);
 
       if (result.success) {
         const resultData = result.data;
         const markets = resultData.map((market: PolymarketRawMarket) =>
-          ClobService._transformMarketData(market),
+          GammaService._transformMarketData(market),
         );
         return { success: true, markets };
       }
@@ -309,13 +294,6 @@ export class ClobService extends Service {
         };
       }
 
-      if (totalFetchedInSession >= 10000) {
-        // Example limit. Adjust as needed
-        logger.warn(
-          "Safety break triggered: Fetched over 10000 markets in a single session. Potential runaway pagination.",
-        );
-      }
-
       if (pageResponse.markets.length > 0) {
         allMarkets.push(...pageResponse.markets);
         offset += pageResponse.markets.length;
@@ -350,9 +328,6 @@ export class ClobService extends Service {
     throw new Error("Method not implemented.");
   }
 
-  async stop() {
-    // No specific resources to release in this implementation
-    logger.info("ClobService stopped");
-  }
+  async stop() {}
 }
-export default ClobService;
+export default GammaService;

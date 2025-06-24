@@ -16,6 +16,7 @@ import { ClobService } from "../../services/clobService";
 import { ReadMarketsActionContent, ReadMarketsData } from "../../types";
 import { readMarketsModel } from "../../models";
 import { getMarketsExamples } from "../../examples";
+import { GammaService } from "src/services/gammaService";
 
 export const readMarketsAction: Action = {
   name: "READ_POLYMARKET_MARKETS",
@@ -103,10 +104,10 @@ export const readMarketsAction: Action = {
 
       // If not in cache, fetch from service
       logger.info(
-        `Fetching markets from ClobService with query: "${query}" and limit: ${userLimit}`,
+        `Fetching markets from GammaService with query: "${query}" and limit: ${userLimit}`,
       );
 
-      const result = await ClobService.fetchMarkets();
+      const result = await GammaService.fetchMarkets();
 
       if (!result.success || !result.markets || result.markets.length === 0) {
         const errorMessage = `Sorry, I couldn't find any prediction markets${query ? ` about "${query}"` : ""}.${result.error ? ` ${result.error}` : ""}`;

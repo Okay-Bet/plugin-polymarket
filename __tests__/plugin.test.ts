@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeAll, afterAll } from 'vitest';
-import { ModelType, logger } from '@elizaos/core';
+import { ModelType, logger } from '@elizaos/core/v2';
 import { ClobService } from '../src/services/clobService';
 import dotenv from 'dotenv';
 import plugin from '../src/plugin';

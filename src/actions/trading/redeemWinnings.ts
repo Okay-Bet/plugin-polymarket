@@ -4,11 +4,13 @@ import {
   type Memory,
   type State,
   type Content,
+  elizaLogger,
   HandlerCallback,
   logger
 } from "@elizaos/core/v2";
 import { ClobService } from "../../services/clobService";
-import { RedeemWinningsActionContent } from "../../types";
+import { RedeemParams, RedeemWinningsActionContent } from "../../types";
+import { GammaService } from "../../services/gammaService";
 
 export const redeemWinningsAction: Action = {
   name: "POLYMARKET_REDEEM_WINNINGS",
@@ -85,7 +87,7 @@ export const redeemWinningsAction: Action = {
     // If market ID is provided, verify it exists
     let marketName = "all resolved markets";
     if (marketId) {
-      const marketResult = await ClobService.fetchMarketById(marketId);
+      const marketResult = await GammaService.fetchMarketById(marketId);
       if (!marketResult.success || !marketResult.market) {
         return `Sorry, I couldn't find a market with ID ${marketId} to redeem winnings from. ${marketResult.error || ''}`;
       }
@@ -96,19 +98,15 @@ export const redeemWinningsAction: Action = {
     logger.info(`Attempting to redeem winnings${marketId ? ` from market ${marketId}` : ' from all resolved markets'}`);
     
     // Call the CLOB API to redeem winnings
-    const result = await ClobService.redeemUserPositions({
-      // These values are placeholders and need to be replaced with actual values
-      conditionalTokensAddress: "0x0000000000000000000000000000000000000000", 
-      collateralTokenAddress: "0x0000000000000000000000000000000000000000", 
-      conditionId: "0", 
-      outcomeSlotCount: 1 
-    });
+    const result = await ClobService.redeemWinnings(
+      {
+        marketId: marketId,
+      } as RedeemParams,
+    );
     
     const responseContent: Content = {
-      text: result.success
-        ? `Successfully redeemed your winnings from ${marketName}. Transaction details: ${JSON.stringify(
-            result.transactionDetails
-          )}` // Update success message
+      text: result.success 
+        ? `Successfully redeemed your winnings from ${marketName}. You received ${result.amount} USDC.`
         : `Sorry, there was an error redeeming your winnings: ${result.error}`
     };
     
