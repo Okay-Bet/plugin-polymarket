@@ -1,13 +1,11 @@
 import {
   logger,
-  Plugin,
   type IAgentRuntime,
   type Project,
   type ProjectAgent,
 } from "@elizaos/core/v2";
 import character from "./character";
 import pluginPolymarket from "./plugin";
-import googleGenAIPlugin from "@elizaos/plugin-google-genai";
 
 /**
  * Represents the default character (Eliza) with her specific attributes and behaviors.

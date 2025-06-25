@@ -5,7 +5,7 @@ import {
   type State,
   type HandlerCallback,
 } from "@elizaos/core/v2";
-import { ClobService } from "../../services/clobService"; // Ensure correct path
+import { PolymarketService } from "../../services/polymarketService"; // Ensure correct path
 import { redeemSharesExamples } from "src/examples";
 
 export const redeemSharesAction: Action = {
@@ -25,42 +25,29 @@ export const redeemSharesAction: Action = {
     callback: HandlerCallback,
     _responses: Memory[],
   ): Promise<string> => {
-    const { marketId, userProvidedPrivateKey } = _options;
+    const { marketId } = _options;
 
     if (!marketId) {
       return "Invalid input: Please provide marketId.";
     }
 
-    const clobService = _runtime.getService(
-      ClobService.serviceType,
-    ) as ClobService;
-    if (!clobService) {
-      return "ClobService not available. Please check plugin configuration.";
+    const polymarketService = _runtime.getService(
+      PolymarketService.serviceType,
+    ) as PolymarketService;
+    if (!polymarketService) {
+      return "PolymarketService not available. Please check plugin configuration.";
     }
 
-    const clobClient = clobService.getClobClient();
-
-    // If not connected, try to connect
-    /*if (!clobService.isWalletConnected()) {
-      await clobService.connectWallet(userProvidedPrivateKey); // Get from user input
-    }*/
 
     try {
-      const result = await clobService.redeemShares(marketId);
-      if (!result.success) {
-        throw new Error(
-          result.error || "Unknown error during simulated redemption",
-        );
-      }
-      const responseText = `Successfully redeemed shares in market ${marketId}. Transaction details: ${JSON.stringify(
-        result,
-      )}`;
-
-      //const responseText = `Simulated redemption of shares in market ${marketId}.  You need to implement the actual CLOB redemption logic here.`;
+      // Replace this with the actual logic for redeeming/settling shares in the CLOB.
+      // It might involve interacting with the CLOB API in a specific way after a market resolves.
+      // The current implementation is a placeholder and likely needs significant adjustment.
+      const responseText = `Simulated redemption of shares in market ${marketId}.  You need to implement the actual CLOB redemption logic here.`;
       await callback({ text: responseText });
       return responseText;
     } catch (e) {
       return `Error redeeming shares: ${e instanceof Error ? e.message : "Unknown error"}`;
     }
   },
-};
+}

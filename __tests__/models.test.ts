@@ -103,15 +103,15 @@ const runCoreModelTests = async (
 };
 
 describe('Plugin Models', () => {
-  it.skip('should have models defined', () => {
-    expect(plugin.models).toBeDefined();
+  it('should have models defined', () => {
+    expect(plugin.models).toBeDefined(); // change to check if models are defined instead of truthy
     if (plugin.models) {
       expect(typeof plugin.models).toBe('object');
     }
   });
 
   describe('TEXT_SMALL Model', () => {
-    it.skip('should have a TEXT_SMALL model defined', () => {
+    it('should have a TEXT_SMALL model defined', () => {
       if (plugin.models) {
         expect(plugin.models).toHaveProperty(ModelType.TEXT_SMALL);
         expect(typeof plugin.models[ModelType.TEXT_SMALL]).toBe('function');
@@ -131,7 +131,7 @@ describe('Plugin Models', () => {
   });
 
   describe('TEXT_LARGE Model', () => {
-    it.skip('should have a TEXT_LARGE model defined', () => {
+    it('should have a TEXT_LARGE model defined', () => {
       if (plugin.models) {
         expect(plugin.models).toHaveProperty(ModelType.TEXT_LARGE);
         expect(typeof plugin.models[ModelType.TEXT_LARGE]).toBe('function');

@@ -19,7 +19,8 @@ export const setUserAction: Action = {
     _runtime: IAgentRuntime,
     message: Memory,
   ): Promise<boolean> => {
-    const text = (message.content as Content).text.toLowerCase();
+    const context = (message.content as Content);
+     const text = (context.text) ? context.text.toLowerCase() : "";
     return (
       (text.includes("set") &&
         text.includes("username") &&
@@ -70,7 +71,8 @@ export const getUsernameAction: Action = {
     _runtime: IAgentRuntime,
     message: Memory,
   ): Promise<boolean> => {
-    const text = (message.content as Content).text.toLowerCase();
+    const context = (message.content as Content);
+     const text = (context.text) ? context.text.toLowerCase() : "";
     return (
       text.includes("what") &&
       text.includes("is") &&

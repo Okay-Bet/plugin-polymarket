@@ -1,7 +1,7 @@
 {
   "name": "@elizaos/plugin-polymarket",
   "description": "Polymarket Plugin for ElizaOS",
-  "version": "0.1.0",
+  "version": "0.1.11",
   "type": "module",
   "private": true,
   "main": "dist/index.js",
@@ -19,6 +19,7 @@
     "./package.json": "./package.json",
     ".": {
       "import": {
+        "@elizaos/source": "./src/index.ts",
         "types": "./dist/index.d.ts",
         "default": "./dist/index.js"
       }
@@ -35,6 +36,7 @@
     "@elizaos/plugin-openai": "^1.0.4",
     "@polymarket/clob-client": "latest",
     "@polymarket/order-utils": "latest",
+    "@polymarket/sdk": "latest",
     "@types/node": "latest",
     "bun": "latest",
     "drizzle-orm": "latest",
@@ -51,17 +53,25 @@
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
     "format": "prettier --write ./src",
-    "format:check": "prettier --check ./src"
+    "format:check": "prettier --check ./src",
+    "coverage": "vitest run --coverage",
+    "prepublishOnly": "npm run build"
   },
   "publishConfig": {
     "access": "restricted"
   },
   "packageType": "project",
   "agentConfig": {
+    "name": "@elizaos/plugin-polymarket",
+    "version": "1.0.0",
     "pluginType": "elizaos:project:latest",
     "projectConfig": {
-      "name": "elizaos/plugin-polymarket",
+      "name": "@elizaos/plugin-polymarket",
       "description": "Polymarket Plugin for elizaOS"
+    },
+    "agentConfig": {
+      "pluginType": "elizaos:plugin:latest",
+      "pluginParameters": {}
     }
   },
   "platform": "node",
@@ -72,8 +82,11 @@
   ],
   "devDependencies": {
     "@vitest/coverage-v8": "latest",
+    "dotenv": "^16.5.0",
+    "uuid": "latest",
     "prettier": "latest",
     "tsup": "latest",
+    "typescript": "^5.8.3",
     "vitest": "latest"
   },
   "author": "John T. Stevens",

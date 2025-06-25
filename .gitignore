@@ -23,18 +23,16 @@ temp/
 
 # Environment files
 .env
-.elizad
+
+# Other files
 *.env
 elizadb
+.elizad
 elizaos
 elizaos.db
 elizaos.db-journal
 elizaos.db-shm
-elizaos.db-wal    
-.windsurf/rules/
+elizaos.db-wal
 .qodo/
 .eliza
 .eliza/*
-.windsurf
-.vs
-.vs/*
