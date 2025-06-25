@@ -82,6 +82,8 @@
   ],
   "devDependencies": {
     "@vitest/coverage-v8": "latest",
+    "dotenv": "^16.5.0",
+    "uuid": "latest",
     "prettier": "latest",
     "tsup": "latest",
     "typescript": "^5.8.3",
