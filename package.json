@@ -1,7 +1,7 @@
 {
   "name": "@elizaos/plugin-polymarket",
   "description": "Polymarket Plugin for ElizaOS",
-  "version": "0.1.11",
+  "version": "0.1.10",
   "type": "module",
   "private": true,
   "main": "dist/index.js",
@@ -29,11 +29,10 @@
     "dist"
   ],
   "dependencies": {
-    "@elizaos/cli": "^1.0.11",
-    "@elizaos/core": "^1.0.11",
-    "@elizaos/plugin-bootstrap": "^1.0.11",
-    "@elizaos/plugin-google-genai": "1.0.0",
-    "@elizaos/plugin-node": "^0.25.6-alpha.1",
+    "@elizaos/cli": "^1.0.12",
+    "@elizaos/core": "^1.0.12",
+    "@elizaos/plugin-bootstrap": "^1.0.12",
+    "@elizaos/plugin-google-genai": "^1.0.0",
     "@elizaos/plugin-openai": "^1.0.4",
     "@polymarket/clob-client": "latest",
     "@polymarket/order-utils": "latest",
@@ -71,7 +70,7 @@
       "description": "Polymarket Plugin for elizaOS"
     },
     "agentConfig": {
-      "pluginType": "elizaos:plugin:latest",
+      "pluginType": "elizaos:plugin:1.0.0",
       "pluginParameters": {}
     }
   },
@@ -83,8 +82,6 @@
   ],
   "devDependencies": {
     "@vitest/coverage-v8": "latest",
-    "dotenv": "^16.5.0",
-    "uuid": "latest",
     "prettier": "latest",
     "tsup": "latest",
     "typescript": "^5.8.3",
