@@ -97,15 +97,19 @@ export const redeemWinningsAction: Action = {
     logger.info(`Attempting to redeem winnings${marketId ? ` from market ${marketId}` : ' from all resolved markets'}`);
     
     // Call the CLOB API to redeem winnings
-    const result = await ClobService.redeemWinnings(
-      {
-        marketId: marketId,
-      } as RedeemParams,
-    );
+    const result = await ClobService.redeemUserPositions({
+      // These values are placeholders and need to be replaced with actual values
+      conditionalTokensAddress: "0x0000000000000000000000000000000000000000", 
+      collateralTokenAddress: "0x0000000000000000000000000000000000000000", 
+      conditionId: "0", 
+      outcomeSlotCount: 1 
+    });
     
     const responseContent: Content = {
-      text: result.success 
-        ? `Successfully redeemed your winnings from ${marketName}. You received ${result.amount} USDC.`
+      text: result.success
+        ? `Successfully redeemed your winnings from ${marketName}. Transaction details: ${JSON.stringify(
+            result.transactionDetails
+          )}` // Update success message
         : `Sorry, there was an error redeeming your winnings: ${result.error}`
     };
     

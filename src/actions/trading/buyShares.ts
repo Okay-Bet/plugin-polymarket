@@ -3,11 +3,12 @@ import {
   type Action,
   type Memory,
   type State,
-  type HandlerCallback,
+  HandlerCallback,
 } from "@elizaos/core/v2";
 import { ClobService } from "../../services/clobService"; // Ensure correct path
 import { Side, OrderType } from "@polymarket/clob-client";
 import { buySharesExamples } from "src/examples";
+import { OrderParams } from "src/types";
 
 export const buySharesAction: Action = {
   name: "BUY_SHARES",
@@ -44,38 +45,21 @@ export const buySharesAction: Action = {
       return "ClobService not available. Please check plugin configuration.";
     }
 
-    const clobClient = clobService.getClobClient();
-
-    //  THIS SHOULD BE ADDED TO ALL THE ACTIONS THAT REQUIRE WALLET
-    // Ensure wallet is connected
-    /*if (!clobService.isWalletConnected()) {
-      // Assuming there's a way to check if the wallet is connected
-      //  You'll need to implement this in ClobService
-      await clobService.connectWallet(userProvidedPrivateKey); // Get from user input
-    }
-     */
-
-    // Assume marketId is the token ID for simplicity, needs adjustment for real mapping
-    const tokenID = marketId;
-    const price = 0.5; // Placeholder.  You will likely need to fetch this from market data.
-    const side = outcome === "Yes" ? Side.BUY : Side.BUY; // Assuming buying "Yes". Adapt for "No" if needed.
-    // Placeholder to see if I can avoid a compilation issue
     try {
-      const order = await clobClient.createOrder({
-        tokenID,
-        price,
-        side,
-        size: quantity,
-        feeRateBps: 0, // Assuming no fees for now
-        nonce: Math.floor(Math.random() * 1000000),
-      });
+       const orderParams: OrderParams = {
+        marketMakerAddress: "0xMarketMakerAddress", // Replace with actual value
+        conditionalTokensAddress: "0xConditionalTokensAddress", // Replace with actual value
+        returnAmount: quantity, // Assuming quantity maps to returnAmount, adjust as needed
+        outcomeIndex: outcome === "Yes" ? 0 : 1, // Assuming 0 for "Yes", 1 for "No",
+        maxOutcomeTokensToSell: quantity, // Assuming quantity maps to maxOutcomeTokensToSell, adjust as needed
+      };
 
-      const resp = await clobClient.postOrder(order, OrderType.GTC);
-      const responseText = `Successfully placed a buy order for ${quantity} shares of "${outcome}" in market ${marketId}. Order details: ${JSON.stringify(resp)}`;
-      await callback({ text: responseText });
-      return responseText;
-    } catch (e) {
-      return `Error buying shares: ${e instanceof Error ? e.message : "Unknown error"}`;
+      const result = await clobService.buySharesSDK(orderParams);
+      const message = result.message || "Buy order processed.";
+      await callback({ text: message });
+      return message;
+    } catch (error) {
+      return `Error buying shares: ${error instanceof Error ? error.message : "Unknown error"}`;
     }
   },
-};
+} as Action;

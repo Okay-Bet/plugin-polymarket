@@ -1,3 +1,4 @@
+import { BigNumberish } from 'ethers';
 import { z } from 'zod';
 
 // Helper for date strings if you want to validate them as actual dates
@@ -277,15 +278,28 @@ export type RedeemWinningsActionContent = z.infer<typeof RedeemWinningsActionCon
 
 // OrderParams
 export const OrderParamsSchema = z.object({
-  marketId: z.string(),
-  outcomeId: z.string(),
+  //markertAddress: z.string(),
+  //marketId: z.string(),
+  //outcomeId: z.string(),
   side: z.enum(['BUY', 'SELL']),
   amount: z.string(),
   price: z.string(),
   orderType: z.enum(['LIMIT', 'MARKET']).optional(),
 });
-export type OrderParams = z.infer<typeof OrderParamsSchema>;
+export type OrderParams = {marketMakerAddress: string, conditionalTokensAddress: string, returnAmount: BigNumberish, outcomeIndex: BigNumberish, maxOutcomeTokensToSell: BigNumberish};
 
 export type OrderResult = { success: boolean; orderId?: string; message?: string; error?: string };
-export type RedeemParams = { marketId?: string };
-export type RedeemResult = { success: boolean; amount?: string; message?: string; error?: string };
+
+export interface RedeemParams {
+  conditionalTokensAddress: string;
+  collateralTokenAddress: string;
+  conditionId: string;
+  outcomeSlotCount: number;
+}
+export interface RedeemResult {
+  success: boolean;
+  message?: string;
+  transactionDetails?: any;
+  //transactionHash?: string;
+  error?: string;
+}

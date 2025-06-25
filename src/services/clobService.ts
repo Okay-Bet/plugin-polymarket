@@ -8,15 +8,18 @@ import {
   PolymarketSingleMarketApiResponse,
   OrderParams,
   OrderResult,
-  RedeemParams,
-  RedeemResult
-} from '../types';
+  RedeemResult,
+  RedeemParams
+} from "../types"
 
-/**
- * Service for interacting with Polymarket's Central Limit Order Book (CLOB) API
- * Handles trading operations like buying, selling and redeeming winnings
- */
 export class ClobService extends Service {
+  static async redeemUserPositions(params: RedeemParams): Promise<RedeemResult> {
+    try {
+      return await ClobService.redeemUserPositionsSDK(params);
+    } catch (error: any) {
+      return { success: false, error: `Redemption failed: ${error.message}` };
+    }
+  }
   static serviceType = 'ClobService';
 
   static apiUrl = "https://gamma-api.polymarket.com"; // Base URL for CLOB API
@@ -30,9 +33,6 @@ export class ClobService extends Service {
 
   private clobClient: ClobClient;
   capabilityDescription = "Enables the agent to trade on Polymarket's CLOB API";// @Author: Tony363
-
-  // capabilityDescription = "Provides access to the Polymarket CLOB client for trading operations."; // @Author: JT-Creates
-
   static async start(runtime: IAgentRuntime): Promise<ClobService> {
     const service = new ClobService(runtime);
     return service;
@@ -46,194 +46,90 @@ export class ClobService extends Service {
     service.stop();
   }
 
+  constructor(runtime: IAgentRuntime) {
+    super(runtime)
+    logger.info(`Loading ClobService with PK: ${process.env.PK}`)
+  }
+
+  static async redeemUserPositionsSDK(params: RedeemParams): Promise<RedeemResult> {
+    try {
+      const transactions = await redeemPositions(params.conditionalTokensAddress, params.collateralTokenAddress, params.conditionId, params.outcomeSlotCount)
+      // Placeholder for transaction handling, needs actual implementation
+      const transactionDetails = transactions.map(tx => ({ typeCode: tx.typeCode, data: tx.data }))
+      return {
+        success: true,
+        message: `Successfully initiated redemption. Transaction details: ${JSON.stringify(transactionDetails)}`,
+        transactionDetails,
+        //transactionHash: "0xTransactionHash" //Add placeholder txHash for testing
+
+      }
+    } catch (error: any) {
+      logger.error("Error during redemption:", error)
+      return { success: false, error: `Redemption failed: ${error.message}` }
+    }
+  }
+
   /**
-   * Places an order to buy or sell shares
+   * Places an order to buy shares using the SDK
    * @param params - Parameters for the order
    * @returns Order result with success status and details
    */
-  static async placeOrder(params: OrderParams): Promise<OrderResult> {
-    // Get API key from environment variables
-    const apiKey = process.env.POLYMARKET_API_KEY;
-
-    if (!apiKey) {
+  async buySharesSDK(params: OrderParams): Promise<OrderResult> {
+    try {
+      const clobClient = this.getClobClient();
+      const transactions = await buyMarketOutcome(
+        params.marketMakerAddress,
+        params.conditionalTokensAddress,
+        params.returnAmount,
+        params.outcomeIndex,
+        params.maxOutcomeTokensToSell,
+      )
+      const orderDetails = transactions.map(tx => ({ typeCode: tx.typeCode, data: tx.data }))
+      return {
+        success: true,
+        orderId: JSON.stringify(orderDetails),
+        message: `Successfully placed buy order for ${params.returnAmount} shares at outcome index ${params.outcomeIndex} using SDK. Order details: ${JSON.stringify(
+          orderDetails,
+        )}`,
+      };
+    } catch (error: any) {
+      logger.error("Error placing buy order with SDK:", error);
       return {
         success: false,
-        error: "API key not configured. Please set POLYMARKET_API_KEY in your environment."
+        error: `Failed to place buy order with SDK: ${error.message}`,
       };
     }
-
-    // Construct the order payload
-    const payload = {
-      marketId: params.marketId,
-      outcomeId: params.outcomeId,
-      side: params.side, // 'BUY' or 'SELL'
-      size: params.amount,
-      price: params.price,
-      type: params.orderType || 'LIMIT' // Default to limit order
-    };
-
-    // Send the request
-    let response;
-    let data;
-
-    response = await fetch(`${this.apiUrl}/orders`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
-      },
-      body: JSON.stringify(payload)
-    }).catch(error => {
-      logger.error("Network error in placeOrder:", error);
-      return null;
-    });
-
-    if (!response) {
-      return {
-        success: false,
-        error: "Network error while connecting to Polymarket API"
-      };
-    }
-
-    if (!response.ok) {
-      const errorText = await response.text().catch(() => "Unknown error");
-      return {
-        success: false,
-        error: `Order placement failed: ${response.status} ${errorText}`
-      };
-    }
-
-    data = await response.json().catch(() => null);
-    if (!data) {
-      return {
-        success: false,
-        error: "Failed to parse API response"
-      };
-    }
-
-    return {
-      success: true,
-      orderId: data.orderId,
-      message: `Successfully placed ${params.side.toLowerCase()} order for ${params.amount} shares at $${params.price}`
-    };
   }
 
   /**
-   * Cancels an existing order
-   * @param orderId - ID of the order to cancel
-   * @returns Order cancellation result
+   * Places an order to sell shares using the SDK
+   * @param params - Parameters for the order
+   * @returns Order result with success status and details
    */
-  static async cancelOrder(orderId: string): Promise<OrderResult> {
-    const apiKey = process.env.POLYMARKET_API_KEY;
-
-    if (!apiKey) {
+  async sellSharesSDK(params: OrderParams): Promise<OrderResult> {
+    try {
+      const clobClient = this.getClobClient();
+      const transactions = await sellMarketOutcome(
+        params.marketMakerAddress,
+        params.conditionalTokensAddress,
+        params.returnAmount,
+        params.outcomeIndex,
+        params.maxOutcomeTokensToSell,
+      )
+      const orderDetails = transactions.map(tx => ({
+        typeCode: tx.typeCode,
+        data: tx.data,
+      }))
       return {
-        success: false,
-        error: "API key not configured. Please set POLYMARKET_API_KEY in your environment."
+        success: true,
+        orderId: JSON.stringify(orderDetails),
+        message: `Successfully placed sell order for ${params.returnAmount} shares at outcome index ${params.outcomeIndex} using SDK. Order details: ${JSON.stringify(orderDetails)}`,
       };
+    } catch (error: any) {
+      logger.error("Error placing sell order with SDK:", error);
+      return { success: false, error: `Failed to place sell order with SDK: ${error.message}` }
     }
-
-    let response = await fetch(`${this.apiUrl}/orders/${orderId}`, {
-      method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`
-      }
-    }).catch(error => {
-      logger.error("Network error in cancelOrder:", error);
-      return null;
-    });
-
-    if (!response) {
-      return {
-        success: false,
-        error: "Network error while connecting to Polymarket API"
-      };
-    }
-
-    if (!response.ok) {
-      const errorText = await response.text().catch(() => "Unknown error");
-      return {
-        success: false,
-        error: `Order cancellation failed: ${response.status} ${errorText}`
-      };
-    }
-
-    return {
-      success: true,
-      orderId: orderId,
-      message: `Successfully cancelled order ${orderId}`
-    };
   }
-
-  /**
-   * Redeems winnings from resolved markets
-   * @param params - Parameters for redemption
-   * @returns Redemption result
-   */
-  static async redeemWinnings(params: RedeemParams): Promise<RedeemResult> {
-    const apiKey = process.env.POLYMARKET_API_KEY;
-
-    if (!apiKey) {
-      return {
-        success: false,
-        error: "API key not configured. Please set POLYMARKET_API_KEY in your environment."
-      };
-    }
-
-    // Construct the redeem payload
-    const payload = params.marketId ? { marketId: params.marketId } : {};
-
-    let response = await fetch(`${this.apiUrl}/redeem`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
-      },
-      body: JSON.stringify(payload)
-    }).catch(error => {
-      logger.error("Network error in redeemWinnings:", error);
-      return null;
-    });
-
-    if (!response) {
-      return {
-        success: false,
-        error: "Network error while connecting to Polymarket API"
-      };
-    }
-
-    if (!response.ok) {
-      const errorText = await response.text().catch(() => "Unknown error");
-      return {
-        success: false,
-        error: `Redemption failed: ${response.status} ${errorText}`
-      };
-    }
-
-    const data = await response.json().catch(() => null);
-    if (!data) {
-      return {
-        success: false,
-        error: "Failed to parse API response"
-      };
-    }
-
-    return {
-      success: true,
-      amount: data.amount,
-      message: `Successfully redeemed winnings: ${data.amount} USDC`
-    };
-  }
-
-  constructor(runtime: IAgentRuntime) {
-    super(runtime);
-    // Initialize the ClobClient here, using environment variables
-    // Assuming IWallet is now called something else or needs a different import
-    logger.info(`Loading ClobService with PK: ${process.env.PK}`);
-  }
-
-  // Include ClobService functions here, prefixed with 'static' as needed or adjusted
-  // Example:
 
   async connectWallet(privateKey: string): Promise<void> {
     try {
@@ -311,7 +207,7 @@ export class ClobService extends Service {
         throw new Error(`Failed to fetch markets: ${response.statusText}`);
       }
       const data = (await response.json()) as any[];
-      logger.info(JSON.stringify(data).substring(0,50));
+      logger.info(JSON.stringify(data).substring(0,500));
       // Assuming the API returns an array of raw market objects
       const markets: PolymarketMarket[] = data.map((rawMarket: any) =>
         ClobService._transformMarketData(rawMarket),
@@ -416,31 +312,58 @@ export class ClobService extends Service {
       };
     }
 
-    // TODO: Implement the transformation logic here.
-    //       For now, it returns a placeholder.
+    let outcomes: any[] = [];
+    if (rawMarket.outcomes) {
+      if (Array.isArray(rawMarket.outcomes)) {
+        if (rawMarket.outcomes.every((outcome: any) => typeof outcome === 'string')) {
+          // Array of strings: outcome names.  Needs mapping to PolymarketOutcome
+          outcomes = rawMarket.outcomes.map((name: string, index: number) => ({
+            clobTokenId: (rawMarket.clobTokenIds && rawMarket.clobTokenIds[index]) || `unknown-${index}`, // Assuming clobTokenIds is parallel
+            name: name,
+            price: (rawMarket.outcomePrices && rawMarket.outcomePrices[index]) || "0", // Assuming outcomePrices is parallel
+          }));
+        } else {
+          // Array of objects (assuming PolymarketRawOutcome format)
+          outcomes = rawMarket.outcomes.map((rawOutcome: any, index: number) => ({
+            clobTokenId: rawOutcome.address || (rawMarket.clobTokenIds && rawMarket.clobTokenIds[index]) || `unknown-${index}`,
+            name: rawOutcome.name,
+            price: rawOutcome.last_price || "0",
+          }));
+        }
+      } else if (typeof rawMarket.outcomes === 'string') {
+        // String: Attempt to parse as JSON or split as comma-separated
+        try {
+          outcomes = JSON.parse(rawMarket.outcomes);
+          if (!Array.isArray(outcomes)) {
+            logger.warn("Parsed outcomes is not an array:", outcomes);
+            outcomes = [];
+          }
+        } catch (e) {
+          logger.warn("Failed to parse outcomes as JSON, attempting comma split.");
+          outcomes = rawMarket.outcomes.split(',').map((name: string, index: number) => ({
+            clobTokenId: (rawMarket.clobTokenIds && rawMarket.clobTokenIds[index]) || `unknown-${index}`,
+            name: name.trim(),
+            price: (rawMarket.outcomePrices && rawMarket.outcomePrices[index]) || "0",
+          }));
+        }
+      } else {
+        logger.warn("Unexpected outcomes format:", rawMarket.outcomes);
+      }
+    }
+
     return {
       id: rawMarket.id || "unknown",
       slug: rawMarket.slug || "unknown",
       question: rawMarket.question || "No question",
-      outcomes: rawMarket.outcomes || [],
+      outcomes: outcomes,
       description: rawMarket.description || "",
-      // Ensure 'active' is always a boolean
       active: rawMarket.active || false,
-      // Ensure volume and liquidity are always strings with default "0"
-      // (or another appropriate default for your application)
       volume: String(rawMarket.volume || "0"),
       liquidity: String(rawMarket.liquidity || "0"),
     };
   }
 
-  /**
-   * Fetches a single page of markets based on provided API parameters
-   * @param apiParams - Parameters for the API call
-   * @returns Promise resolving to market data
-   */
-  private static async fetchMarketPage(
-    apiParams: any,
-  ): Promise<PolymarketApiResponse> {
+  private static async fetchMarketPage(apiParams: any): Promise<PolymarketApiResponse> {
     try {
       const url = this._buildApiUrl(apiParams);
       const response = await fetch(url);
@@ -463,17 +386,11 @@ export class ClobService extends Service {
         markets: [],
       };
     }
-  }
+  }  
 
-  /**
-   * Helper to fetch all markets by handling pagination
-   * @param baseParams - Base parameters for the API call
-   * @returns Promise resolving to full set of market data
-   */
-  private static async fetchAllMarketsPaginated(
-    baseParams: Omit<any, "limit" | "offset">,
-  ): Promise<PolymarketApiResponse> {
+  private static async fetchAllMarketsPaginated(baseParams: Omit<any, "limit" | "offset">): Promise<PolymarketApiResponse> {
     const allMarkets: PolymarketMarket[] = [];
+
     let offset = 0;
     const limit = 100; // Polymarket's typical max limit per page
     let hasMore = true;
@@ -496,11 +413,10 @@ export class ClobService extends Service {
           markets: allMarkets,
         };
       }
-
       if (totalFetchedInSession >= 10000) {
         // Example limit. Adjust as needed
         logger.warn(
-          "Safety break triggered: Fetched over 10000 markets in a single session. Potential runaway pagination.",
+            "Safety break triggered: Fetched over 10000 markets in a single session. Potential runaway pagination."
         );
       }
 
@@ -513,28 +429,9 @@ export class ClobService extends Service {
       if (pageResponse.markets.length < limit) {
         hasMore = false;
       }
-    }
-
+    }    
     return { success: true, markets: allMarkets };
   }
 
-  async buyShares(
-    marketId: string,
-    outcome: string,
-    quantity: number,
-  ): Promise<any> {
-    throw new Error("Method not implemented.");
-  }
-
-  async sellShares(
-    marketId: string,
-    outcome: string,
-    quantity: number,
-  ): Promise<any> {
-    throw new Error("Method not implemented.");
-  }
-
-  async redeemShares(marketId: string): Promise<any> {
-    throw new Error("Method not implemented.");
-  }
+  
 }

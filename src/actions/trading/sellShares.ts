@@ -2,12 +2,13 @@ import {
   type IAgentRuntime,
   type Action,
   type Memory,
-  type State,
-  type HandlerCallback,
+    type State,
+  HandlerCallback,
 } from "@elizaos/core/v2";
 import { ClobService } from "../../services/clobService"; // Ensure correct path
 import { Side, OrderType } from "@polymarket/clob-client";
 import { sellSharesExamples } from "src/examples";
+import { OrderParams } from "src/types";
 
 export const sellSharesAction: Action = {
   name: "SELL_SHARES",
@@ -44,35 +45,21 @@ export const sellSharesAction: Action = {
       return "ClobService not available. Please check plugin configuration.";
     }
 
-    const clobClient = clobService.getClobClient();
-
-    // Assume marketId is the token ID for simplicity, needs adjustment for real mapping
-    const tokenID = marketId;
-    const price = 0.5; // Placeholder.  You will likely need to fetch this from market data.
-    const side = outcome === "Yes" ? Side.SELL : Side.SELL; // Assuming selling "Yes". Adapt for "No" if needed.
-    // Placeholder to see if I can avoid a compilation issue
     try {
-      const order = await clobClient.createOrder({
-        tokenID,
-        price,
-        side,
-        size: quantity,
-        feeRateBps: 0, // Assuming no fees for now
-        nonce: Math.floor(Math.random() * 1000000),
-      });
-      // Add logging to inspect the order object
-      console.log(
-        "Order object before posting:",
-        JSON.stringify(order, null, 2),
-      );
-      if (!order) return "order does not exist";
+        const orderParams: OrderParams = {
+            marketMakerAddress: "0xMarketMakerAddress", // Replace with actual value
+            conditionalTokensAddress: "0xConditionalTokensAddress", // Replace with actual value
+            returnAmount: quantity, // Assuming quantity maps to returnAmount, adjust as needed
+            outcomeIndex: outcome === "Yes" ? 0 : 1, // Assuming 0 for "Yes", 1 for "No"
+            maxOutcomeTokensToSell: quantity, // Assuming quantity maps to maxOutcomeTokensToSell, adjust as needed
+        };
 
-      const resp = await clobClient.postOrder(order, OrderType.GTC);
-      const responseText = `Successfully placed a sell order for ${quantity} shares of "${outcome}" in market ${marketId}. Order details: ${JSON.stringify(resp)}`;
-      await callback({ text: responseText });
-      return responseText;
-    } catch (e) {
-      return `Error selling shares: ${e instanceof Error ? e.message : "Unknown error"}`;
+        const result = await clobService.sellSharesSDK(orderParams);
+      const message = result.message || "Sell order processed.";
+      await callback({ text: message });
+      return message;
+    } catch (error) {
+      return `Error selling shares: ${error instanceof Error ? error.message : "Unknown error"}`;
     }
   },
-};
+} as Action;
