@@ -22,14 +22,9 @@ const initCharacter = ({ runtime }: { runtime: IAgentRuntime }) => {
 };
 
 export const projectAgent: ProjectAgent = {
-  character: character,
+  character,
   init: async (runtime: IAgentRuntime) => await initCharacter({ runtime }),
-  plugins: [
-    pluginPolymarket,
-    ...(process.env.GOOGLE_GENAI_API_KEY
-      ? [googleGenAIPlugin as unknown as Plugin]
-      : []),
-  ],
+  plugins: [pluginPolymarket],
 };
 const project: Project = {
   agents: [projectAgent],

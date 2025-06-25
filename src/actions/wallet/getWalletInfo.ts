@@ -28,7 +28,8 @@ export const getWalletInfoAction: Action = {
     message: Memory,
     _state?: State,
   ): Promise<boolean> => {
-    const text = (message.content as Content).text.toLowerCase();
+    const context = (message.content as Content);
+     const text = (context.text) ? context.text.toLowerCase() : "";
     return (
       text.includes("wallet") &&
       (text.includes("info") ||

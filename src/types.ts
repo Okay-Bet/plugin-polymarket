@@ -1,21 +1,17 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 // Helper for date strings if you want to validate them as actual dates
 // For now, sticking to z.string() as per original types, but you might refine this:
-const dateStringSchema = z.string().datetime({ offset: true }); // For ISO 8601 with offset
-const simpleDateStringSchema = z
-  .string()
-  .refine((val) => !isNaN(Date.parse(val)), {
-    message: "Invalid date string",
-  });
+// const dateStringSchema = z.string().datetime({ offset: true }); // For ISO 8601 with offset
+// const simpleDateStringSchema = z.string().refine((val) => !isNaN(Date.parse(val)), {
+//   message: "Invalid date string",
+// });
 
 // PolymarketConfig
 export const PolymarketConfigSchema = z.object({
-  provider: z
-    .object({
-      apiUrl: z.string().optional(),
-    })
-    .optional(),
+  provider: z.object({
+    apiUrl: z.string().optional(),
+  }).optional(),
 });
 export type PolymarketConfig = z.infer<typeof PolymarketConfigSchema>;
 
@@ -36,9 +32,7 @@ export const PolymarketConditionOutcomeSchema = z.object({
   yesPrice: z.string().optional(),
   noPrice: z.string().optional(),
 });
-export type PolymarketConditionOutcome = z.infer<
-  typeof PolymarketConditionOutcomeSchema
->;
+export type PolymarketConditionOutcome = z.infer<typeof PolymarketConditionOutcomeSchema>;
 
 // PolymarketCondition
 // Note: Recursive structures often need z.lazy if types refer to each other in a way that
@@ -94,9 +88,7 @@ export const ReadMarketsActionContentSchema = z.object({
   text: z.string(),
   source: z.string().optional(),
 });
-export type ReadMarketsActionContent = z.infer<
-  typeof ReadMarketsActionContentSchema
->;
+export type ReadMarketsActionContent = z.infer<typeof ReadMarketsActionContentSchema>;
 
 // ReadMarketsData
 export const ReadMarketsDataSchema = z.object({
@@ -110,9 +102,7 @@ export type ReadMarketsData = z.infer<typeof ReadMarketsDataSchema>;
 export const ReadMarketsActionParamsSchema = z.object({
   query: z.string().optional(),
 });
-export type ReadMarketsActionParams = z.infer<
-  typeof ReadMarketsActionParamsSchema
->;
+export type ReadMarketsActionParams = z.infer<typeof ReadMarketsActionParamsSchema>;
 
 // PolymarketApiCallParams
 export const PolymarketApiCallParamsSchema = z.object({
@@ -133,9 +123,7 @@ export const PolymarketApiCallParamsSchema = z.object({
   end_date_min: z.string().optional(), // Consider dateStringSchema
   end_date_max: z.string().optional(), // Consider dateStringSchema
 });
-export type PolymarketApiCallParams = z.infer<
-  typeof PolymarketApiCallParamsSchema
->;
+export type PolymarketApiCallParams = z.infer<typeof PolymarketApiCallParamsSchema>;
 
 // MarketCollectionOptions
 export const MarketCollectionOptionsSchema = z.object({
@@ -145,11 +133,9 @@ export const MarketCollectionOptionsSchema = z.object({
   volumeMin: z.string().optional(),
   daysLookbackForEndDateMin: z.number().int().optional(),
   daysLookbackForNewMarkets: z.number().int().optional(),
-  marketStatus: z.enum(["active", "inactive", "all"]).optional(),
+  marketStatus: z.enum(['active', 'inactive', 'all']).optional(),
 });
-export type MarketCollectionOptions = z.infer<
-  typeof MarketCollectionOptionsSchema
->;
+export type MarketCollectionOptions = z.infer<typeof MarketCollectionOptionsSchema>;
 
 // PolymarketApiResponse
 export const PolymarketApiResponseSchema = z.object({
@@ -164,9 +150,7 @@ export const GetMarketActionContentSchema = z.object({
   text: z.string(),
   marketId: z.string().optional(),
 });
-export type GetMarketActionContent = z.infer<
-  typeof GetMarketActionContentSchema
->;
+export type GetMarketActionContent = z.infer<typeof GetMarketActionContentSchema>;
 
 // PolymarketSingleMarketApiResponse
 export const PolymarketSingleMarketApiResponseSchema = z.object({
@@ -174,9 +158,7 @@ export const PolymarketSingleMarketApiResponseSchema = z.object({
   market: PolymarketMarketSchema.optional(),
   error: z.string().optional(),
 });
-export type PolymarketSingleMarketApiResponse = z.infer<
-  typeof PolymarketSingleMarketApiResponseSchema
->;
+export type PolymarketSingleMarketApiResponse = z.infer<typeof PolymarketSingleMarketApiResponseSchema>;
 
 // Raw outcome data structure from Polymarket API
 export const PolymarketRawOutcomeSchema = z.object({
@@ -197,9 +179,7 @@ export const PolymarketRawConditionSchema = z.object({
   human_readable_name: z.string(),
   outcomes: z.array(PolymarketRawOutcomeSchema).optional(),
 });
-export type PolymarketRawCondition = z.infer<
-  typeof PolymarketRawConditionSchema
->;
+export type PolymarketRawCondition = z.infer<typeof PolymarketRawConditionSchema>;
 
 // Raw market data structure from Polymarket API
 export const PolymarketRawMarketSchema = z.object({
@@ -243,25 +223,19 @@ export const PolymarketRawMarketSchema = z.object({
 
   /* ── outcomes & tokens ───────────────────────────────────────────── */
   // Handling complex union types for API variations:
-  outcomes: z
-    .union([
-      z.array(z.string()),
-      z.array(z.record(z.string(), z.unknown())), // Array of objects with any string keys and unknown values
-      z.string(), // Potentially a JSON string or comma-separated list; might need .transform() if parsing is desired
-    ])
-    .optional(),
-  outcomePrices: z
-    .union([
-      z.array(z.string()), // Array of strings (prices)
-      z.string(), // Potentially a JSON string or comma-separated list
-    ])
-    .optional(),
-  clobTokenIds: z
-    .union([
-      z.array(z.string()),
-      z.string(), // Potentially a JSON string or comma-separated list
-    ])
-    .optional(),
+  outcomes: z.union([
+    z.array(z.string()),
+    z.array(z.record(z.string(), z.unknown())), // Array of objects with any string keys and unknown values
+    z.string(), // Potentially a JSON string or comma-separated list; might need .transform() if parsing is desired
+  ]).optional(),
+  outcomePrices: z.union([
+    z.array(z.string()), // Array of strings (prices)
+    z.string(), // Potentially a JSON string or comma-separated list
+  ]).optional(),
+  clobTokenIds: z.union([
+    z.array(z.string()),
+    z.string(), // Potentially a JSON string or comma-separated list
+  ]).optional(),
 
   // Assuming conditions might also come in raw form, if not, this could be removed or adjusted.
   // If PolymarketRawMarket can include raw conditions similar to PolymarketMarket including PolymarketCondition:
@@ -269,6 +243,49 @@ export const PolymarketRawMarketSchema = z.object({
 });
 export type PolymarketRawMarket = z.infer<typeof PolymarketRawMarketSchema>;
 
+
 // Type for raw API data from Polymarket API
 export const PolymarketApiDataSchema = z.array(PolymarketRawMarketSchema);
 export type PolymarketApiData = z.infer<typeof PolymarketApiDataSchema>;
+
+// BuySharesActionContent
+export const BuySharesActionContentSchema = z.object({
+  text: z.string(),
+  marketId: z.string().optional(),
+  outcomeId: z.string().optional(),
+  amount: z.string().optional(),
+  price: z.string().optional(),
+});
+export type BuySharesActionContent = z.infer<typeof BuySharesActionContentSchema>;
+
+// SellSharesActionContent
+export const SellSharesActionContentSchema = z.object({
+  text: z.string(),
+  marketId: z.string().optional(),
+  outcomeId: z.string().optional(),
+  amount: z.string().optional(),
+  price: z.string().optional(),
+});
+export type SellSharesActionContent = z.infer<typeof SellSharesActionContentSchema>;
+
+// RedeemWinningsActionContent
+export const RedeemWinningsActionContentSchema = z.object({
+  text: z.string(),
+  marketId: z.string().optional(),
+});
+export type RedeemWinningsActionContent = z.infer<typeof RedeemWinningsActionContentSchema>;
+
+// OrderParams
+export const OrderParamsSchema = z.object({
+  marketId: z.string(),
+  outcomeId: z.string(),
+  side: z.enum(['BUY', 'SELL']),
+  amount: z.string(),
+  price: z.string(),
+  orderType: z.enum(['LIMIT', 'MARKET']).optional(),
+});
+export type OrderParams = z.infer<typeof OrderParamsSchema>;
+
+export type OrderResult = { success: boolean; orderId?: string; message?: string; error?: string };
+export type RedeemParams = { marketId?: string };
+export type RedeemResult = { success: boolean; amount?: string; message?: string; error?: string };
