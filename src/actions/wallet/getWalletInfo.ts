@@ -2,6 +2,7 @@ import {
   type Action,
   type IAgentRuntime,
   Memory,
+  type Service,
   type State,
   type Content,
   HandlerCallback,
@@ -47,12 +48,30 @@ export const getWalletInfoAction: Action = {
     _responses: Memory[],
   ): Promise<string> => {
     try {
-      // In a real implementation, this would interact with a wallet provider (e.g., MetaMask)
+      const clobService = _runtime.getService("ClobService") as any;
+      if (!clobService) {
+        return "Error: ClobService not available.";
+      }
+
+      // Ensure the wallet is connected
+      const privateKey = process.env.PK;
+      if (!privateKey) {
+        return "Error: Private key not found in environment variables.";
+      }
+
+      await clobService.connectWallet(privateKey);
+
+      const wallet = clobService.getClobClient().wallet;
+      const address = await wallet.getAddress();
+      const chainId = await wallet.getChainId();
+
+      // Placeholder balance, needs actual implementation
       const walletInfo: WalletInfo = {
-        address: "0xYourWalletAddressHere",
-        balance: "0.00",
-      }; // Replace with actual logic
-      const responseText = `Your wallet address: ${walletInfo.address}\nBalance: ${walletInfo.balance} (Replace with actual currency)`;
+        chainId: chainId,
+        address: address,
+        balance: "0.00", // Replace with actual balance fetch logic
+      };
+      const responseText = `Your wallet is connected on chain ID: ${walletInfo.chainId}\nAddress: ${walletInfo.address}\nBalance: ${walletInfo.balance} (Placeholder - replace with actual balance)`;
       await callback({ text: responseText });
       return responseText;
     } catch (error) {

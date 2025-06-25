@@ -46,15 +46,25 @@ export const buySharesAction: Action = {
     }
 
     try {
-       const orderParams: OrderParams = {
-        marketMakerAddress: "0xMarketMakerAddress", // Replace with actual value
-        conditionalTokensAddress: "0xConditionalTokensAddress", // Replace with actual value
-        returnAmount: quantity, // Assuming quantity maps to returnAmount, adjust as needed
-        outcomeIndex: outcome === "Yes" ? 0 : 1, // Assuming 0 for "Yes", 1 for "No",
-        maxOutcomeTokensToSell: quantity, // Assuming quantity maps to maxOutcomeTokensToSell, adjust as needed
+      // Assuming you have a way to fetch market data and get the required addresses
+      const marketData = await ClobService.fetchMarketById(marketId);
+
+      if (!marketData) {
+        return `Could not retrieve market data for market ID: ${marketId}`;
+      }
+      marketData.market.conditions.forEach(element => {
+        element.humanReadableName
+      }); 
+      const orderParams: OrderParams = {
+        marketMakerAddress: marketData.market.marketMakerAddress,
+        conditionalTokensAddress: outcome.conditionalTokensAddress,
+        returnAmount: quantity,
+        outcomeIndex: outcome === "Yes" ? 0 : 1,
+        maxOutcomeTokensToSell: quantity,
       };
 
       const result = await clobService.buySharesSDK(orderParams);
+
       const message = result.message || "Buy order processed.";
       await callback({ text: message });
       return message;

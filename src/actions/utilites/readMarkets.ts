@@ -94,7 +94,7 @@ export const readMarketsAction: Action = {
       }
 
       // Extract limit if present
-      let userLimit = 10; // Default limit
+      let userLimit = 20; // Default limit
       const limitMatch =
         text.match(/show\s+(\d+)/i) || text.match(/(\d+)\s+markets/i);
       if (limitMatch) {
@@ -106,29 +106,17 @@ export const readMarketsAction: Action = {
         `Fetching markets from ClobService with query: "${query}" and limit: ${userLimit}`,
       );
 
-      const result = await ClobService.fetchMarkets();
+      const result = await ClobService.fetchMarkets({limit: userLimit, activeOnly: true, query: query});
 
       if (!result.success || !result.markets || result.markets.length === 0) {
         const errorMessage = `Sorry, I couldn't find any prediction markets${query ? ` about "${query}"` : ""}.${result.error ? ` ${result.error}` : ""}`;
         logger.error(errorMessage);
+        logger.debug(result);
         return errorMessage;
       }
 
-      let filteredMarkets = result.markets;
-      if (query && query.trim() !== "") {
-        const escaped = query.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-        const wordPattern = new RegExp(`\\b${escaped}\\b`, "i");
-
-        filteredMarkets = result.markets.filter(
-          (m) =>
-            (m.question && wordPattern.test(m.question)) ||
-            (m.description && wordPattern.test(m.description)) ||
-            (m.slug && wordPattern.test(m.slug.replace(/-/g, " "))),
-        );
-      }
-
       const response = formatMarketsResponse(
-        filteredMarkets.slice(0, userLimit),
+        result.markets,
         query,
       );
       logger.info("Response from formatMarketsResponse:", response);

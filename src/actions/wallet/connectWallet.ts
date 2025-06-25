@@ -51,7 +51,6 @@ export const connectWalletAction: Action = {
 
     try {
       // Check if a wallet is already connected
-      clobService.getClobClient(); // This will throw an error if not connected
       await callback({ text: "Wallet is already connected." });
       return "Wallet is already connected.";
     } catch (e: any) {

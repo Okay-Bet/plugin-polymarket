@@ -38,7 +38,6 @@ export const redeemSharesAction: Action = {
       return "ClobService not available. Please check plugin configuration.";
     }
 
-    const clobClient = clobService.getClobClient();
 
     try {
       // Replace this with the actual logic for redeeming/settling shares in the CLOB.
@@ -51,4 +50,4 @@ export const redeemSharesAction: Action = {
       return `Error redeeming shares: ${e instanceof Error ? e.message : "Unknown error"}`;
     }
   },
-};
+}
