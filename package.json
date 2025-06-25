@@ -29,14 +29,17 @@
     "dist"
   ],
   "dependencies": {
-    "@elizaos/cli": "^1.0.11",
-    "@elizaos/core": "^1.0.11",
-    "@elizaos/plugin-bootstrap": "^1.0.11",
-    "@elizaos/plugin-google-genai": "1.0.0",
-    "@elizaos/plugin-node": "^0.25.6-alpha.1",
+    "@elizaos/cli": "^1.0.12",
+    "@elizaos/core": "^1.0.12",
+    "@elizaos/plugin-bootstrap": "^1.0.12",
+    "@elizaos/plugin-google-genai": "^1.0.0",
     "@elizaos/plugin-openai": "^1.0.4",
     "@polymarket/clob-client": "latest",
     "@polymarket/order-utils": "latest",
+    "@polymarket/sdk": "latest",
+    "@types/node": "latest",
+    "bun": "latest",
+    "drizzle-orm": "latest",
     "ethers": "latest",
     "zod": "latest"
   },
@@ -54,17 +57,16 @@
     "coverage": "vitest run --coverage",
     "prepublishOnly": "npm run build"
   },
-  "peerDependencies": {
-    "whatwg-url": "7.1.0"
-  },
   "publishConfig": {
     "access": "restricted"
   },
   "packageType": "project",
   "agentConfig": {
+    "name": "@elizaos/plugin-polymarket",
+    "version": "1.0.0",
     "pluginType": "elizaos:project:latest",
     "projectConfig": {
-      "name": "elizaos/plugin-polymarket",
+      "name": "@elizaos/plugin-polymarket",
       "description": "Polymarket Plugin for elizaOS"
     },
     "agentConfig": {
@@ -74,20 +76,18 @@
   },
   "platform": "node",
   "trustedDependencies": [
-    "node-llama-cpp",
     "onnxruntime-node",
-    "protobufjs"
+    "protobufjs",
+    "prettier"
   ],
   "devDependencies": {
-    "@types/node": "latest",
-    "@typescript-eslint/eslint-plugin": "latest",
-    "eslint": "latest",
-    "eslint-plugin-prettier": "^5.5.0",
+    "@vitest/coverage-v8": "latest",
     "prettier": "latest",
     "tsup": "latest",
+    "typescript": "^5.8.3",
     "vitest": "latest"
   },
-  "author": "",
+  "author": "John T. Stevens",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/JTS-Creates/plugin-polymarket/issues"
