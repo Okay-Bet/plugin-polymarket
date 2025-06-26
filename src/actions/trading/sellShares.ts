@@ -6,7 +6,6 @@ import {
   HandlerCallback,
 } from "@elizaos/core/v2";
 import { ClobService } from "../../services/clobService"; // Ensure correct path
-import { Side, OrderType } from "@polymarket/clob-client";
 import { sellSharesExamples } from "src/examples";
 import { OrderParams } from "src/types";
 

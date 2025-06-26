@@ -2,7 +2,6 @@ import {
   type Action,
   type IAgentRuntime,
   Memory,
-  type Service,
   type State,
   type Content,
   HandlerCallback,

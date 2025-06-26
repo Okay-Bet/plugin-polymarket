@@ -4,9 +4,9 @@ import {
   type Memory,
   type State,
   HandlerCallback,
+  logger,
 } from "@elizaos/core/v2";
 import { ClobService } from "../../services/clobService"; // Ensure correct path
-import { Side, OrderType } from "@polymarket/clob-client";
 import { buySharesExamples } from "src/examples";
 import { OrderParams } from "src/types";
 
@@ -52,14 +52,25 @@ export const buySharesAction: Action = {
       if (!marketData) {
         return `Could not retrieve market data for market ID: ${marketId}`;
       }
-      marketData.market.conditions.forEach(element => {
-        element.humanReadableName
-      }); 
+
+      logger.info("marketData:", marketData);  // Added logging
+      logger.info("outcome:", outcome);          // Added logging
+
+      // Assuming outcome relates to a condition's humanReadableName
+      const condition = marketData.market.conditions.find(
+        (c) => c.humanReadableName === outcome // Adjust if needed, based on actual relationship
+      );
+
+      if (!condition) {
+        return `Could not find condition matching outcome: ${outcome}`;
+      }
+
       const orderParams: OrderParams = {
         marketMakerAddress: marketData.market.marketMakerAddress,
-        conditionalTokensAddress: outcome.conditionalTokensAddress,
+        conditionalTokensAddress: condition.conditionalTokensAddress, // Assuming this is correct
         returnAmount: quantity,
-        outcomeIndex: outcome === "Yes" ? 0 : 1,
+        //  NOTE: outcomeIndex might not be directly related to "Yes"/"No" in this structure.
+        outcomeIndex:  outcome === "Yes" ? 0 : 1, //  You likely need logic to determine this from conditions.
         maxOutcomeTokensToSell: quantity,
       };
 

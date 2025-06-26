@@ -4,12 +4,11 @@ import {
   type Memory,
   type State,
   type Content,
-  elizaLogger,
   HandlerCallback,
   logger
 } from "@elizaos/core/v2";
 import { ClobService } from "../../services/clobService";
-import { RedeemParams, RedeemWinningsActionContent } from "../../types";
+import { RedeemWinningsActionContent } from "../../types";
 
 export const redeemWinningsAction: Action = {
   name: "POLYMARKET_REDEEM_WINNINGS",

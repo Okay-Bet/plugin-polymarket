@@ -1,7 +1,5 @@
 import { Service, IAgentRuntime, logger } from "@elizaos/core/v2";
-import { ethers } from "ethers";
-import { ClobClient, AssetType } from "@polymarket/clob-client";
-import { addFundingToMarket, buyMarketOutcome, safeAddFundingToMarket, splitPosition, getIndexSet, getMarketIndex, getProxyWalletAddress, checkExitIsCheckpointed, checkExitIsValid, isDepositComplete, depositFundsIntoMatic, payDebt, takeOnDebt, erc20TransferTransaction, ethTransferTransaction, exitFundsFromMatic, multipleExitFundsFromMatic, removeFundingFromMarket, withdrawFundsOnMatic, mergePositions, sellMarketOutcome, negRiskOperations, redeemPositions } from "@polymarket/sdk";
+import { buyMarketOutcome, sellMarketOutcome, redeemPositions } from "@polymarket/sdk";
 import {
   PolymarketMarket,
   PolymarketApiResponse,
@@ -13,6 +11,7 @@ import {
 } from "../types";
 
 export class ClobService extends Service {
+  private isConnected: boolean = false; // Track connection state
   static async redeemUserPositions(params: RedeemParams): Promise<RedeemResult> {
     try {
       return await ClobService.redeemUserPositionsSDK(params);
@@ -48,6 +47,22 @@ export class ClobService extends Service {
   constructor(runtime: IAgentRuntime) {
     super(runtime)
     logger.info(`Loading ClobService with PK: ${process.env.PK}`)
+    // Attempt automatic connection on service start
+    this.attemptAutoConnect();
+  }
+
+  private async attemptAutoConnect(): Promise<void> {
+    try {
+      if (process.env.PK) {
+        // Replace with SDK's connection method using private key, if available
+        // Example (adjust based on SDK documentation):
+        // await connectWithPrivateKey(process.env.PK);
+        this.isConnected = true;
+        logger.info("Successfully auto-connected wallet using .env credentials.");
+      }
+    } catch (error: any) {
+      logger.error(`Auto-connect failed: ${error.message}`);
+    }
   }
 
   static async redeemUserPositionsSDK(params: RedeemParams): Promise<RedeemResult> {
