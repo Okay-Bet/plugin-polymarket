@@ -12,12 +12,12 @@ export default defineConfig({
       reporter: ['text', 'json', 'html'],
       reportsDirectory: './coverage',
     },
-    include: ['./plugin-polymarket/__tests__/**/*.test.ts'], // Pattern for test files
+    include: ['./__tests__/**/*.test.ts'], // Pattern for test files
     // setupFiles: ['./path/to/setupFile.ts'], // If you need global setup
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './plugin-polymarket/src'),
+      '@': path.resolve(__dirname, './src'),
     },
   },
 });

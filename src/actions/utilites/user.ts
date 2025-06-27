@@ -7,7 +7,7 @@ import {
   HandlerCallback,
   logger,
 } from "@elizaos/core/v2";
-import { getUsernameExamples, setUserExamples } from "src/examples";
+import { getUsernameExamples, setUserExamples } from "plugin-polymarket/src/examples";
 
 // Action to set the username
 export const setUserAction: Action = {

@@ -26,5 +26,5 @@
       "@elizaos/core/*": ["../core/src/*"]
     }
   },
-  "include": ["plugin-polymarket/src/**/*.ts"]
+  "include": ["src/**/*.ts"]
 }
