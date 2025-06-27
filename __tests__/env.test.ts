@@ -90,6 +90,6 @@ describe('Environment Setup', () => {
     expect(fs.existsSync(testReadmePath)).toBe(true);
 
     const testReadme = fs.readFileSync(testReadmePath, 'utf8');
-    expect(testReadme).toContain('# Polymarket Plugin Tests');
+    expect(testReadme).toContain('# Project Starter Tests');
   });
 });

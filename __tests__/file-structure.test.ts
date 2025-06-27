@@ -127,9 +127,9 @@ describe('Project Structure Validation', () => {
 
     it('should have appropriate documentation content', () => {
       const readmeContent = fs.readFileSync(path.join(rootDir, 'README.md'), 'utf8');
-      expect(readmeContent).toContain('# Polymarket Plugin'); 
+      expect(readmeContent).toContain('# Polymarket Plugin'); // Assuming 'Plugin Clob' is correct for README.md
       expect(readmeContent).toContain('# Features');
-      expect(readmeContent).toContain('# Installation');
+      expect(readmeContent).toContain('# Getting Started');
 
       const testReadmeContent = fs.readFileSync(path.join(rootDir, 'README-TESTS.md'), 'utf8');
       expect(testReadmeContent).toContain('Test Structure');

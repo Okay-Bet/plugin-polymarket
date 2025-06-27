@@ -1,30 +1,13 @@
 import { describe, expect, it, vi, beforeEach, assert } from 'vitest';
-import { PolyMarketTestSuite } from '../src/tests';
-import { buySharesAction } from '../src/actions/trading/buyShares';
-import { redeemSharesAction } from '../src/actions/trading/redeemShares';
-import { redeemWinningsAction } from '../src/actions/trading/redeemWinnings';
-import { sellSharesAction } from '../src/actions/trading/sellShares';
-import { readMarketAction } from '../src/actions/utilities/readMarket';
-import { readMarketsAction } from '../src/actions/utilities/readMarkets';
-import { getUsernameAction, setUserAction } from '../src/actions/utilities/user';
-import { connectWalletAction } from '../src/actions/wallet/connectWallet';
-import { getWalletInfoAction } from '../src/actions/wallet/getWalletInfo';
+import { ClobTestSuite } from '../src/tests';
 
 // Mock runtime
 const createMockRuntime = () => {
   return {
     registerPlugin: vi.fn().mockResolvedValue(undefined),
     actions: [
-      connectWalletAction,
-      getUsernameAction,
-      setUserAction,
-      getWalletInfoAction,
-      readMarketsAction,
-      readMarketAction,
-      buySharesAction,
-      sellSharesAction,
-      redeemSharesAction,
-      redeemWinningsAction
+      {
+      },
     ],
     providers: [
       {
@@ -38,7 +21,7 @@ const createMockRuntime = () => {
     ],
     getService: vi.fn().mockReturnValue({
       capabilityDescription:
-        'This is a ClobService which is attached to the agent through the PolyMarket plugin.',
+        'This is a clob service which is attached to the agent through the clob plugin.',
       stop: vi.fn(),
     }),
     processActions: vi.fn(),
@@ -49,16 +32,16 @@ vi.mock('uuid', () => ({
   v4: () => '00000000-0000-0000-0000-000000000000',
 }));
 
-describe('PolyMarketTestSuite', () => {
-  let testSuite: PolyMarketTestSuite;
+describe('ClobTestSuite', () => {
+  let testSuite: ClobTestSuite;
 
   beforeEach(() => {
-    testSuite = new PolyMarketTestSuite();
+    testSuite = new ClobTestSuite();
   });
 
   it('should have name and description', () => {
-    expect(testSuite.name).toBe('PolyMarket');
-    expect(testSuite.description).toBe('Tests for the PolyMarket project');
+    expect(testSuite.name).toBe('clob');
+    expect(testSuite.description).toBe('Tests for the clob project');
   });
 
   it('should have at least one test', () => {
@@ -79,10 +62,8 @@ describe('PolyMarketTestSuite', () => {
     }
   });
 
-  it.skip('should run plugin initialization test successfully', async () => {
+  it('should run plugin initialization test successfully', async () => {
     const mockRuntime = createMockRuntime();
-    console.log('mockRuntime', mockRuntime)
-
     const pluginInitTest = testSuite.tests.find(
       (test) => test.name === 'Plugin initialization test'
     );
@@ -95,12 +76,12 @@ describe('PolyMarketTestSuite', () => {
     }
   });
   
-  it.skip('should run clob service test successfully', async () => {
+  it('should run clob service test successfully', async () => {
     const mockRuntime = createMockRuntime();
     const serviceTest = testSuite.tests.find((test) => test.name === 'ClobService test');
     if (serviceTest) {
       await expect(serviceTest.fn(mockRuntime as any)).resolves.not.toThrow();
-      expect(mockRuntime.getService).toHaveBeenCalledWith('ClobService');
+      expect(mockRuntime.getService).toHaveBeenCalledWith('clob');
     } else {
       assert.fail('ClobService test not found');
     }
