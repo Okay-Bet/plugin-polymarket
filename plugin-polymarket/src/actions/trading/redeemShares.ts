@@ -1,91 +1,53 @@
-import { 
+import {
   type IAgentRuntime,
   type Action,
-  type Memory, 
+  type Memory,
   type State,
   type HandlerCallback,
-  logger,
 } from "@elizaos/core/v2";
-import { type ActionExample } from "@elizaos/core/v2";
-import { ClobService } from "../../services/clobService"; // Import ClobService
-import { RedeemParams, RedeemWinningsActionContent } from "../../types";
-import { GammaService } from "../../services/gammaService";
-import { redeemSharesExamples } from "plugin-polymarket/src/examples";
+import { ClobService } from "../../services/clobService"; // Ensure correct path
+import { redeemSharesExamples } from "src/examples";
+
 export const redeemSharesAction: Action = {
   name: "REDEEM_SHARES",
-  similes: ["REDEEM_SHARES"], 
+  similes: ["REDEEM_SHARES"],
   description:
     "Redeems shares in a specified Polymarket market after it has resolved.",
   examples: [...redeemSharesExamples],
-  validate: async (
-    runtime: IAgentRuntime,
-    message: Memory,
-    state?: State,
-  ): Promise<boolean> => {
-    const content = message.content as RedeemWinningsActionContent;
-    if (!content || !content.text) { 
-      return false;
-    }
-
-    const text = content.text.toLowerCase();
-
-    const hasRedeemKeywords = 
-      text.includes("redeem") || text.includes("claim") || text.includes("resolve");
-      
-    const hasSharesKeywords = text.includes("shares") || text.includes("position");
-
-    const hasMarketContext = text.includes("market") || /\b\d{6}\b/.test(text);
-
-    return hasRedeemKeywords && hasSharesKeywords && hasMarketContext; 
+  validate: async (params: any) => {
+    return params && params.marketId;
   },
   handler: async (
     _runtime: IAgentRuntime,
-    message: Memory,
+    _message: Memory,
     _state: State,
     _options: any,
     callback: HandlerCallback,
-    _responses: Memory[]
+    _responses: Memory[],
   ): Promise<string> => {
-    const content = message.content as RedeemWinningsActionContent;
-    const text = content.text.trim();
+    const { marketId } = _options;
 
-    // Extract market ID
-    const marketIdPattern = /\b\d{6}\b/;
-    const marketIdMatch = text.match(marketIdPattern); 
-    const marketId = marketIdMatch ? marketIdMatch[0] : content.marketId;
-    if (!marketId) { 
-      return "Sorry, I couldn't identify a market ID in your request. Please specify a market ID.";
-    } 
-
-    // First fetch market details to verify market exists and to display details later
-    const marketResult = await GammaService.fetchMarketById(marketId);
-    if (!marketResult.success || !marketResult.market) {
-      return `Sorry, I couldn't find a market with ID ${marketId}. ${
-        marketResult.error || ""
-      }`;
+    if (!marketId) {
+      return "Invalid input: Please provide marketId.";
     }
 
-    // Log the redemption attempt
-    logger.info(`Attempting to redeem shares from market ${marketId}`);
+    const clobService = _runtime.getService(
+      ClobService.serviceType,
+    ) as ClobService;
+    if (!clobService) {
+      return "ClobService not available. Please check plugin configuration.";
+    }
 
-    // Call the CLOB API to redeem shares
+
     try {
-      // Get the SDK instance 
-      const clobService = _runtime.getService(ClobService.serviceType) as ClobService;
-      //const sdk = clobService.getSDK();
-
-      // Adapt the SDK call for redeeming shares (adjust based on SDK API)
-      //await sdk.redeem.redeemWinnings({ marketId: parseInt(marketId) }); // Assuming marketId is a number
-
-      const responseText = `Successfully redeemed your shares from market "${marketResult.market.question}" (ID: ${marketId}).`;
+      // Replace this with the actual logic for redeeming/settling shares in the CLOB.
+      // It might involve interacting with the CLOB API in a specific way after a market resolves.
+      // The current implementation is a placeholder and likely needs significant adjustment.
+      const responseText = `Simulated redemption of shares in market ${marketId}.  You need to implement the actual CLOB redemption logic here.`;
       await callback({ text: responseText });
       return responseText;
-
-    } catch (error: any) {
-      logger.error("Error redeeming shares:", error);
-      const responseText = `Sorry, there was an error redeeming your shares: ${error.message || 'Unknown error'}`;
-      await callback({ text: responseText });
-      return responseText;
+    } catch (e) {
+      return `Error redeeming shares: ${e instanceof Error ? e.message : "Unknown error"}`;
     }
   },
-} as Action;
+}

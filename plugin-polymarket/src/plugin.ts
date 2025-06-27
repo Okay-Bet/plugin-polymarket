@@ -1,13 +1,12 @@
 import { IAgentRuntime, logger, Route, type Plugin } from '@elizaos/core/v2';
-import { GammaService } from './services/gammaService';
 import { ClobService } from './services/clobService';
-import { readMarketsAction } from './actions/utilities/readMarkets';
-import { readMarketAction } from './actions/utilities/readMarket';
+import { readMarketsAction } from './actions/utilites/readMarkets';
+import { readMarketAction } from './actions/utilites/readMarket';
 import { buySharesAction } from './actions/trading/buyShares';
 import { sellSharesAction } from './actions/trading/sellShares';
 import { redeemWinningsAction } from './actions/trading/redeemWinnings';
 import { redeemSharesAction } from './actions/trading/redeemShares';
-import { getUsernameAction, setUserAction } from './actions/utilities/user';
+import { getUsernameAction, setUserAction } from './actions/utilites/user';
 import { connectWalletAction } from './actions/wallet/connectWallet';
 import { ResponseParserService } from './services/responseParser';
 import { getWalletInfoAction } from './actions/wallet/getWalletInfo';
