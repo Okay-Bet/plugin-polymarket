@@ -1,0 +1,8 @@
+onlyBuiltDependencies:
+  - '@discordjs/opus'
+  - bun
+  - esbuild
+  - node-llama-cpp
+  - onnxruntime-node
+  - protobufjs
+  - sharp

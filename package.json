@@ -1,10 +1,20 @@
 {
-  "name": "plugin-polymarket",
-  "version": "0.1.9",
+  "name": "@elizaos/plugin-polymarket",
+  "description": "Polymarket Plugin for ElizaOS",
+  "version": "0.1.11",
   "type": "module",
+  "private": true,
   "main": "dist/index.js",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
+  "keywords": [
+    "project",
+    "elizaos"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JTS-Creates/plugin-polymarket.git"
+  },
   "exports": {
     "./package.json": "./package.json",
     ".": {
@@ -18,33 +28,71 @@
   "files": [
     "dist"
   ],
+  "dependencies": {
+    "@elizaos/cli": "^1.0.12",
+    "@elizaos/core": "^1.0.12",
+    "@elizaos/plugin-bootstrap": "^1.0.12",
+    "@elizaos/plugin-google-genai": "^1.0.0",
+    "@elizaos/plugin-openai": "^1.0.4",
+    "@polymarket/clob-client": "latest",
+    "@polymarket/order-utils": "latest",
+    "@polymarket/sdk": "latest",
+    "@types/node": "latest",
+    "bun": "latest",
+    "drizzle-orm": "latest",
+    "ethers": "latest",
+    "zod": "latest"
+  },
   "scripts": {
-    "build": "tsc",
+    "update": "elizaos update",
+    "start": "elizaos start",
+    "dev": "elizaos dev",
+    "build": "tsup",
+    "lint": "prettier --write ./src && prettier --write src/**/*.ts && prettier --write __tests__/**/*.ts",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
+    "format": "prettier --write ./src",
+    "format:check": "prettier --check ./src",
     "coverage": "vitest run --coverage",
     "prepublishOnly": "npm run build"
   },
+  "publishConfig": {
+    "access": "restricted"
+  },
+  "packageType": "project",
   "agentConfig": {
     "name": "@elizaos/plugin-polymarket",
     "version": "1.0.0",
+    "pluginType": "elizaos:project:latest",
+    "projectConfig": {
+      "name": "@elizaos/plugin-polymarket",
+      "description": "Polymarket Plugin for elizaOS"
+    },
     "agentConfig": {
-      "pluginType": "elizaos:plugin:1.0.0",
+      "pluginType": "elizaos:plugin:latest",
       "pluginParameters": {}
     }
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "platform": "node",
+  "trustedDependencies": [
+    "onnxruntime-node",
+    "protobufjs",
+    "prettier"
+  ],
   "devDependencies": {
-    "@vitest/coverage-v8": "^3.1.3",
-    "c8": "^10.1.3",
-    "tsup": "^8.3.5",
+    "@vitest/coverage-v8": "latest",
+    "dotenv": "^16.5.0",
+    "uuid": "latest",
+    "prettier": "latest",
+    "tsup": "latest",
     "typescript": "^5.8.3",
-    "vitest": "^3.1.3"
+    "vitest": "latest"
   },
-  "dependencies": {
-    "@elizaos/core": "^0.25.9",
-    "tsup": "^8.3.5"
-  }
+  "author": "John T. Stevens",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JTS-Creates/plugin-polymarket/issues"
+  },
+  "homepage": "https://github.com/JTS-Creates/plugin-polymarket#readme"
 }
