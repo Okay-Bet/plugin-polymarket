@@ -6,7 +6,7 @@ import {
   type Content,
   HandlerCallback,
 } from "@elizaos/core/v2";
-import { getWalletInfoExamples } from "plugin-polymarket/src/examples";
+import { getWalletInfoExamples } from "src/examples";
 
 // Placeholder for actual wallet information type
 interface WalletInfo {

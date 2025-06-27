@@ -8,7 +8,7 @@ import {
   HandlerCallback,
 } from "@elizaos/core/v2";
 import { ClobService } from "../../services/clobService"; // Import ClobService
-import { connectWalletExamples } from "plugin-polymarket/src/examples";
+import { connectWalletExamples } from "src/examples";
 
 export const connectWalletAction: Action = {
   name: "CONNECT_WALLET",

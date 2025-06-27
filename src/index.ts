@@ -1,32 +1,31 @@
-import { buySharesAction } from "./actions/trading/buyShares";
-import { redeemSharesAction } from "./actions/trading/redeemShares";
-import { redeemWinningsAction } from "./actions/trading/redeemWinnings";
-import { sellSharesAction } from "./actions/trading/sellShares";
-import { readMarketAction } from "./actions/utilities/readMarket";
-import { readMarketsAction } from "./actions/utilities/readMarkets";
-import { getUsernameAction, setUserAction } from "./actions/utilities/user";
-import { connectWalletAction } from "./actions/wallet/connectWallet";
-import { getWalletInfoAction } from "./actions/wallet/getWalletInfo";
-import { ClobService } from "./services/clobService";
-import GammaService from "./services/gammaService";
-import { polymarketService } from "./services/polymarketService";
-import { ResponseParserService } from "./services/responseParser";
+import {
+  logger,
+  type IAgentRuntime,
+  type Project,
+  type ProjectAgent,
+} from "@elizaos/core/v2";
+import character from "./character";
+import pluginPolymarket from "./plugin";
 
-const polymarketPlugin = {
-    name: "polymarket",
-    description: "Polymarket client",
-    actions: [
-        connectWalletAction,
-        getUsernameAction,
-        setUserAction,
-        getWalletInfoAction,
-        readMarketsAction,
-        readMarketAction,
-        buySharesAction,
-        sellSharesAction,
-        redeemSharesAction,
-        redeemWinningsAction
-    ],
-    services: [polymarketService, ClobService, GammaService, ResponseParserService],
+/**
+ * Represents the default character (Eliza) with her specific attributes and behaviors.
+ * Eliza responds to messages relevant to the community manager, offers help when asked, and stays focused on her job.
+ * She interacts with users in a concise, direct, and helpful manner, using humor and silence effectively.
+ * Eliza's responses are geared towards resolving issues, offering guidance, and maintaining a positive community environment.
+ */
+
+const initCharacter = ({ runtime }: { runtime: IAgentRuntime }) => {
+  logger.info("Initializing character");
+  logger.info("Name: ", character.name);
 };
-export default polymarketPlugin;
+
+export const projectAgent: ProjectAgent = {
+  character,
+  init: async (runtime: IAgentRuntime) => await initCharacter({ runtime }),
+  plugins: [pluginPolymarket],
+};
+const project: Project = {
+  agents: [projectAgent],
+};
+
+export default project;

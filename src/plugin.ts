@@ -8,6 +8,7 @@ import { redeemWinningsAction } from './actions/trading/redeemWinnings';
 import { redeemSharesAction } from './actions/trading/redeemShares';
 import { getUsernameAction, setUserAction } from './actions/utilites/user';
 import { connectWalletAction } from './actions/wallet/connectWallet';
+import { ResponseParserService } from './services/responseParser';
 import { getWalletInfoAction } from './actions/wallet/getWalletInfo';
 
 const pluginPolymarket: Plugin = {
@@ -26,7 +27,7 @@ const pluginPolymarket: Plugin = {
     redeemSharesAction,
     redeemWinningsAction
   ],
-  services: [ClobService, ClobService],
+  services: [ResponseParserService, ClobService, ClobService],
   events: {
     VOICE_MESSAGE_RECEIVED: [
       async (params: any) =>

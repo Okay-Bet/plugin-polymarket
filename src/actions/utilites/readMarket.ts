@@ -14,7 +14,7 @@ import {
   GetMarketActionContent,
   PolymarketMarket,
 } from "../../types";
-import { getMarketByIdExamples } from "plugin-polymarket/src/examples";
+import { getMarketByIdExamples } from "src/examples";
 
 export const readMarketAction: Action = {
   name: "GET_POLYMARKET_MARKET_BY_ID",
