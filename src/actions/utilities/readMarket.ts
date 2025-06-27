@@ -71,7 +71,7 @@ export const readMarketAction: Action = {
         logger.error("Error during response formatting:", e);
         return `Sorry, I encountered an issue processing the market data: ${e.message}`;
       }
-    } catch (error) {
+    } catch (error: any) {
       return `Sorry, there was an error fetching market details: ${error instanceof Error ? error.message : "Unknown error"}`;
     }
   },

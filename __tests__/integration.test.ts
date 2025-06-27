@@ -82,7 +82,7 @@ describe('Project Scaffolding', () => {
       expect(testsModule.default).toHaveProperty('description');
       expect(testsModule.default).toHaveProperty('tests');
       expect(Array.isArray(testsModule.default.tests)).toBe(true);
-    } catch (error) {
+    } catch (error: any) {
       // If we're in a test environment without builds, this might fail
       if (!isCI) {
         throw error;
@@ -125,7 +125,7 @@ describe('Project Scaffolding', () => {
       expect(fs.existsSync(path.join(TEST_DIR, 'plugin.ts'))).toBe(true);
       expect(fs.existsSync(path.join(TEST_DIR, 'tests.ts'))).toBe(true);
       expect(fs.existsSync(path.join(TEST_DIR, 'package.json'))).toBe(true);
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Error in scaffolding test:', error);
       throw error;
     }

@@ -9,6 +9,7 @@ import {
 import { PolymarketService } from "../../services/polymarketService"; // Ensure correct path
 import { buySharesExamples } from "src/examples";
 import { OrderParams } from "src/types";
+import { ethers } from "ethers";
 
 export const buySharesAction: Action = {
   name: "BUY_SHARES",
@@ -46,31 +47,35 @@ export const buySharesAction: Action = {
     }
 
     try {
-      // Assuming you have a way to fetch market data and get the required addresses
-      const marketData = await PolymarketService.fetchMarketById(marketId);
+      const marketDataResponse = await PolymarketService.fetchMarketById(marketId);
 
-      if (!marketData) {
-        return `Could not retrieve market data for market ID: ${marketId}`;
+      if (!marketDataResponse.success || !marketDataResponse.market) {
+        return `Could not retrieve market data for market ID: ${marketId}. ${marketDataResponse.error}`;
       }
 
-      logger.info("marketData:", marketData);  // Added logging
-      logger.info("outcome:", outcome);          // Added logging
+      const marketData = marketDataResponse.market;
 
-      // Assuming outcome relates to a condition's humanReadableName
-      const condition = marketData.market.conditions.find(
-        (c) => c.humanReadableName === outcome // Adjust if needed, based on actual relationship
-      );
+      logger.info("marketData:", marketData);
+      logger.info("outcome:", outcome);
 
-      if (!condition) {
+      const outcomeIndex = marketData.outcomes.findIndex(o => o.name === outcome);
+
+      if (outcomeIndex === -1) {
         return `Could not find condition matching outcome: ${outcome}`;
       }
+
+      const clobTokenId = marketData.outcomes[outcomeIndex].clobTokenId;
+
+      if (!clobTokenId) {
+        return `Could not find clobTokenId for outcome: ${outcome}`;
+      }
+
       const orderParams: OrderParams = {
-        marketMakerAddress: marketData.market.marketMakerAddress,
-        conditionalTokensAddress: condition.conditionalTokensAddress, // Assuming this is correct
-        returnAmount: quantity,
-        //  NOTE: outcomeIndex might not be directly related to "Yes"/"No" in this structure.
-        outcomeIndex:  outcome === "Yes" ? 0 : 1, //  You likely need logic to determine this from conditions.
-        maxOutcomeTokensToSell: quantity,
+        marketMakerAddress: "0x9e7E27aA1D9d4418E3fA5134aA2aB14446483584", // This is a placeholder, you should have a way to get this value
+        conditionalTokensAddress: "0x4e35122252a3bA8A5296A63aB4a31545539B334f", // This is a placeholder, you should have a way to get this value
+        returnAmount: ethers.utils.parseUnits(quantity.toString(), 6),
+        outcomeIndex: outcomeIndex,
+        maxOutcomeTokensToSell: ethers.utils.parseUnits(quantity.toString(), 6),
       };
 
       const result = await polymarketService.buySharesSDK(orderParams);
@@ -78,7 +83,7 @@ export const buySharesAction: Action = {
       const message = result.message || "Buy order processed.";
       await callback({ text: message });
       return message;
-    } catch (error) {
+    } catch (error: any) {
       return `Error buying shares: ${error instanceof Error ? error.message : "Unknown error"}`;
     }
   },

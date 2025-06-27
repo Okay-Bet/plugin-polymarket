@@ -54,7 +54,7 @@ export const setUserAction: Action = {
       } else {
         return "Please specify a username after 'to'. Example: Set my username to John";
       }
-    } catch (error) {
+    } catch (error: any) {
       logger.error(error);
       return `Error setting username: ${error instanceof Error ? error.message : "Unknown error"}`;
     }
@@ -93,7 +93,7 @@ export const getUsernameAction: Action = {
       const responseText = `Your username is: ${currentUsername}`;
       await callback({ text: responseText });
       return responseText;
-    } catch (error) {
+    } catch (error: any) {
       logger.error(error);
       return `Error getting username: ${error instanceof Error ? error.message : "Unknown error"}`;
     }

@@ -51,7 +51,7 @@ describe('readMarketsAction', () => {
         await readMarketsAction.handler(runtime, message, state, {}, mockCallback, []);
 
         logger.info("Callback response after handler:", callbackResponse);
-      } catch (error) {
+      } catch (error: any) {
         // If the handler throws, fail the test and log the error
         console.error("Test failed due to handler error:", error);
         throw error; 
@@ -70,7 +70,7 @@ describe('direct_API_call', () => {
       expect(data).not.toBeNull();
       // Add more specific assertions about the data if needed
       console.log("Direct API call successful. Data:", data.toString().substring(0,50));
-    } catch (error) {
+    } catch (error: any) {
       console.error("Direct API call failed:", error);
       throw error; // Re-throw the error to fail the test
     }

@@ -7,8 +7,10 @@ import {
   OrderParams,
   OrderResult,
   RedeemResult,
-  RedeemParams
+  RedeemParams,
+  ApiKeyResult
 } from "../types";
+import { createApiKey } from "../providers/keyGen";
 
 export class PolymarketService extends Service {
   private isConnected: boolean = false; // Track connection state
@@ -62,6 +64,16 @@ export class PolymarketService extends Service {
       }
     } catch (error: any) {
       logger.error(`Auto-connect failed: ${error.message}`);
+    }
+  }
+
+  async createApiKey(): Promise<ApiKeyResult> {
+    try {
+      const apiKey = await createApiKey();
+      return { success: true, apiKey: apiKey };
+    } catch (error: any) {
+      logger.error("Error creating API key:", error);
+      return { success: false, error: `Failed to create API key: ${error.message}` };
     }
   }
 
@@ -337,7 +349,7 @@ export class PolymarketService extends Service {
       const data = (await response.json()) as PolymarketMarket[];
       // No schema parsing yet, assuming PolymarketApiResponse format for raw data
       return { success: true, markets: data };
-    } catch (error) {
+    } catch (error: any) {
       console.log("Error in fetchMarketPage:", error);
       return {
         success: false,

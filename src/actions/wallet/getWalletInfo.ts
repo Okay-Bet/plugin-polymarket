@@ -73,7 +73,7 @@ export const getWalletInfoAction: Action = {
       const responseText = `Your wallet is connected on chain ID: ${walletInfo.chainId}\nAddress: ${walletInfo.address}\nBalance: ${walletInfo.balance} (Placeholder - replace with actual balance)`;
       await callback({ text: responseText });
       return responseText;
-    } catch (error) {
+    } catch (error: any) {
       return `Error getting wallet info: ${error instanceof Error ? error.message : "Unknown error"}`;
     }
   },

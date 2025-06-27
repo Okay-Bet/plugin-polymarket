@@ -1,4 +1,4 @@
-import { IAgentRuntime, logger, Route, type Plugin } from '@elizaos/core/v2';
+import { IAgentRuntime, logger, Route, type Plugin, ModelType } from '@elizaos/core/v2';
 import { PolymarketService } from './services/polymarketService';
 import { readMarketsAction } from './actions/utilities/readMarkets';
 import { readMarketAction } from './actions/utilities/readMarket';
@@ -9,6 +9,7 @@ import { redeemSharesAction } from './actions/trading/redeemShares';
 import { getUsernameAction, setUserAction } from './actions/utilities/user';
 import { connectWalletAction } from './actions/wallet/connectWallet';
 import { getWalletInfoAction } from './actions/wallet/getWalletInfo';
+import { getApiKeyAction } from './actions/wallet/getApiKey';
 
 const pluginPolymarket: Plugin = {
   name: '@elizaos/plugin-polymarket',
@@ -24,7 +25,8 @@ const pluginPolymarket: Plugin = {
     buySharesAction,
     sellSharesAction,
     redeemSharesAction,
-    redeemWinningsAction
+    redeemWinningsAction,
+    getApiKeyAction
   ],
   services: [ PolymarketService],
   events: {

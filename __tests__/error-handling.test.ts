@@ -80,7 +80,7 @@ describe('Error Handling', () => {
           // We expect the callback to be called (if there's internal error handling)
           expect(mockCallback).toHaveBeenCalled();
           expect(mockCallback).toHaveBeenCalledWith(expect.objectContaining({ text: expect.any(String) }));
-        } catch (error) {
+        } catch (error: any) {
           // If error is thrown, ensure it's handled correctly
           expect(logger.error).toHaveBeenCalled();
         }
@@ -96,7 +96,7 @@ describe('Error Handling', () => {
       try {
         await PolymarketService.stop(mockRuntime);
  expect(true).toBe(false); // Should not reach here
-      } catch (error) {
+      } catch (error: any) {
         caughtError = error as Error;
         expect(error.message).toBe('PolymarketService not found');
       }
@@ -178,7 +178,7 @@ describe('Error Handling', () => {
           await messageHandler(mockParams as any);
           // If it succeeds without error, that's good too
           expect(true).toBe(true);
-        } catch (error) {
+        } catch (error: any) {
           // If it does error, make sure we can catch it
           expect(error).toBeDefined();
         }
@@ -201,7 +201,7 @@ describe('Error Handling', () => {
           await provider.get(mockRuntime, mockMessage, mockState);
           // If we get here, it didn't throw - which is good
           expect(true).toBe(true);
-        } catch (error) {
+        } catch (error: any) {
           // If it does throw, at least make sure it's a handled error
  expect(logger.error).toHaveBeenCalled();
         }

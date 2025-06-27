@@ -66,7 +66,7 @@ export class ClobTestSuite implements TestSuite {
             init: async () => {},
             config: {},
           });
-        } catch (error) {
+        } catch (error: any) {
           throw new Error(`Failed to register plugin: ${error.message}`);
         }
       },
@@ -115,7 +115,7 @@ export class ClobTestSuite implements TestSuite {
           }
 
           // expect(runtime.processActions).toHaveBeenCalledTimes(1); // Verify it was called
-        } catch (error) {
+        } catch (error: any) {
           throw new Error(
             `Polymarket plugin started action test failed: ${error.message}`,
           );
@@ -140,7 +140,7 @@ export class ClobTestSuite implements TestSuite {
           }
 
           await service.stop();
-        } catch (error) {
+        } catch (error: any) {
           throw new Error(`PolymarketService test failed: ${error.message}`);
         }
       },
@@ -218,7 +218,7 @@ export class ClobTestSuite implements TestSuite {
               `Get username action failed after setting. Expected response: "${expectedResponse}"`,
             );
           }
-        } catch (error) {
+        } catch (error: any) {
           throw new Error(`Set username action test failed: ${error.message}`);
         }
       },

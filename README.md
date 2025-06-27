@@ -70,6 +70,10 @@ Sorry, there was an error fetching prediction markets: [Specific error message f
 The plugin uses a pre-configured Polymarket API endpoint. No additional setup is required by the user to access the `readMarkets` functionality.
 
 
+## Getting Started
+
+To get started with the Polymarket plugin, you'll need to install it and configure your environment.
+
 ## Installation
 
 ```bash

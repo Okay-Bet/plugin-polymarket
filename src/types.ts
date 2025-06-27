@@ -303,3 +303,5 @@ export interface RedeemResult {
   //transactionHash?: string;
   error?: string;
 }
+
+export type ApiKeyResult = { success: boolean; apiKey?: any; error?: string };
