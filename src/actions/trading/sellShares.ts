@@ -5,7 +5,7 @@ import {
     type State,
   HandlerCallback,
 } from "@elizaos/core/v2";
-import { PolymarketService } from "../../services/polymarketService"; // Ensure correct path
+import { ClobService } from "../../services/clobService"; // Ensure correct path
 import { sellSharesExamples } from "src/examples";
 import { OrderParams } from "src/types";
 
@@ -37,11 +37,11 @@ export const sellSharesAction: Action = {
       return "Invalid input: Please provide marketId, outcome (Yes/No), and quantity.";
     }
 
-    const polymarketService = _runtime.getService(
-      PolymarketService.serviceType,
-    ) as PolymarketService;
-    if (!polymarketService) {
-      return "PolymarketService not available. Please check plugin configuration.";
+    const clobService = _runtime.getService(
+      ClobService.serviceType,
+    ) as ClobService;
+    if (!clobService) {
+      return "ClobService not available. Please check plugin configuration.";
     }
 
     try {
@@ -53,7 +53,7 @@ export const sellSharesAction: Action = {
             maxOutcomeTokensToSell: quantity, // Assuming quantity maps to maxOutcomeTokensToSell, adjust as needed
         };
 
-        const result = await polymarketService.sellSharesSDK(orderParams);
+        const result = await clobService.sellSharesSDK(orderParams);
       const message = result.message || "Sell order processed.";
       await callback({ text: message });
       return message;

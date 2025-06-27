@@ -12,7 +12,7 @@ import {
 } from "@elizaos/core/v2";
 import * as dotenv from "dotenv";
 dotenv.config();
-import { PolymarketService } from "../../services/polymarketService";
+import { ClobService } from "../../services/clobService";
 import { ReadMarketsActionContent, ReadMarketsData } from "../../types";
 import { readMarketsModel } from "../../models";
 import { getMarketsExamples } from "../../examples";
@@ -103,10 +103,10 @@ export const readMarketsAction: Action = {
 
       // If not in cache, fetch from service
       logger.info(
-        `Fetching markets from PolymarketService with query: "${query}" and limit: ${userLimit}`,
+        `Fetching markets from ClobService with query: "${query}" and limit: ${userLimit}`,
       );
 
-      const result = await PolymarketService.fetchMarkets({limit: userLimit, activeOnly: true, query: query});
+      const result = await ClobService.fetchMarkets({limit: userLimit, activeOnly: true, query: query});
 
       if (!result.success || !result.markets || result.markets.length === 0) {
         const errorMessage = `Sorry, I couldn't find any prediction markets${query ? ` about "${query}"` : ""}.${result.error ? ` ${result.error}` : ""}`;

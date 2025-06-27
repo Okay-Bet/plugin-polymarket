@@ -1,6 +1,6 @@
 import { describe, expect, it, vi, beforeAll, afterAll } from 'vitest';
 import { ModelType, logger } from '@elizaos/core';
-import { PolymarketService } from '../src/services/polymarketService';
+import { ClobService } from '../src/services/clobService';
 import dotenv from 'dotenv';
 import plugin from '../src/plugin';
 
@@ -47,8 +47,8 @@ function createRealRuntime() {
 
   // Create a real service instance if needed
   const createService = (serviceType: string) => {
-    if (serviceType === PolymarketService.serviceType) {
-      return new PolymarketService({
+    if (serviceType === ClobService.serviceType) {
+      return new ClobService({
         character: {
           name: 'Test Character',
           system: 'You are a helpful assistant for testing.',
@@ -194,18 +194,18 @@ describe('Plugin Models', () => {
   });
 });
 
-describe('PolymarketService', () => {
+describe('ClobService', () => {
   it('should start the service', async () => {
     const runtime = createRealRuntime();
     let startResult;
     let error: Error | unknown = null;
 
     try {
-      logger.info('Starting PolymarketService');
-      startResult = await PolymarketService.start(runtime as any);
+      logger.info('Starting ClobService');
+      startResult = await ClobService.start(runtime as any);
 
       expect(startResult).toBeDefined();
-      expect(startResult.constructor.name).toBe('PolymarketService');
+      expect(startResult.constructor.name).toBe('ClobService');
 
       // Test real functionality
       const servicePropertyNames = Object.getOwnPropertyNames(startResult);
@@ -217,7 +217,7 @@ describe('PolymarketService', () => {
     }
 
     documentTestResult(
-      'PolymarketService start',
+      'ClobService start',
       {
         success: !!startResult,
         serviceType: startResult?.constructor.name,
@@ -230,14 +230,14 @@ describe('PolymarketService', () => {
     const runtime = createRealRuntime();
 
     // First registration should succeed
-    const result1 = await PolymarketService.start(runtime as any);
+    const result1 = await ClobService.start(runtime as any);
     expect(result1).toBeTruthy();
 
     let startupError: Error | unknown = null;
 
     try {
       // Second registration should fail
-      await PolymarketService.start(runtime as any);
+      await ClobService.start(runtime as any);
       expect(true).toBe(false); // Should not reach here
     } catch (e) {
       startupError = e;
@@ -245,7 +245,7 @@ describe('PolymarketService', () => {
     }
 
     documentTestResult(
-      'PolymarketService double start',
+      'ClobService double start',
       {
         errorThrown: !!startupError,
         errorMessage: startupError instanceof Error ? startupError.message : String(startupError),
@@ -260,14 +260,14 @@ describe('PolymarketService', () => {
 
     try {
       // Register a real service first
-      const service = new PolymarketService(runtime as any);
-      runtime.registerService(PolymarketService.serviceType, service);
+      const service = new ClobService(runtime as any);
+      runtime.registerService(ClobService.serviceType, service);
 
       // Spy on the real service's stop method
       const stopSpy = vi.spyOn(service, 'stop');
 
       // Call the static stop method
-      await PolymarketService.stop(runtime as any);
+      await ClobService.stop(runtime as any);
 
       // Verify the service's stop method was called
       expect(stopSpy).toHaveBeenCalled();
@@ -277,7 +277,7 @@ describe('PolymarketService', () => {
     }
 
     documentTestResult(
-      'PolymarketService stop',
+      'ClobService stop',
       {
         success: !error,
       },
@@ -292,26 +292,26 @@ describe('PolymarketService', () => {
     let error: Error | unknown = null;
 
     try {
-      // For this specific test, explicitly mock getService to return null for 'PolymarketService'
-      // to ensure we test the "service not found" path in PolymarketService.stop
+      // For this specific test, explicitly mock getService to return null for 'ClobService'
+      // to ensure we test the "service not found" path in ClobService.stop
       vi.spyOn(runtime, 'getService').mockImplementation((serviceType: string) => {
-        if (serviceType === PolymarketService.serviceType) return null;
+        if (serviceType === ClobService.serviceType) return null;
         return services.get(serviceType); // Fallback to original behavior for other services if any
       });
       const services = new Map();
-      await PolymarketService.stop(runtime as any);
+      await ClobService.stop(runtime as any);
       // Should not reach here
       expect(true).toBe(false);
     } catch (e) {
       error = e;
       expect(error).toBeTruthy();
       if (error instanceof Error) {
-        expect(error.message).toContain('PolymarketService not found');
+        expect(error.message).toContain('ClobService not found');
         }
     }
 
     documentTestResult(
-      'PolymarketService non-existent stop',
+      'ClobService non-existent stop',
       {
         errorThrown: !!error,
         errorMessage: (error as Error).message,
@@ -324,7 +324,7 @@ describe('PolymarketService', () => {
     const runtime = createRealRuntime();
 
     // First start the service
-    const startResult = await PolymarketService.start(runtime as any);
+    const startResult = await ClobService.start(runtime as any);
     expect(startResult).toBeTruthy();
 
     let stopError: Error | unknown = null;
@@ -332,7 +332,7 @@ describe('PolymarketService', () => {
 
     try {
       // Then stop it
-      await PolymarketService.stop(runtime as any);
+      await ClobService.stop(runtime as any);
       stopSuccess = true;
     } catch (e) {
       stopError = e;
@@ -340,7 +340,7 @@ describe('PolymarketService', () => {
     }
 
     documentTestResult(
-      'PolymarketService stop',
+      'ClobService stop',
       {
         success: stopSuccess,
         errorThrown: !!stopError,

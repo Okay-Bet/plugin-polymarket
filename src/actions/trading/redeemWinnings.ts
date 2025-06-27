@@ -7,7 +7,7 @@ import {
   HandlerCallback,
   logger
 } from "@elizaos/core/v2";
-import { PolymarketService } from "../../services/polymarketService";
+import { ClobService } from "../../services/clobService";
 import { RedeemWinningsActionContent } from "../../types";
 
 export const redeemWinningsAction: Action = {
@@ -85,7 +85,7 @@ export const redeemWinningsAction: Action = {
     // If market ID is provided, verify it exists
     let marketName = "all resolved markets";
     if (marketId) {
-      const marketResult = await PolymarketService.fetchMarketById(marketId);
+      const marketResult = await ClobService.fetchMarketById(marketId);
       if (!marketResult.success || !marketResult.market) {
         return `Sorry, I couldn't find a market with ID ${marketId} to redeem winnings from. ${marketResult.error || ''}`;
       }
@@ -96,7 +96,7 @@ export const redeemWinningsAction: Action = {
     logger.info(`Attempting to redeem winnings${marketId ? ` from market ${marketId}` : ' from all resolved markets'}`);
     
     // Call the CLOB API to redeem winnings
-    const result = await PolymarketService.redeemUserPositions({
+    const result = await ClobService.redeemUserPositions({
       // These values are placeholders and need to be replaced with actual values
       conditionalTokensAddress: "0x0000000000000000000000000000000000000000", 
       collateralTokenAddress: "0x0000000000000000000000000000000000000000", 

@@ -303,34 +303,3 @@ export interface RedeemResult {
   //transactionHash?: string;
   error?: string;
 }
-
-export interface SimpleMarket {
-    id: number;
-    question: string;
-    end: string;
-    description: string;
-    active: boolean;
-    funded: boolean;
-    rewardsMinSize: number;
-    rewardsMaxSpread: number;
-    spread: number;
-    outcomes: string;
-    outcome_prices: string;
-    clob_token_ids: string;
-}
-
-export interface SimpleEvent {
-    id: number;
-    ticker: string;
-    slug: string;
-    title: string;
-    description: string;
-    active: boolean;
-    closed: boolean;
-    archived: boolean;
-    new: boolean;
-    featured: boolean;
-    restricted: boolean;
-    end: string;
-    markets: string;
-}

@@ -1,5 +1,5 @@
 import { IAgentRuntime, logger, Route, type Plugin } from '@elizaos/core/v2';
-import { PolymarketService } from './services/polymarketService';
+import { ClobService } from './services/clobService';
 import { readMarketsAction } from './actions/utilites/readMarkets';
 import { readMarketAction } from './actions/utilites/readMarket';
 import { buySharesAction } from './actions/trading/buyShares';
@@ -8,6 +8,7 @@ import { redeemWinningsAction } from './actions/trading/redeemWinnings';
 import { redeemSharesAction } from './actions/trading/redeemShares';
 import { getUsernameAction, setUserAction } from './actions/utilites/user';
 import { connectWalletAction } from './actions/wallet/connectWallet';
+import { ResponseParserService } from './services/responseParser';
 import { getWalletInfoAction } from './actions/wallet/getWalletInfo';
 
 const pluginPolymarket: Plugin = {
@@ -26,7 +27,7 @@ const pluginPolymarket: Plugin = {
     redeemSharesAction,
     redeemWinningsAction
   ],
-  services: [PolymarketService],
+  services: [ResponseParserService, ClobService, ClobService],
   events: {
     VOICE_MESSAGE_RECEIVED: [
       async (params: any) =>
@@ -45,7 +46,7 @@ const pluginPolymarket: Plugin = {
       type: "GET",
       handler: async (req: any, res: any, runtime: IAgentRuntime) => {
         try {
-          const markets = await PolymarketService.fetchMarkets();
+          const markets = await ClobService.fetchMarkets();
           res.json(markets);
         } catch (error: any) {
           logger.error("Error fetching markets:", error);
