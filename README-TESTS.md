@@ -24,7 +24,7 @@ The test suite covers:
    - Trading: `POLYMARKET_BUY_SHARES`, `POLYMARKET_SELL_SHARES`, and `POLYMARKET_REDEEM_WINNINGS`
 2. **Service Tests** - Testing the service functionality:
    - `GammaService` for market data API interactions
-   - `ClobService` for trading operations API interactions
+   - `PolymarketService` for trading operations API interactions
 3. **Plugin Structure** - Validating the overall plugin configuration
 
 ## Running Tests
@@ -115,13 +115,13 @@ describe('buySharesAction', () => {
     });
     const mockState = createMockState();
     
-    // Mock GammaService and ClobService calls
+    // Mock GammaService and PolymarketService calls
     jest.spyOn(GammaService, 'fetchMarketById').mockResolvedValue({
       success: true,
       market: { /* mock market data */ }
     });
     
-    jest.spyOn(ClobService, 'placeOrder').mockResolvedValue({
+    jest.spyOn(PolymarketService, 'placeOrder').mockResolvedValue({
       success: true,
       orderId: 'mock-order-id',
       message: 'Order placed successfully'
@@ -138,7 +138,7 @@ describe('buySharesAction', () => {
     
     expect(result).toContain('Order placed successfully');
     expect(GammaService.fetchMarketById).toHaveBeenCalledWith('138462');
-    expect(ClobService.placeOrder).toHaveBeenCalledWith({
+    expect(PolymarketService.placeOrder).toHaveBeenCalledWith({
       marketId: '138462',
       outcomeId: 'YES',
       side: 'BUY',
@@ -183,9 +183,9 @@ describe('GammaService', () => {
 });
 ```
 
-### ClobService Tests
+### PolymarketService Tests
 
-Tests for the ClobService cover:
+Tests for the PolymarketService cover:
 
 - Order placement (buy/sell) functionality
 - Order cancellation
@@ -197,7 +197,7 @@ Tests for the ClobService cover:
 Example test case structure:
 
 ```typescript
-describe('ClobService', () => {
+describe('PolymarketService', () => {
   beforeEach(() => {
     // Mock environment variables
     process.env.POLYMARKET_API_KEY = 'test-api-key';
@@ -213,7 +213,7 @@ describe('ClobService', () => {
       json: async () => ({ orderId: 'test-order-id' })
     });
     
-    const result = await ClobService.placeOrder({
+    const result = await PolymarketService.placeOrder({
       marketId: '138462',
       outcomeId: 'YES',
       side: 'BUY',
@@ -238,7 +238,7 @@ describe('ClobService', () => {
   it('should handle missing API key', async () => {
     delete process.env.POLYMARKET_API_KEY;
     
-    const result = await ClobService.redeemWinnings({
+    const result = await PolymarketService.redeemWinnings({
       marketId: '138462'
     });
     
@@ -264,14 +264,14 @@ For testing the trading functionality, follow these steps:
 
 1. **Mock Dependencies**:
    - Mock the `GammaService.fetchMarketById` method to return a valid market
-   - Mock the `ClobService.placeOrder` and `ClobService.redeemWinnings` methods to simulate successful or failed API responses
+   - Mock the `PolymarketService.placeOrder` and `PolymarketService.redeemWinnings` methods to simulate successful or failed API responses
 
 2. **Test Parameter Extraction**:
    - Test that action can correctly extract market ID, outcome, amount, and price from user messages
    - Test different message formats and phrasings to ensure robustness
 
 3. **Test API Interactions**:
-   - Verify the correct parameters are passed to the ClobService methods
+   - Verify the correct parameters are passed to the PolymarketService methods
    - Test error handling logic when API calls fail
 
 4. **Test Without Try-Catch**:

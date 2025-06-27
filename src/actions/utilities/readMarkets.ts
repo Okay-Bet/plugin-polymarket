@@ -12,7 +12,7 @@ import {
 } from "@elizaos/core/v2";
 import * as dotenv from "dotenv";
 dotenv.config();
-import { ClobService } from "../../services/clobService";
+import { PolymarketService } from "../../services/polymarketService";
 import { ReadMarketsActionContent, ReadMarketsData } from "../../types";
 import { readMarketsModel } from "../../models";
 import { getMarketsExamples } from "../../examples";
@@ -33,7 +33,7 @@ export const readMarketsAction: Action = {
     message: Memory,
   ): Promise<boolean> => {
     const content = message.content as ReadMarketsActionContent;
-    const text = content.text.toLowerCase();
+    const text = (content.text || "").toLowerCase();
 
     // Check for keywords related to Polymarket and prediction markets
     const hasPolymarketKeyword = text.includes("polymarket");
@@ -56,8 +56,14 @@ export const readMarketsAction: Action = {
       text.includes("markets") ||
       text.includes("market prices");
 
+      // Check for action keywords
+      const hasSkipKeywords = !(
+        text.includes("news") ||
+        text.includes("test")
+      )
+        
     return (
-      hasActionKeywords && (hasPolymarketKeyword || hasPredictionMarketKeywords)
+      hasActionKeywords && (hasPolymarketKeyword || hasPredictionMarketKeywords) && hasSkipKeywords
     );
   },
 
@@ -103,10 +109,10 @@ export const readMarketsAction: Action = {
 
       // If not in cache, fetch from service
       logger.info(
-        `Fetching markets from ClobService with query: "${query}" and limit: ${userLimit}`,
+        `Fetching markets from PolymarketService with query: "${query}" and limit: ${userLimit}`,
       );
 
-      const result = await ClobService.fetchMarkets({limit: userLimit, activeOnly: true, query: query});
+      const result = await PolymarketService.fetchMarkets({limit: userLimit, activeOnly: true, query: query});
 
       if (!result.success || !result.markets || result.markets.length === 0) {
         const errorMessage = `Sorry, I couldn't find any prediction markets${query ? ` about "${query}"` : ""}.${result.error ? ` ${result.error}` : ""}`;

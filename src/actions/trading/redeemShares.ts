@@ -5,7 +5,7 @@ import {
   type State,
   type HandlerCallback,
 } from "@elizaos/core/v2";
-import { ClobService } from "../../services/clobService"; // Ensure correct path
+import { PolymarketService } from "../../services/polymarketService"; // Ensure correct path
 import { redeemSharesExamples } from "src/examples";
 
 export const redeemSharesAction: Action = {
@@ -31,11 +31,11 @@ export const redeemSharesAction: Action = {
       return "Invalid input: Please provide marketId.";
     }
 
-    const clobService = _runtime.getService(
-      ClobService.serviceType,
-    ) as ClobService;
-    if (!clobService) {
-      return "ClobService not available. Please check plugin configuration.";
+    const polymarketService = _runtime.getService(
+      PolymarketService.serviceType,
+    ) as PolymarketService;
+    if (!polymarketService) {
+      return "PolymarketService not available. Please check plugin configuration.";
     }
 
 

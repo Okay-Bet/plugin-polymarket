@@ -7,7 +7,7 @@ import {
   logger,
   HandlerCallback,
 } from "@elizaos/core/v2";
-import { ClobService } from "../../services/clobService"; // Import ClobService
+import { PolymarketService } from "../../services/polymarketService"; // Import PolymarketService
 import { connectWalletExamples } from "src/examples";
 
 export const connectWalletAction: Action = {
@@ -39,11 +39,11 @@ export const connectWalletAction: Action = {
     _responses: Memory[],
   ): Promise<string> => {
     // In a real application, you'd trigger a wallet connection flow here.
-    const clobService = _runtime.getService(ClobService.serviceType) as
-      | ClobService
+    const polymarketService = _runtime.getService(PolymarketService.serviceType) as
+      | PolymarketService
       | undefined;
-    if (!clobService) {
-      const errorMsg = "ClobService not available.";
+    if (!polymarketService) {
+      const errorMsg = "PolymarketService not available.";
       logger.error(errorMsg);
       await callback({ text: errorMsg });
       return errorMsg;

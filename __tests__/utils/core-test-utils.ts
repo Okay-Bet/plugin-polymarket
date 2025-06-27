@@ -121,8 +121,8 @@ export const createMockRuntime = (): IAgentRuntime => {
       search: async () => [],
     },
     actions: [],
-    clobService: {
-      // Adding clobService with a mock fetchMarkets
+    polymarketService: {
+      // Adding polymarketService with a mock fetchMarkets
       fetchMarkets: vi.fn(),
       fetchMarketById: vi.fn(),
     },

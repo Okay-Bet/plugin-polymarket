@@ -123,13 +123,13 @@ export class ClobTestSuite implements TestSuite {
       },
     },
     {
-      name: "ClobService test",
+      name: "PolymarketService test",
       fn: async (runtime: IAgentRuntime) => {
         // Test service registration and lifecycle
         try {
           const service = runtime.getService("clob");
           if (!service) {
-            throw new Error("ClobService not found");
+            throw new Error("PolymarketService not found");
           }
 
           if (
@@ -141,7 +141,7 @@ export class ClobTestSuite implements TestSuite {
 
           await service.stop();
         } catch (error) {
-          throw new Error(`ClobService test failed: ${error.message}`);
+          throw new Error(`PolymarketService test failed: ${error.message}`);
         }
       },
     },

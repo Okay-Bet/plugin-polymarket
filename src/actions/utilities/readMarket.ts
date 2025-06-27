@@ -9,7 +9,7 @@ import {
 } from "@elizaos/core/v2";
 import * as dotenv from "dotenv";
 dotenv.config();
-import { ClobService } from "../../services/clobService";
+import { PolymarketService } from "../../services/polymarketService";
 import {
   GetMarketActionContent,
   PolymarketMarket,
@@ -50,7 +50,7 @@ export const readMarketAction: Action = {
         return "Sorry, I couldn't identify a market ID in your request. Please specify a market ID.";
       }
 
-      const result = await (ClobService.fetchMarketById(marketId));
+      const result = await (PolymarketService.fetchMarketById(marketId));
       logger.debug(result.toString());
       if (!result.success || !result.market) {
         const errorMessage = `Sorry, I couldn't fetch details for market ID "${marketId}".${result.error ? ` Error: ${result.error}` : ""}`;
@@ -81,7 +81,7 @@ export const readMarketAction: Action = {
     state?: State,
   ): Promise<boolean> => {
     const content = message.content as GetMarketActionContent;
-    const text = content.text.toLowerCase();
+    const text = (content.text || "").toLowerCase();
 
     // Check for keywords related to Polymarket and prediction markets
     const hasPolymarketKeyword = text.includes("polymarket");

@@ -47,9 +47,9 @@ export const getWalletInfoAction: Action = {
     _responses: Memory[],
   ): Promise<string> => {
     try {
-      const clobService = _runtime.getService("ClobService") as any;
-      if (!clobService) {
-        return "Error: ClobService not available.";
+      const polymarketService = _runtime.getService("PolymarketService") as any;
+      if (!polymarketService) {
+        return "Error: PolymarketService not available.";
       }
 
       // Ensure the wallet is connected
@@ -58,9 +58,9 @@ export const getWalletInfoAction: Action = {
         return "Error: Private key not found in environment variables.";
       }
 
-      await clobService.connectWallet(privateKey);
+      await polymarketService.connectWallet(privateKey);
 
-      const wallet = clobService.getClobClient().wallet;
+      const wallet = polymarketService.getClobClient().wallet;
       const address = await wallet.getAddress();
       const chainId = await wallet.getChainId();
 

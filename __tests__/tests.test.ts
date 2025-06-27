@@ -78,12 +78,12 @@ describe('ClobTestSuite', () => {
   
   it('should run clob service test successfully', async () => {
     const mockRuntime = createMockRuntime();
-    const serviceTest = testSuite.tests.find((test) => test.name === 'ClobService test');
+    const serviceTest = testSuite.tests.find((test) => test.name === 'PolymarketService test');
     if (serviceTest) {
       await expect(serviceTest.fn(mockRuntime as any)).resolves.not.toThrow();
       expect(mockRuntime.getService).toHaveBeenCalledWith('clob');
     } else {
-      assert.fail('ClobService test not found');
+      assert.fail('PolymarketService test not found');
     }
   });
 });

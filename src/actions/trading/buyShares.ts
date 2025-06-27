@@ -6,7 +6,7 @@ import {
   HandlerCallback,
   logger,
 } from "@elizaos/core/v2";
-import { ClobService } from "../../services/clobService"; // Ensure correct path
+import { PolymarketService } from "../../services/polymarketService"; // Ensure correct path
 import { buySharesExamples } from "src/examples";
 import { OrderParams } from "src/types";
 
@@ -38,16 +38,16 @@ export const buySharesAction: Action = {
       return "Invalid input: Please provide marketId, outcome (Yes/No), and quantity.";
     }
 
-    const clobService = _runtime.getService(
-      ClobService.serviceType,
-    ) as ClobService;
-    if (!clobService) {
-      return "ClobService not available. Please check plugin configuration.";
+    const polymarketService = _runtime.getService(
+      PolymarketService.serviceType,
+    ) as PolymarketService;
+    if (!polymarketService) {
+      return "PolymarketService not available. Please check plugin configuration.";
     }
 
     try {
       // Assuming you have a way to fetch market data and get the required addresses
-      const marketData = await ClobService.fetchMarketById(marketId);
+      const marketData = await PolymarketService.fetchMarketById(marketId);
 
       if (!marketData) {
         return `Could not retrieve market data for market ID: ${marketId}`;
@@ -73,7 +73,7 @@ export const buySharesAction: Action = {
         maxOutcomeTokensToSell: quantity,
       };
 
-      const result = await clobService.buySharesSDK(orderParams);
+      const result = await polymarketService.buySharesSDK(orderParams);
 
       const message = result.message || "Buy order processed.";
       await callback({ text: message });

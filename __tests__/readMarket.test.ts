@@ -1,11 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { readMarketsAction } from '../src/actions/utilities/readMarkets';
-import { polymarketService } from '../src/services/polymarketService';
+import { PolymarketService } from '../src/services/polymarketService';
 import type { IAgentRuntime, Memory, State, Content, UUID } from '@elizaos/core/v2'; // Import UUID and Content
 import { ReadMarketsActionContent, PolymarketMarket } from '../src/types';
 
 vi.mock('../../services/polymarketService', () => ({
-  polymarketService: {
+  PolymarketService: {
     fetchMarkets: vi.fn(),
   },
 }));
@@ -121,12 +121,12 @@ describe('readMarketsAction Action', () => {
         { id: '1', slug: 'ai-safety-market-1', question: 'AI safety market 1?', outcomes: [{clobTokenId: 'o1', name: 'Yes', price: "0.7" }, {clobTokenId: 'o1-no', name: 'No', price: "0.3" }], active: true, url: '', volume: "0", liquidity: "0", endDate: '', description: '' },
         { id: '2', slug: 'ai-safety-market-2', question: 'AI safety market 2?', outcomes: [{clobTokenId: 'o2', name: 'No', price: "0.3" }], active: true, url: '', volume: "0", liquidity: "0", endDate: '', description: '' },
       ];
-      (polymarketService.fetchMarkets as ReturnType<typeof vi.fn>).mockResolvedValue({ success: true, markets: fakeMarkets });
+      (PolymarketService.fetchMarkets as ReturnType<typeof vi.fn>).mockResolvedValue({ success: true, markets: fakeMarkets });
 
       const result = await readMarketsAction.handler!(mockRuntime, currentMessage, mockState);
 
       expect(mockRuntime.composeState).toHaveBeenCalledWith(currentMessage);
-      expect(polymarketService.fetchMarkets).toHaveBeenCalledWith({
+      expect(PolymarketService.fetchMarkets).toHaveBeenCalledWith({
         limit: 3,
         activeOnly: true,
         query: 'AI safety',
@@ -141,9 +141,9 @@ describe('readMarketsAction Action', () => {
           ...mockMessage,
           content: { text: 'what polymarket markets about "elections"?' } as Content
       };
-       (polymarketService.fetchMarkets as ReturnType<typeof vi.fn>).mockResolvedValue({ success: true, markets: [] });
+       (PolymarketService.fetchMarkets as ReturnType<typeof vi.fn>).mockResolvedValue({ success: true, markets: [] });
       await readMarketsAction.handler!(mockRuntime, currentMessage, mockState);
-      expect(polymarketService.fetchMarkets).toHaveBeenCalledWith(expect.objectContaining({
+      expect(PolymarketService.fetchMarkets).toHaveBeenCalledWith(expect.objectContaining({
         limit: 5, 
         query: 'elections',
       }));
@@ -154,9 +154,9 @@ describe('readMarketsAction Action', () => {
           ...mockMessage,
           content: { text: 'list all markets from polymarket' } as Content
       };
-      (polymarketService.fetchMarkets as ReturnType<typeof vi.fn>).mockResolvedValue({ success: true, markets: [] });
+      (PolymarketService.fetchMarkets as ReturnType<typeof vi.fn>).mockResolvedValue({ success: true, markets: [] });
       await readMarketsAction.handler!(mockRuntime, currentMessage, mockState);
-      expect(polymarketService.fetchMarkets).toHaveBeenCalledWith(expect.objectContaining({
+      expect(PolymarketService.fetchMarkets).toHaveBeenCalledWith(expect.objectContaining({
         activeOnly: false,
       }));
     });
@@ -166,7 +166,7 @@ describe('readMarketsAction Action', () => {
           ...mockMessage,
           content: { text: 'find polymarket markets about "obscure topic"' } as Content
       };
-      (polymarketService.fetchMarkets as ReturnType<typeof vi.fn>).mockResolvedValue({ success: true, markets: [] });
+      (PolymarketService.fetchMarkets as ReturnType<typeof vi.fn>).mockResolvedValue({ success: true, markets: [] });
 
       const result = await readMarketsAction.handler!(mockRuntime, currentMessage, mockState);
       expect(result).toBe(`Sorry, I couldn't find any prediction markets about "obscure topic".`);
@@ -177,7 +177,7 @@ describe('readMarketsAction Action', () => {
           ...mockMessage,
           content: { text: 'show polymarket markets' } as Content
       };
-      (polymarketService.fetchMarkets as ReturnType<typeof vi.fn>).mockResolvedValue({ success: false, error: 'Service unavailable' });
+      (PolymarketService.fetchMarkets as ReturnType<typeof vi.fn>).mockResolvedValue({ success: false, error: 'Service unavailable' });
 
       const result = await readMarketsAction.handler!(mockRuntime, currentMessage, mockState);
       expect(result).toBe("Sorry, I couldn't find any prediction markets. Service unavailable");
@@ -188,7 +188,7 @@ describe('readMarketsAction Action', () => {
           ...mockMessage,
           content: { text: 'show polymarket markets' } as Content
       };
-      (polymarketService.fetchMarkets as ReturnType<typeof vi.fn>).mockRejectedValue(new Error('Big boom'));
+      (PolymarketService.fetchMarkets as ReturnType<typeof vi.fn>).mockRejectedValue(new Error('Big boom'));
       const result = await readMarketsAction.handler!(mockRuntime, currentMessage, mockState);
       expect(result).toBe('Sorry, there was an error fetching prediction markets: Big boom');
     });

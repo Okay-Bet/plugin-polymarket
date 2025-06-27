@@ -1,7 +1,5 @@
 # Polymarket Plugin for Eliza
 
-# Polymarket Plugin
-
 A plugin for ElizaOS that provides integration with Polymarket prediction markets data. This plugin enables AI agents to fetch and present real-time market data from Polymarket and execute trading operations.
 
 ## Overview
