@@ -11,6 +11,10 @@ node_modules/
 *.njsproj
 *.sln
 *.swp
+.vs
+.vs/*
+.windsurf/rules/
+.windsurf
 
 # Logs and temp files
 *.log
@@ -19,3 +23,16 @@ temp/
 
 # Environment files
 .env
+
+# Other files
+.elizad
+*.env
+elizadb
+elizaos
+elizaos.db
+elizaos.db-journal
+elizaos.db-shm
+elizaos.db-wal
+.qodo/
+.eliza
+.eliza/*
