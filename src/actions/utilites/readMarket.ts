@@ -9,12 +9,12 @@ import {
 } from "@elizaos/core/v2";
 import * as dotenv from "dotenv";
 dotenv.config();
-import { ClobService } from "../../../plugin-polymarket/src/services/clobService";
+import { ClobService } from "../../services/clobService";
 import {
   GetMarketActionContent,
   PolymarketMarket,
 } from "../../types";
-import { getMarketByIdExamples } from "../../../plugin-polymarket/src/examples";
+import { getMarketByIdExamples } from "src/examples";
 
 export const readMarketAction: Action = {
   name: "GET_POLYMARKET_MARKET_BY_ID",
@@ -33,7 +33,7 @@ export const readMarketAction: Action = {
     _state: State,
     _options: any,
     callback: HandlerCallback,
-    _responses: Memory[]
+    _responses: Memory[],
   ): Promise<string> => {
     try {
       const content = message.content as GetMarketActionContent;

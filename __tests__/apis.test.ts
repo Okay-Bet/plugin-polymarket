@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, afterEach, beforeEach } from 'vitest';
-import { readMarketsAction } from '../src/actions/utilities/readMarkets';
+import { readMarketsAction } from '../src/actions/utilites/readMarkets';
 import { createMockRuntime, createMockMessage, createMockState } from './utils/core-test-utils';
 import { HandlerCallback, logger } from '@elizaos/core/v2';
 const apiUrl = "https://gamma-api.polymarket.com/markets";
@@ -27,8 +27,8 @@ describe('readMarketsAction', () => {
       fetchMarkets: vi.fn().mockResolvedValue({
           success: true,
           markets: [{ url: apiUrl, question: "Will this test pass?", outcomes: [{ name: "Yes", price: "0.5", clobTokenId: "123" }] }], // Simulate a market object
-      }),
-    };
+        }),
+      };
     
     // Mock the runtime's getService method to return the mock ClobService    
     runtime.getService = vi.fn().mockImplementation((serviceType) => {

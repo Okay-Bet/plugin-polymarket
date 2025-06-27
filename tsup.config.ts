@@ -1,13 +1,13 @@
 import { defineConfig } from 'tsup';
 
 export default defineConfig({
-  entry: ['plugin-polymarket/src/index.ts'],
-  outDir: './dist',
-  tsconfig: './tsconfig.build.json', // Use build-specific tsconfig
+  entry: ['src/index.ts'],
+  outDir: 'dist',
+  tsconfig: './tsconfig.json', // Use build-specific tsconfig
   sourcemap: true,
   clean: true,
-  format: ['esm'], // Ensure you're targeting CommonJS
-  dts: false, // Skip DTS generation to avoid external import issues // Ensure you're targeting CommonJS
+  format: ['esm'],
+  dts: true,
   external: [
       'dotenv',           // Externalize dotenv
       'fs',               // Externalize Node.js built-in 'fs'

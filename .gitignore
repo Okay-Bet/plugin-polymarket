@@ -25,9 +25,9 @@ temp/
 .env
 
 # Other files
+.elizad
 *.env
 elizadb
-.elizad
 elizaos
 elizaos.db
 elizaos.db-journal

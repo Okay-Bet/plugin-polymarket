@@ -12,11 +12,10 @@ import {
 } from "@elizaos/core/v2";
 import * as dotenv from "dotenv";
 dotenv.config();
-import { ClobService } from "../../../plugin-polymarket/src/services/clobService";
+import { ClobService } from "../../services/clobService";
 import { ReadMarketsActionContent, ReadMarketsData } from "../../types";
 import { readMarketsModel } from "../../models";
-import { getMarketsExamples } from "../../../plugin-polymarket/src/examples";
-import { GammaService } from "../../services/gammaService";
+import { getMarketsExamples } from "../../examples";
 
 export const readMarketsAction: Action = {
   name: "READ_POLYMARKET_MARKETS",
@@ -61,13 +60,14 @@ export const readMarketsAction: Action = {
       hasActionKeywords && (hasPolymarketKeyword || hasPredictionMarketKeywords)
     );
   },
+
   handler: async (
     runtime: IAgentRuntime,
     message: Memory,
     state: State,
     _options: any,
     callback: HandlerCallback,
-    _responses: Memory[]
+    _responses: Memory[],
   ) => {
     try {
       const content = message.content as ReadMarketsActionContent;
@@ -78,7 +78,7 @@ export const readMarketsAction: Action = {
         template: readMarketsModel,
       });
       let reflection = "";
-      reflection = await runtime.useModel(ModelType.TEXT_LARGE, {
+      reflection = await runtime.useModel(ModelType.TEXT_SMALL, {
         prompt,
       });
 
@@ -103,7 +103,7 @@ export const readMarketsAction: Action = {
 
       // If not in cache, fetch from service
       logger.info(
-        `Fetching markets from GammaService with query: "${query}" and limit: ${userLimit}`,
+        `Fetching markets from ClobService with query: "${query}" and limit: ${userLimit}`,
       );
 
       const result = await ClobService.fetchMarkets({limit: userLimit, activeOnly: true, query: query});
@@ -122,14 +122,15 @@ export const readMarketsAction: Action = {
       logger.info("Response from formatMarketsResponse:", response);
       const responseContent = {
         // Here we are adding the "#" to the text for test
-        text: response
-      } as Content; 
-      await callback(responseContent); 
+        text: response,
+      } as Content;
+
+      await callback(responseContent);
 
       return responseContent.text;
     } catch (error: any) {
       logger.error(error);
-      return `Sorry, there was an error fetching prediction markets: ${error instanceof Error ? error.message : "Unknown error"}. Please try again later.`;
+      return `Sorry, there was an error fetching prediction markets: ${error instanceof Error ? error.message : "Unknown error"}`;
     }
   },
 };
@@ -140,7 +141,7 @@ function formatMarketsResponse(
   query?: string,
 ): string {
   if (markets.length === 0) {
-    return `I couldn't find any prediction markets${query ? ` about "${query}"` : ""}.`; 
+    return `I couldn't find any prediction markets${query ? ` about "${query}"` : ""}.`;
   }
 
   const marketCount = markets.length;

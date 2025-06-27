@@ -7,7 +7,7 @@ import {
   HandlerCallback,
   logger,
 } from "@elizaos/core/v2";
-import { getUsernameExamples, setUserExamples } from "../../../plugin-polymarket/src/examples";
+import { getUsernameExamples, setUserExamples } from "src/examples";
 
 // Action to set the username
 export const setUserAction: Action = {
@@ -37,11 +37,11 @@ export const setUserAction: Action = {
     _state: State,
     _options: any,
     callback: HandlerCallback,
-    _responses: Memory[]
+    _responses: Memory[],
   ): Promise<string> => {
     try {
-       const context = (message.content as Content);
-      const text = (context.text) ? context.text.toLowerCase() : "";
+      const content = message.content as Content;
+      const text = content.text;
       const match = text.match(
         /(change|set|edit)\s+my\s+username\s+(?:to|and make it)\s+(.+)/i,
       );
@@ -86,7 +86,7 @@ export const getUsernameAction: Action = {
     _state: State,
     _options: any,
     callback: HandlerCallback,
-    _responses: Memory[]
+    _responses: Memory[],
   ): Promise<string> => {
     try {
       const currentUsername = getDefaultUsername() || "User"; // Provide a fallback default
@@ -101,7 +101,7 @@ export const getUsernameAction: Action = {
 };
 
 const USERNAME_KEY = "polymarket_username";
-// This function retrieves the username from local storage, or returns "User" if not found.
+
 export const getDefaultUsername = (): string => {
   const storedUsername = localStorage.getItem(USERNAME_KEY);
   return storedUsername || "User";
@@ -109,7 +109,7 @@ export const getDefaultUsername = (): string => {
 
 export const setUsername = (username: string): void => {
   if (username === null || username === undefined) {
-    localStorage.removeItem(USERNAME_KEY);
+    localStorage.removeItem(USERNAME_KEY); // Remove the key if null or undefined
   } else {
     localStorage.setItem(USERNAME_KEY, username);
   }

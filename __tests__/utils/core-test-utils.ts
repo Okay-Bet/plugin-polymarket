@@ -7,15 +7,6 @@ import {
 import type { Action, IAgentRuntime, Memory, State } from "@elizaos/core/v2";
 import { logger } from "@elizaos/core/v2";
 import { v4 as uuidv4 } from "uuid";
-import { buySharesAction } from "../../src/actions/trading/buyShares";
-import { redeemSharesAction } from "../../src/actions/trading/redeemShares";
-import { redeemWinningsAction } from "../../src/actions/trading/redeemWinnings";
-import { sellSharesAction } from "../../src/actions/trading/sellShares";
-import { readMarketAction } from "../../src/actions/utilities/readMarket";
-import { readMarketsAction } from "../../src/actions/utilities/readMarkets";
-import { getUsernameAction, setUserAction } from "../../src/actions/utilities/user";
-import { connectWalletAction } from "../../src/actions/wallet/connectWallet";
-import { getWalletInfoAction } from "../../src/actions/wallet/getWalletInfo";
 
 /**
  * Utility functions for reusing core package tests in project-starter tests
@@ -129,18 +120,7 @@ export const createMockRuntime = (): IAgentRuntime => {
       getRecentMessages: async () => [],
       search: async () => [],
     },
-    actions: [
-      connectWalletAction,
-      getUsernameAction,
-      setUserAction,
-      getWalletInfoAction,
-      readMarketsAction,
-      readMarketAction,
-      buySharesAction,
-      sellSharesAction,
-      redeemSharesAction,
-      redeemWinningsAction
-    ],
+    actions: [],
     clobService: {
       // Adding clobService with a mock fetchMarkets
       fetchMarkets: vi.fn(),
