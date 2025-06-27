@@ -1,4 +1,4 @@
-import {
+import { 
   type Action,
   type IAgentRuntime,
   type Memory,
@@ -7,15 +7,14 @@ import {
   logger,
   HandlerCallback,
 } from "@elizaos/core/v2";
-import { ClobService } from "../../services/clobService"; // Import ClobService
-import { connectWalletExamples } from "src/examples";
+import { ClobService } from "../../../plugin-polymarket/src/services/clobService"; // Import ClobService 
+import { connectWalletExamples } from "../../../plugin-polymarket/src/examples";
 
 export const connectWalletAction: Action = {
   name: "CONNECT_WALLET",
   similes: ["LINK_WALLET", "AUTHORIZE_WALLET"],
   description: "Connects the user's cryptocurrency wallet to Polymarket.",
   examples: [...connectWalletExamples],
-
   validate: async (
     _runtime: IAgentRuntime,
     message: Memory,
@@ -29,15 +28,14 @@ export const connectWalletAction: Action = {
       text.includes("polymarket")
     );
   },
-
   handler: async (
     _runtime: IAgentRuntime,
     _message: Memory,
     _state: State,
-    _options: any,
+    _options: {},
     callback: HandlerCallback,
-    _responses: Memory[],
-  ): Promise<string> => {
+    _responses: Memory[]
+  ): Promise<string> => { 
     // In a real application, you'd trigger a wallet connection flow here.
     const clobService = _runtime.getService(ClobService.serviceType) as
       | ClobService
@@ -48,7 +46,7 @@ export const connectWalletAction: Action = {
       await callback({ text: errorMsg });
       return errorMsg;
     }
-
+    
     try {
       // Check if a wallet is already connected
       await callback({ text: "Wallet is already connected." });
@@ -60,7 +58,7 @@ export const connectWalletAction: Action = {
         text: "Please connect your wallet.",
         metadata: { walletEvent: eventPayload },
       });
-      return "Requesting wallet connection...";
+      return "Requesting wallet connection... Please check your wallet provider for a connection request.";
     }
   },
-};
+}

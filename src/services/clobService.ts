@@ -2,14 +2,19 @@ import { Service, IAgentRuntime, logger } from "@elizaos/core/v2";
 import { buyMarketOutcome, sellMarketOutcome, redeemPositions } from "@polymarket/sdk";
 import {
   PolymarketMarket,
-  PolymarketApiResponse,
+  PolymarketApiResponse, 
   PolymarketSingleMarketApiResponse,
   OrderParams,
   OrderResult,
   RedeemResult,
   RedeemParams
-} from "../types";
+} from "../../../src/types";
 
+export type OrderParams = any;
+/***
+ * Service for interacting with Polymarket's Central Limit Order Book (CLOB) API
+ * Handles trading operations like buying, selling and redeeming winnings
+ */
 export class ClobService extends Service {
   private isConnected: boolean = false; // Track connection state
   static async redeemUserPositions(params: RedeemParams): Promise<RedeemResult> {

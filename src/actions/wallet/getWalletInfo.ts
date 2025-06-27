@@ -6,7 +6,7 @@ import {
   type Content,
   HandlerCallback,
 } from "@elizaos/core/v2";
-import { getWalletInfoExamples } from "src/examples";
+import { getWalletInfoExamples } from "../../../plugin-polymarket/src/examples";
 
 // Placeholder for actual wallet information type
 interface WalletInfo {
@@ -16,7 +16,7 @@ interface WalletInfo {
   // Add other relevant wallet information here
 }
 
-export const getWalletInfoAction: Action = {
+export const getWalletInfoAction: Action = { 
   name: "GET_WALLET_INFO",
   similes: ["CHECK_WALLET_BALANCE", "VIEW_WALLET"],
   description:
@@ -41,10 +41,10 @@ export const getWalletInfoAction: Action = {
   handler: async (
     _runtime: IAgentRuntime,
     _message: Memory,
-    _state: State,
+    _state: State | undefined,
     _options: any,
     callback: HandlerCallback,
-    _responses: Memory[],
+    _responses: Memory[]
   ): Promise<string> => {
     try {
       const clobService = _runtime.getService("ClobService") as any;
