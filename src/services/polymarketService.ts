@@ -10,7 +10,7 @@ import {
   RedeemParams,
   ApiKeyResult
 } from "../types";
-import { createApiKey } from "../providers/keyGen";
+import { getOrCreateApiKey } from "../providers/keyGen";
 
 export class PolymarketService extends Service {
   private isConnected: boolean = false; // Track connection state
@@ -69,7 +69,7 @@ export class PolymarketService extends Service {
 
   async createApiKey(): Promise<ApiKeyResult> {
     try {
-      const apiKey = await createApiKey();
+      const apiKey = await getOrCreateApiKey();
       return { success: true, apiKey: apiKey };
     } catch (error: any) {
       logger.error("Error creating API key:", error);

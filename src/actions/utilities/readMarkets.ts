@@ -133,7 +133,7 @@ export const readMarketsAction: Action = {
 
       await callback(responseContent);
 
-      return responseContent.text;
+      return responseContent.text || "";
     } catch (error: any) {
       logger.error(error);
       return `Sorry, there was an error fetching prediction markets: ${error instanceof Error ? error.message : "Unknown error"}`;

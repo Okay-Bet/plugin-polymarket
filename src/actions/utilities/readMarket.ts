@@ -66,7 +66,7 @@ export const readMarketAction: Action = {
 
         await callback(responseContent);
 
-        return responseContent.text;
+        return responseContent.text || "";
       } catch (e: any) {
         logger.error("Error during response formatting:", e);
         return `Sorry, I encountered an issue processing the market data: ${e.message}`;

@@ -114,6 +114,6 @@ export const redeemWinningsAction: Action = {
     
     await callback(responseContent);
     
-    return responseContent.text;
+    return responseContent.text || "";
   }
 };
