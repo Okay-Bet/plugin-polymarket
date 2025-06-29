@@ -3,70 +3,70 @@ import plugin from "../src/plugin";
 
 // Mock logger
 vi.mock('@elizaos/core/v2', async () => {
-  const actual = await vi.importActual('@elizaos/core/v2');
-  return {
-    ...actual,
-    logger: {
-      info: vi.fn(),
-      error: vi.fn(),
-      warn: vi.fn(),
-    },
-  };
+	const actual = await vi.importActual('@elizaos/core/v2');
+	return {
+		...actual,
+		logger: {
+			info: vi.fn(),
+			error: vi.fn(),
+			warn: vi.fn(),
+		},
+	};
 });
 
 // Access the plugin's init function
 const initPlugin = plugin.init;
 
 describe('Plugin Configuration Schema', () => {
-  // Create a backup of the original env values
-  const originalEnv = { ...process.env };
+	// Create a backup of the original env values
+	const originalEnv = { ...process.env };
 
-  beforeEach(() => {
-    vi.clearAllMocks();
-    // Reset environment variables before each test
-    process.env = { ...originalEnv };
-  });
+	beforeEach(() => {
+		vi.clearAllMocks();
+		// Reset environment variables before each test
+		process.env = { ...originalEnv };
+	});
 
-  afterEach(() => {
-    // Restore original environment variables after each test
-    process.env = { ...originalEnv };
-  });
+	afterEach(() => {
+		// Restore original environment variables after each test
+		process.env = { ...originalEnv };
+	});
 
-  it('should accept valid configuration', async () => {
-    const validConfig = {
-      EXAMPLE_PLUGIN_VARIABLE: 'valid-value',
-    };
+	it('should accept valid configuration', async () => {
+		const validConfig = {
+			EXAMPLE_PLUGIN_VARIABLE: 'valid-value',
+		};
 
-    if (initPlugin) {
-      let error = null;
-      try {
-        const mockRuntime = {
-          registerPlugin: vi.fn(), // Add mock registerPlugin
-        };
+		if (initPlugin) {
+			let error = null;
+			try {
+				const mockRuntime = {
+					registerPlugin: vi.fn(), // Add mock registerPlugin
+				};
 
-        await initPlugin(validConfig, mockRuntime as any);
+				await initPlugin(validConfig, mockRuntime as any);
 
-      } catch (e) {
-        error = e;
-      }
-      expect(error).toBeNull();
-    }
-  });
+			} catch (e) {
+				error = e;
+			}
+			expect(error).toBeNull();
+		}
+	});
 
-  it('should accept empty configuration', async () => {
-    const emptyConfig = {};
+	it('should accept empty configuration', async () => {
+		const emptyConfig = {};
 
-    if (initPlugin) {
-      const mockRuntime = {
-        registerPlugin: vi.fn(), // Add mock registerPlugin
-      };
-      let error = null;
-      try {
-        await initPlugin(emptyConfig, mockRuntime as any);
-      } catch (e) {
-        error = e;
-      }
-      expect(error).toBeNull();
-    }
-  });
+		if (initPlugin) {
+			const mockRuntime = {
+				registerPlugin: vi.fn(), // Add mock registerPlugin
+			};
+			let error = null;
+			try {
+				await initPlugin(emptyConfig, mockRuntime as any);
+			} catch (e) {
+				error = e;
+			}
+			expect(error).toBeNull();
+		}
+	});
 });

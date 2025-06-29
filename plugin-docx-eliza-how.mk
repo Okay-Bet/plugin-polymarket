@@ -14,16 +14,16 @@ The content is organized as follows:
 2. Repository information
 3. Directory structure
 4. Multiple file entries, each consisting of:
-  a. A header with the file path (## File: path/to/file)
-  b. The full contents of the file in a code block
+	a. A header with the file path (## File: path/to/file)
+	b. The full contents of the file in a code block
 
 ## Usage Guidelines
 - This file should be treated as read-only. Any changes should be made to the
-  original repository files, not this packed version.
+	original repository files, not this packed version.
 - When processing this file, use the file path to distinguish
-  between different files in the repository.
+	between different files in the repository.
 - Be aware that this file may contain sensitive information. Handle it with
-  the same level of security as you would the original repository.
+	the same level of security as you would the original repository.
 - Pay special attention to the Repository Description. These contain important context and guidelines specific to this project.
 - Pay special attention to the Repository Instruction. These contain important context and guidelines specific to this project.
 
@@ -46,46 +46,46 @@ ElizaOS Developer Context - Core technical components and implementation details
 # Directory Structure
 ```
 packages/
-  cli/
-    src/
-      index.ts
-  client/
-    src/
-      hooks/
-        use-agent-management.ts
-      lib/
-        api.ts
-      types/
-        index.ts
-  core/
-    src/
-      actions.ts
-      database.ts
-      entities.ts
-      logger.ts
-      prompts.ts
-      runtime.ts
-  docs/
-    docs/
-      core/
-        actions.md
-        agents.md
-        database.md
-        entities.md
-        evaluators.md
-        knowledge.md
-        overview.md
-        plugins.md
-        project.md
-        providers.md
-        rooms.md
-        services.md
-        tasks.md
-        worlds.md
-      quickstart.md
-    src/
-      openapi/
-        eliza-v1.yaml
+	cli/
+		src/
+			index.ts
+	client/
+		src/
+			hooks/
+				use-agent-management.ts
+			lib/
+				api.ts
+			types/
+				index.ts
+	core/
+		src/
+			actions.ts
+			database.ts
+			entities.ts
+			logger.ts
+			prompts.ts
+			runtime.ts
+	docs/
+		docs/
+			core/
+				actions.md
+				agents.md
+				database.md
+				entities.md
+				evaluators.md
+				knowledge.md
+				overview.md
+				plugins.md
+				project.md
+				providers.md
+				rooms.md
+				services.md
+				tasks.md
+				worlds.md
+			quickstart.md
+		src/
+			openapi/
+				eliza-v1.yaml
 .env.example
 package.json
 README.md
@@ -139,69 +139,69 @@ import type { Agent, Character, UUID, Memory as CoreMemory, Room as CoreRoom } f
 import clientLogger from './logger';
 import { connectionStatusActions } from '../context/ConnectionContext';
 import {
-  ServerMessage,
-  MessageServer,
-  MessageChannel,
-  AgentWithStatus,
-  AgentPanel,
+	ServerMessage,
+	MessageServer,
+	MessageChannel,
+	AgentWithStatus,
+	AgentPanel,
 } from '../types';
 interface ClientMemory extends CoreMemory {
 }
 interface LogEntry {
-  level: number;
-  time: number;
-  msg: string;
-  [key: string]: string | number | boolean | null | undefined;
+	level: number;
+	time: number;
+	msg: string;
+	[key: string]: string | number | boolean | null | undefined;
 }
 interface LogResponse {
-  logs: LogEntry[];
-  count: number;
-  total: number;
-  level: string;
-  levels: string[];
+	logs: LogEntry[];
+	count: number;
+	total: number;
+	level: string;
+	levels: string[];
 }
 type AgentLog = {
-  id?: string;
-  type?: string;
-  timestamp?: number;
-  message?: string;
-  details?: string;
-  roomId?: string;
-  body?: {
-    modelType?: string;
-    modelKey?: string;
-    params?: any;
-    response?: any;
-    usage?: {
-      prompt_tokens?: number;
-      completion_tokens?: number;
-      total_tokens?: number;
-    };
-  };
-  createdAt?: number;
-  [key: string]: any;
+	id?: string;
+	type?: string;
+	timestamp?: number;
+	message?: string;
+	details?: string;
+	roomId?: string;
+	body?: {
+		modelType?: string;
+		modelKey?: string;
+		params?: any;
+		response?: any;
+		usage?: {
+			prompt_tokens?: number;
+			completion_tokens?: number;
+			total_tokens?: number;
+		};
+	};
+	createdAt?: number;
+	[key: string]: any;
 };
 ⋮----
 const getLocalStorageApiKey = () => `eliza-api-key-$
 const fetcher = async ({
-  url,
-  method,
-  body,
-  headers,
+	url,
+	method,
+	body,
+	headers,
 }: {
-  url: string;
-  method?: 'GET' | 'POST' | 'DELETE' | 'PUT' | 'PATCH';
-  body?: object | FormData;
-  headers?: HeadersInit;
+	url: string;
+	method?: 'GET' | 'POST' | 'DELETE' | 'PUT' | 'PATCH';
+	body?: object | FormData;
+	headers?: HeadersInit;
 }) =>
 ````
 
 ## File: packages/client/src/types/index.ts
 ````typescript
 export interface IAttachment {
-  url: string;
-  contentType: string;
-  title: string;
+	url: string;
+	contentType: string;
+	title: string;
 }
 ````
 
@@ -319,19 +319,19 @@ The core Action interface includes the following components:
 
 ```typescript
 interface Action {
-  name: string; // Unique identifier
-  similes: string[]; // Alternative names/triggers
-  description: string; // Purpose and usage explanation
-  validate: (runtime: IAgentRuntime, message: Memory, state?: State) => Promise<boolean>;
-  handler: (
-    runtime: IAgentRuntime,
-    message: Memory,
-    state?: State,
-    options?: any,
-    callback?: HandlerCallback
-  ) => Promise<boolean>;
-  examples: ActionExample[][];
-  suppressInitialMessage?: boolean; // Optional flag
+	name: string; // Unique identifier
+	similes: string[]; // Alternative names/triggers
+	description: string; // Purpose and usage explanation
+	validate: (runtime: IAgentRuntime, message: Memory, state?: State) => Promise<boolean>;
+	handler: (
+		runtime: IAgentRuntime,
+		message: Memory,
+		state?: State,
+		options?: any,
+		callback?: HandlerCallback
+	) => Promise<boolean>;
+	examples: ActionExample[][];
+	suppressInitialMessage?: boolean; // Optional flag
 }
 
 // Handler callback for generating responses
@@ -339,11 +339,11 @@ type HandlerCallback = (content: Content) => Promise<void>;
 
 // Response content structure
 interface Content {
-  text: string;
-  thought?: string; // Internal reasoning (not shown to users)
-  actions?: string[]; // List of action names being performed
-  action?: string; // Legacy single action name
-  attachments?: Attachment[]; // Optional media attachments
+	text: string;
+	thought?: string; // Internal reasoning (not shown to users)
+	actions?: string[]; // List of action names being performed
+	action?: string; // Legacy single action name
+	attachments?: Attachment[]; // Optional media attachments
 }
 ```
 
@@ -353,56 +353,56 @@ Here's a simplified template for creating a custom action:
 
 ```typescript
 const customAction: Action = {
-  name: 'CUSTOM_ACTION',
-  similes: ['ALTERNATE_NAME', 'OTHER_TRIGGER'],
-  description: 'Detailed description of when and how to use this action',
+	name: 'CUSTOM_ACTION',
+	similes: ['ALTERNATE_NAME', 'OTHER_TRIGGER'],
+	description: 'Detailed description of when and how to use this action',
 
-  validate: async (runtime: IAgentRuntime, message: Memory, state?: State) => {
-    // Logic to determine if this action applies to the current message
-    // Should be efficient and quick to check
-    return true; // Return true if action is valid for this message
-  },
+	validate: async (runtime: IAgentRuntime, message: Memory, state?: State) => {
+		// Logic to determine if this action applies to the current message
+		// Should be efficient and quick to check
+		return true; // Return true if action is valid for this message
+	},
 
-  handler: async (
-    runtime: IAgentRuntime,
-    message: Memory,
-    state?: State,
-    options?: any,
-    callback?: HandlerCallback
-  ) => {
-    // Implementation logic - what the action actually does
+	handler: async (
+		runtime: IAgentRuntime,
+		message: Memory,
+		state?: State,
+		options?: any,
+		callback?: HandlerCallback
+	) => {
+		// Implementation logic - what the action actually does
 
-    // Generate a response with thought and text components
-    const responseContent = {
-      thought: 'Internal reasoning about what to do (not shown to users)',
-      text: 'The actual message to send to the conversation',
-      actions: ['CUSTOM_ACTION'], // List of actions being performed
-    };
+		// Generate a response with thought and text components
+		const responseContent = {
+			thought: 'Internal reasoning about what to do (not shown to users)',
+			text: 'The actual message to send to the conversation',
+			actions: ['CUSTOM_ACTION'], // List of actions being performed
+		};
 
-    // Send the response using the callback
-    if (callback) {
-      await callback(responseContent);
-    }
+		// Send the response using the callback
+		if (callback) {
+			await callback(responseContent);
+		}
 
-    return true; // Return true if action executed successfully
-  },
+		return true; // Return true if action executed successfully
+	},
 
-  examples: [
-    [
-      {
-        name: '{{name1}}',
-        content: { text: 'Trigger message' },
-      },
-      {
-        name: '{{name2}}',
-        content: {
-          text: 'Response',
-          thought: 'Internal reasoning',
-          actions: ['CUSTOM_ACTION'],
-        },
-      },
-    ],
-  ],
+	examples: [
+		[
+			{
+				name: '{{name1}}',
+				content: { text: 'Trigger message' },
+			},
+			{
+				name: '{{name2}}',
+				content: {
+					text: 'Response',
+					thought: 'Internal reasoning',
+					actions: ['CUSTOM_ACTION'],
+				},
+			},
+		],
+	],
 };
 ```
 
@@ -412,21 +412,21 @@ Actions can be referenced in character files to define how an agent should respo
 
 ```json
 "messageExamples": [
-    [
-        {
-            "user": "{{user1}}",
-            "content": {
-                "text": "Can you help transfer some SOL?"
-            }
-        },
-        {
-            "user": "SBF",
-            "content": {
-                "text": "yeah yeah for sure, sending SOL is pretty straightforward. just need the recipient and amount. everything else is basically fine, trust me.",
-                "actions": ["SEND_SOL"]
-            }
-        }
-    ]
+		[
+				{
+						"user": "{{user1}}",
+						"content": {
+								"text": "Can you help transfer some SOL?"
+						}
+				},
+				{
+						"user": "SBF",
+						"content": {
+								"text": "yeah yeah for sure, sending SOL is pretty straightforward. just need the recipient and amount. everything else is basically fine, trust me.",
+								"actions": ["SEND_SOL"]
+						}
+				}
+		]
 ]
 ```
 
@@ -436,49 +436,49 @@ The most fundamental action is the `REPLY` action, which allows agents to respon
 
 ```typescript
 const replyAction: Action = {
-  name: 'REPLY',
-  similes: ['GREET', 'REPLY_TO_MESSAGE', 'SEND_REPLY', 'RESPOND', 'RESPONSE'],
-  description: 'Replies to the current conversation with the text from the generated message.',
+	name: 'REPLY',
+	similes: ['GREET', 'REPLY_TO_MESSAGE', 'SEND_REPLY', 'RESPOND', 'RESPONSE'],
+	description: 'Replies to the current conversation with the text from the generated message.',
 
-  validate: async (_runtime: IAgentRuntime) => true, // Always valid
+	validate: async (_runtime: IAgentRuntime) => true, // Always valid
 
-  handler: async (
-    runtime: IAgentRuntime,
-    message: Memory,
-    state: State,
-    _options: any,
-    callback: HandlerCallback
-  ) => {
-    // Compose state with necessary providers
-    state = await runtime.composeState(message, [
-      ...(message.content.providers ?? []),
-      'RECENT_MESSAGES',
-    ]);
+	handler: async (
+		runtime: IAgentRuntime,
+		message: Memory,
+		state: State,
+		_options: any,
+		callback: HandlerCallback
+	) => {
+		// Compose state with necessary providers
+		state = await runtime.composeState(message, [
+			...(message.content.providers ?? []),
+			'RECENT_MESSAGES',
+		]);
 
-    // Generate response using LLM
-    const response = await runtime.useModel(ModelType.TEXT_SMALL, {
-      prompt: composePromptFromState({
-        state,
-        template: replyTemplate,
-      }),
-    });
+		// Generate response using LLM
+		const response = await runtime.useModel(ModelType.TEXT_SMALL, {
+			prompt: composePromptFromState({
+				state,
+				template: replyTemplate,
+			}),
+		});
 
-    // Parse and format response
-    const responseContentObj = parseJSONObjectFromText(response);
-    const responseContent = {
-      thought: responseContentObj.thought,
-      text: responseContentObj.message || '',
-      actions: ['REPLY'],
-    };
+		// Parse and format response
+		const responseContentObj = parseJSONObjectFromText(response);
+		const responseContent = {
+			thought: responseContentObj.thought,
+			text: responseContentObj.message || '',
+			actions: ['REPLY'],
+		};
 
-    // Send response via callback
-    await callback(responseContent);
-    return true;
-  },
+		// Send response via callback
+		await callback(responseContent);
+		return true;
+	},
 
-  examples: [
-    /* Examples omitted for brevity */
-  ],
+	examples: [
+		/* Examples omitted for brevity */
+	],
 };
 ```
 
@@ -494,35 +494,35 @@ The actions provider is responsible for making valid actions available to the ag
 
 ```typescript
 const actionsProvider: Provider = {
-  name: 'ACTIONS',
-  description: 'Possible response actions',
-  position: -1, // High priority provider
-  get: async (runtime: IAgentRuntime, message: Memory, state: State) => {
-    // Validate all actions for this message
-    const actionPromises = runtime.actions.map(async (action: Action) => {
-      const result = await action.validate(runtime, message, state);
-      return result ? action : null;
-    });
+	name: 'ACTIONS',
+	description: 'Possible response actions',
+	position: -1, // High priority provider
+	get: async (runtime: IAgentRuntime, message: Memory, state: State) => {
+		// Validate all actions for this message
+		const actionPromises = runtime.actions.map(async (action: Action) => {
+			const result = await action.validate(runtime, message, state);
+			return result ? action : null;
+		});
 
-    const resolvedActions = await Promise.all(actionPromises);
-    const actionsData = resolvedActions.filter(Boolean);
+		const resolvedActions = await Promise.all(actionPromises);
+		const actionsData = resolvedActions.filter(Boolean);
 
-    // Format action information for the agent
-    const values = {
-      actionNames: `Possible response actions: ${formatActionNames(actionsData)}`,
-      actions: formatActions(actionsData),
-      actionExamples: composeActionExamples(actionsData, 10),
-    };
+		// Format action information for the agent
+		const values = {
+			actionNames: `Possible response actions: ${formatActionNames(actionsData)}`,
+			actions: formatActions(actionsData),
+			actionExamples: composeActionExamples(actionsData, 10),
+		};
 
-    // Return data, values, and text representation
-    return {
-      data: { actionsData },
-      values,
-      text: [values.actionNames, values.actionExamples, values.actions]
-        .filter(Boolean)
-        .join('\n\n'),
-    };
-  },
+		// Return data, values, and text representation
+		return {
+			data: { actionsData },
+			values,
+			text: [values.actionNames, values.actionExamples, values.actions]
+				.filter(Boolean)
+				.join('\n\n'),
+		};
+	},
 };
 ```
 
@@ -560,87 +560,87 @@ Here's a more detailed example of an image generation action:
 
 ```typescript
 const generateImageAction: Action = {
-  name: 'GENERATE_IMAGE',
-  similes: ['CREATE_IMAGE', 'MAKE_IMAGE', 'DRAW'],
-  description: "Generates an image based on the user's description",
-  suppressInitialMessage: true, // Don't send initial text response
+	name: 'GENERATE_IMAGE',
+	similes: ['CREATE_IMAGE', 'MAKE_IMAGE', 'DRAW'],
+	description: "Generates an image based on the user's description",
+	suppressInitialMessage: true, // Don't send initial text response
 
-  validate: async (runtime: IAgentRuntime, message: Memory) => {
-    const text = message.content.text.toLowerCase();
-    return (
-      text.includes('generate') ||
-      text.includes('create') ||
-      text.includes('draw') ||
-      text.includes('make an image')
-    );
-  },
+	validate: async (runtime: IAgentRuntime, message: Memory) => {
+		const text = message.content.text.toLowerCase();
+		return (
+			text.includes('generate') ||
+			text.includes('create') ||
+			text.includes('draw') ||
+			text.includes('make an image')
+		);
+	},
 
-  handler: async (
-    runtime: IAgentRuntime,
-    message: Memory,
-    state?: State,
-    _options?: any,
-    callback?: HandlerCallback
-  ) => {
-    try {
-      // Get appropriate service
-      const imageService = runtime.getService(ServiceType.IMAGE_GENERATION);
+	handler: async (
+		runtime: IAgentRuntime,
+		message: Memory,
+		state?: State,
+		_options?: any,
+		callback?: HandlerCallback
+	) => {
+		try {
+			// Get appropriate service
+			const imageService = runtime.getService(ServiceType.IMAGE_GENERATION);
 
-      // Generate the response with thought component
-      const responseContent = {
-        thought:
-          "This request is asking for image generation. I'll use the image service to create a visual based on the user's description.",
-        text: "I'm generating that image for you now...",
-        actions: ['GENERATE_IMAGE'],
-      };
+			// Generate the response with thought component
+			const responseContent = {
+				thought:
+					"This request is asking for image generation. I'll use the image service to create a visual based on the user's description.",
+				text: "I'm generating that image for you now...",
+				actions: ['GENERATE_IMAGE'],
+			};
 
-      // Send initial response if callback provided
-      if (callback) {
-        await callback(responseContent);
-      }
+			// Send initial response if callback provided
+			if (callback) {
+				await callback(responseContent);
+			}
 
-      // Generate image
-      const imageUrl = await imageService.generateImage(message.content.text);
+			// Generate image
+			const imageUrl = await imageService.generateImage(message.content.text);
 
-      // Create follow-up message with the generated image
-      await runtime.createMemory(
-        {
-          id: generateId(),
-          content: {
-            text: "Here's the image I generated:",
-            attachments: [
-              {
-                type: 'image',
-                url: imageUrl,
-              },
-            ],
-          },
-          agentId: runtime.agentId,
-          roomId: message.roomId,
-        },
-        'messages'
-      );
+			// Create follow-up message with the generated image
+			await runtime.createMemory(
+				{
+					id: generateId(),
+					content: {
+						text: "Here's the image I generated:",
+						attachments: [
+							{
+								type: 'image',
+								url: imageUrl,
+							},
+						],
+					},
+					agentId: runtime.agentId,
+					roomId: message.roomId,
+				},
+				'messages'
+			);
 
-      return true;
-    } catch (error) {
-      console.error('Image generation failed:', error);
+			return true;
+		} catch (error) {
+			console.error('Image generation failed:', error);
 
-      // Send error response if callback provided
-      if (callback) {
-        await callback({
-          thought: 'The image generation failed due to an error.',
-          text: "I'm sorry, I wasn't able to generate that image. There was a technical problem.",
-          actions: ['REPLY'],
-        });
-      }
+			// Send error response if callback provided
+			if (callback) {
+				await callback({
+					thought: 'The image generation failed due to an error.',
+					text: "I'm sorry, I wasn't able to generate that image. There was a technical problem.",
+					actions: ['REPLY'],
+				});
+			}
 
-      return false;
-    }
-  },
+			return false;
+		}
+	},
 
-  examples: [
-    /* Examples omitted for brevity */
-  ],
+	examples: [
+		/* Examples omitted for brevity */
+	],
 };
 ```
 
@@ -735,45 +735,45 @@ The `AgentRuntime` is the core runtime environment for Eliza agents. It handles 
 
 ```mermaid
 sequenceDiagram
-    actor User
-    participant Platform as Platform
-    participant Runtime as Runtime
-    participant State as State
-    participant P as Providers
-    participant A as Actions
-    participant M as Models
-    participant E as Evaluators
-    participant DB as Database
+		actor User
+		participant Platform as Platform
+		participant Runtime as Runtime
+		participant State as State
+		participant P as Providers
+		participant A as Actions
+		participant M as Models
+		participant E as Evaluators
+		participant DB as Database
 
-    User->>Platform: Message
-    Platform->>Runtime: Forward
+		User->>Platform: Message
+		Platform->>Runtime: Forward
 
-    %% Context building (condensed)
-    Runtime->>State: Get context
-    State->>P: Gather data
-    Note over P: Character, Knowledge,<br>Messages, Time, etc.
-    P-->>State: Context data
-    State-->>Runtime: Assembled context
+		%% Context building (condensed)
+		Runtime->>State: Get context
+		State->>P: Gather data
+		Note over P: Character, Knowledge,<br>Messages, Time, etc.
+		P-->>State: Context data
+		State-->>Runtime: Assembled context
 
-    %% Action flow (condensed)
-    Runtime->>A: Execute action
-    A->>M: Generate content
-    M-->>A: Generated text
-    A-->>Runtime: Result
+		%% Action flow (condensed)
+		Runtime->>A: Execute action
+		A->>M: Generate content
+		M-->>A: Generated text
+		A-->>Runtime: Result
 
-    %% Evaluation (condensed)
-    Runtime->>E: Analyze
-    E->>DB: Store insights
-    E-->>Runtime: Evaluation
+		%% Evaluation (condensed)
+		Runtime->>E: Analyze
+		E->>DB: Store insights
+		E-->>Runtime: Evaluation
 
-    %% Delivery
-    Runtime->>Platform: Response
-    Platform->>User: Deliver
+		%% Delivery
+		Runtime->>Platform: Response
+		Platform->>User: Deliver
 
-    %% Background (simplified)
-    par Background
-        Runtime->>Runtime: Tasks & Events
-    end
+		%% Background (simplified)
+		par Background
+				Runtime->>Runtime: Tasks & Events
+		end
 ```
 
 The runtime follows this general flow:
@@ -781,24 +781,24 @@ The runtime follows this general flow:
 1. **Initial Reception**: The user sends a message which is received by the Platform Services
 2. **Context Building**:
 
-   - The Runtime Core requests context from the State Composition system
-   - State gathers data from various Providers (Character, Knowledge, Recent Messages, etc.)
-   - The complete context is returned to the Runtime
+	 - The Runtime Core requests context from the State Composition system
+	 - State gathers data from various Providers (Character, Knowledge, Recent Messages, etc.)
+	 - The complete context is returned to the Runtime
 
 3. **Action Processing**:
 
-   - The Runtime determines applicable actions and selects the optimal one
-   - The selected action may request content generation from Models
-   - The action result is returned to the Runtime
+	 - The Runtime determines applicable actions and selects the optimal one
+	 - The selected action may request content generation from Models
+	 - The action result is returned to the Runtime
 
 4. **Learning & Persistence**:
 
-   - The conversation is analyzed by Evaluators for insights and facts
-   - Knowledge updates are sent to the Memory System
-   - All relevant data is persisted to the Database
+	 - The conversation is analyzed by Evaluators for insights and facts
+	 - Knowledge updates are sent to the Memory System
+	 - All relevant data is persisted to the Database
 
 5. **Response Delivery**:
-   - The final response is sent back to the user through Platform Services
+	 - The final response is sent back to the user through Platform Services
 
 ---
 
@@ -820,43 +820,43 @@ The [AgentRuntime](/api/classes/AgentRuntime) class is the primary implementatio
 <summary>Advanced: IAgentRuntime Interface</summary>
 ```typescript
 interface IAgentRuntime {
-    // Core identification
-    agentId: UUID;
-    
-    // Configuration
-    character: Character;                          // Personality and behavior settings
-    
-    // Components
-    plugins: Plugin[];                             // Additional capabilities
-    services: Map<ServiceTypeName, Service>;       // Platform connections and functionality
-    providers: Provider[];                         // Real-time data sources
-    actions: Action[];                             // Available behaviors
-    evaluators: Evaluator[];                       // Analysis & learning
-    routes: Route[];                               // API endpoints
-    
-    // Memory Management
-    getMemories(...): Promise<Memory[]>;           // Retrieve conversation history
-    createMemory(...): Promise<UUID>;              // Store new memories
-    searchMemories(...): Promise<Memory[]>;        // Semantic search
-    
-    // State Composition
-    composeState(...): Promise<State>;             // Gather data from providers
-    
-    // Plugin Management
-    registerPlugin(...): Promise<void>;            // Register plugins
-    
-    // Service Management
-    getService<T>(...): T | null;                  // Access services
-    registerService(...): Promise<void>;           // Register services
-    
-    // Model Integration
-    useModel<T, R>(...): Promise<R>;               // Use AI models
-    
-    // Additional Utilities
-    getSetting(...): any;                          // Access settings
-    setSetting(...): void;                         // Configure settings
-    getCache<T>(...): Promise<T | undefined>;      // Access cached data
-    setCache<T>(...): Promise<boolean>;            // Store cached data
+		// Core identification
+		agentId: UUID;
+		
+		// Configuration
+		character: Character;                          // Personality and behavior settings
+		
+		// Components
+		plugins: Plugin[];                             // Additional capabilities
+		services: Map<ServiceTypeName, Service>;       // Platform connections and functionality
+		providers: Provider[];                         // Real-time data sources
+		actions: Action[];                             // Available behaviors
+		evaluators: Evaluator[];                       // Analysis & learning
+		routes: Route[];                               // API endpoints
+		
+		// Memory Management
+		getMemories(...): Promise<Memory[]>;           // Retrieve conversation history
+		createMemory(...): Promise<UUID>;              // Store new memories
+		searchMemories(...): Promise<Memory[]>;        // Semantic search
+		
+		// State Composition
+		composeState(...): Promise<State>;             // Gather data from providers
+		
+		// Plugin Management
+		registerPlugin(...): Promise<void>;            // Register plugins
+		
+		// Service Management
+		getService<T>(...): T | null;                  // Access services
+		registerService(...): Promise<void>;           // Register services
+		
+		// Model Integration
+		useModel<T, R>(...): Promise<R>;               // Use AI models
+		
+		// Additional Utilities
+		getSetting(...): any;                          // Access settings
+		setSetting(...): void;                         // Configure settings
+		getCache<T>(...): Promise<T | undefined>;      // Access cached data
+		setCache<T>(...): Promise<boolean>;            // Store cached data
 }
 ```
 
@@ -903,29 +903,29 @@ The runtime maintains comprehensive state through the State interface:
 
 ```typescript
 interface State {
-  // Core state data
-  values: {
-    [key: string]: any;
-  };
-  data: {
-    [key: string]: any;
-  };
-  text: string;
+	// Core state data
+	values: {
+		[key: string]: any;
+	};
+	data: {
+		[key: string]: any;
+	};
+	text: string;
 }
 
 // State composition example
 async function manageState() {
-  // Initial state composition with all regular providers
-  const state = await runtime.composeState(message);
+	// Initial state composition with all regular providers
+	const state = await runtime.composeState(message);
 
-  // State with specific providers only
-  const filteredState = await runtime.composeState(message, ['timeProvider', 'recentMessages']);
+	// State with specific providers only
+	const filteredState = await runtime.composeState(message, ['timeProvider', 'recentMessages']);
 
-  // Include private or dynamic providers
-  const enhancedState = await runtime.composeState(message, null, [
-    'weatherProvider',
-    'portfolioProvider',
-  ]);
+	// Include private or dynamic providers
+	const enhancedState = await runtime.composeState(message, null, [
+		'weatherProvider',
+		'portfolioProvider',
+	]);
 }
 ```
 
@@ -937,18 +937,18 @@ Plugins extend agent functionality through a modular interface. The runtime supp
 
 ```typescript
 interface Plugin {
-  name: string;
-  description: string;
-  init?: (config: Record<string, string>, runtime: IAgentRuntime) => Promise<void>;
+	name: string;
+	description: string;
+	init?: (config: Record<string, string>, runtime: IAgentRuntime) => Promise<void>;
 
-  // Components
-  services?: (typeof Service)[]; // Communication platforms and external integrations
-  actions?: Action[]; // Custom behaviors
-  providers?: Provider[]; // Data providers
-  evaluators?: Evaluator[]; // Response assessment
-  adapters?: Adapter[]; // Database/cache adapters
-  routes?: Route[]; // API endpoints
-  tests?: TestSuite[]; // Testing utilities
+	// Components
+	services?: (typeof Service)[]; // Communication platforms and external integrations
+	actions?: Action[]; // Custom behaviors
+	providers?: Provider[]; // Data providers
+	evaluators?: Evaluator[]; // Response assessment
+	adapters?: Adapter[]; // Database/cache adapters
+	routes?: Route[]; // API endpoints
+	tests?: TestSuite[]; // Testing utilities
 }
 ```
 
@@ -956,16 +956,16 @@ Plugins can be configured through [characterfile](./characterfile) settings:
 
 ```json
 {
-  "name": "MyAgent",
-  "plugins": ["@elizaos/plugin-solana", "@elizaos/plugin-twitter"],
-  "settings": {
-    "twitter": {
-      "shouldRespondToMentions": true
-    },
-    "solana": {
-      "enableAutoTrading": false
-    }
-  }
+	"name": "MyAgent",
+	"plugins": ["@elizaos/plugin-solana", "@elizaos/plugin-twitter"],
+	"settings": {
+		"twitter": {
+			"shouldRespondToMentions": true
+		},
+		"solana": {
+			"enableAutoTrading": false
+		}
+	}
 }
 ```
 
@@ -1047,42 +1047,42 @@ The ElizaOS database system provides persistent storage capabilities for agents.
 
 ```mermaid
 graph TB
-    %% Main Components
-    Runtime([Agent Runtime])
-    DbAdapter([Database Adapter])
-    DbConnection[("Database (PGLite/PostgreSQL)")]
+		%% Main Components
+		Runtime([Agent Runtime])
+		DbAdapter([Database Adapter])
+		DbConnection[("Database (PGLite/PostgreSQL)")]
 
-    %% Data Models in compact form
-    DataModels["Data Models: Entities, Components, Memories, Relationships, Rooms, Worlds, Tasks Cache"]
+		%% Data Models in compact form
+		DataModels["Data Models: Entities, Components, Memories, Relationships, Rooms, Worlds, Tasks Cache"]
 
-    %% Vector Search
-    VectorStore[(Vector Store)]
+		%% Vector Search
+		VectorStore[(Vector Store)]
 
-    %% Memories Knowledge
-    MemoriesKnowledge[(Memories / Knowledge)]
+		%% Memories Knowledge
+		MemoriesKnowledge[(Memories / Knowledge)]
 
-    %% Connection flow
-    Runtime -->|Uses| DbAdapter
-    DbAdapter -->|Connects to| DbConnection
-    DbConnection -->|Stores & Retrieves| DataModels
+		%% Connection flow
+		Runtime -->|Uses| DbAdapter
+		DbAdapter -->|Connects to| DbConnection
+		DbConnection -->|Stores & Retrieves| DataModels
 
-    %% Connect Vector Store
-    DbConnection -->|Utilizes| VectorStore
-    VectorStore -->|Enables Search on| MemoriesKnowledge
+		%% Connect Vector Store
+		DbConnection -->|Utilizes| VectorStore
+		VectorStore -->|Enables Search on| MemoriesKnowledge
 
-    %% Styling
-    classDef default fill:#f0f4f8,stroke:#2c3e50,stroke-width:1px;
-    classDef runtime fill:#3498db,stroke:#2c3e50,stroke-width:1px,color:#fff;
-    classDef adapter fill:#9b59b6,stroke:#2c3e50,stroke-width:1px,color:#fff;
-    classDef db fill:#27ae60,stroke:#2c3e50,stroke-width:1px,color:#fff;
-    classDef datamodels fill:#52be80,stroke:#2c3e50,stroke-width:1px,color:#fff;
-    classDef memories fill:#2c5e1a,stroke:#2c3333,stroke-width:1px,color:#fff;
+		%% Styling
+		classDef default fill:#f0f4f8,stroke:#2c3e50,stroke-width:1px;
+		classDef runtime fill:#3498db,stroke:#2c3e50,stroke-width:1px,color:#fff;
+		classDef adapter fill:#9b59b6,stroke:#2c3e50,stroke-width:1px,color:#fff;
+		classDef db fill:#27ae60,stroke:#2c3e50,stroke-width:1px,color:#fff;
+		classDef datamodels fill:#52be80,stroke:#2c3e50,stroke-width:1px,color:#fff;
+		classDef memories fill:#2c5e1a,stroke:#2c3333,stroke-width:1px,color:#fff;
 
-    class Runtime runtime;
-    class DbAdapter adapter;
-    class DbConnection,VectorStore db;
-    class DataModels datamodels;
-    class MemoriesKnowledge memories;
+		class Runtime runtime;
+		class DbAdapter adapter;
+		class DbConnection,VectorStore db;
+		class DataModels datamodels;
+		class MemoriesKnowledge memories;
 ```
 
 ElizaOS uses a unified database architecture based on Drizzle ORM with adapters that implement the [`IDatabaseAdapter`](/api/interfaces/IDatabaseAdapter) interface. The current release includes support for:
@@ -1204,24 +1204,24 @@ ElizaOS uses a singleton pattern for database connections to ensure efficient re
 ┌─────────────────────────────────────┐
 │           AgentRuntime              │
 └───────────────┬─────────────────────┘
-                │
-                ▼
+								│
+								▼
 ┌─────────────────────────────────────┐
 │        IDatabaseAdapter             │
 └───────────────┬─────────────────────┘
-                │
-                ▼
+								│
+								▼
 ┌─────────────────────────────────────┐
 │       BaseDrizzleAdapter            │
 └───────────────┬─────────────────────┘
-                │
-        ┌───────┴───────┐
-        ▼               ▼
+								│
+				┌───────┴───────┐
+				▼               ▼
 ┌───────────────┐ ┌─────────────────┐
 │ PGLiteAdapter │ │ PostgresAdapter │
 └───────┬───────┘ └────────┬────────┘
-        │                  │
-        ▼                  ▼
+				│                  │
+				▼                  ▼
 ┌───────────────┐ ┌─────────────────┐
 │PGLiteManager  │ │PostgresManager  │
 │  (Singleton)  │ │  (Singleton)    │
@@ -1239,8 +1239,8 @@ The database adapter is initialized through the SQL plugin:
 ```typescript
 // Plugin registration in project configuration
 const project = {
-  plugins: ['@elizaos/plugin-sql'],
-  // ...
+	plugins: ['@elizaos/plugin-sql'],
+	// ...
 };
 ```
 
@@ -1248,18 +1248,18 @@ The SQL plugin automatically selects and initializes the appropriate database ad
 
 ```typescript
 function createDatabaseAdapter(
-  config: {
-    dataDir?: string;
-    postgresUrl?: string;
-  },
-  agentId: UUID
+	config: {
+		dataDir?: string;
+		postgresUrl?: string;
+	},
+	agentId: UUID
 ): IDatabaseAdapter {
-  if (config.postgresUrl) {
-    return new PgDatabaseAdapter(agentId, postgresConnectionManager);
-  }
+	if (config.postgresUrl) {
+		return new PgDatabaseAdapter(agentId, postgresConnectionManager);
+	}
 
-  // Default to PGLite
-  return new SqliteDatabaseAdapter(agentId, pgLiteClientManager);
+	// Default to PGLite
+	return new SqliteDatabaseAdapter(agentId, pgLiteClientManager);
 }
 ```
 
@@ -1281,32 +1281,32 @@ The database system includes built-in retry logic with exponential backoff and j
 
 ```typescript
 protected async withRetry<T>(operation: () => Promise<T>): Promise<T> {
-  let attempt = 0;
-  let lastError: Error | null = null;
+	let attempt = 0;
+	let lastError: Error | null = null;
 
-  while (attempt < this.maxRetries) {
-    try {
-      return await operation();
-    } catch (error) {
-      lastError = error as Error;
-      const isRetryable = this.isRetryableError(error);
+	while (attempt < this.maxRetries) {
+		try {
+			return await operation();
+		} catch (error) {
+			lastError = error as Error;
+			const isRetryable = this.isRetryableError(error);
 
-      if (!isRetryable) {
-        break;
-      }
+			if (!isRetryable) {
+				break;
+			}
 
-      // Calculate delay with exponential backoff and jitter
-      const delay = Math.min(
-        this.baseDelay * Math.pow(2, attempt) + Math.random() * this.jitterMax,
-        this.maxDelay
-      );
+			// Calculate delay with exponential backoff and jitter
+			const delay = Math.min(
+				this.baseDelay * Math.pow(2, attempt) + Math.random() * this.jitterMax,
+				this.maxDelay
+			);
 
-      await new Promise(resolve => setTimeout(resolve, delay));
-      attempt++;
-    }
-  }
+			await new Promise(resolve => setTimeout(resolve, delay));
+			attempt++;
+		}
+	}
 
-  throw lastError;
+	throw lastError;
 }
 ```
 
@@ -1318,16 +1318,16 @@ Here are examples of common database operations:
 
 ```typescript
 await runtime.createMemory(
-  {
-    entityId: message.entityId,
-    agentId: runtime.agentId,
-    content: { text: 'Important information to remember' },
-    roomId: message.roomId,
-    embedding: await runtime.useModel(ModelType.TEXT_EMBEDDING, {
-      text: 'Important information to remember',
-    }),
-  },
-  'facts'
+	{
+		entityId: message.entityId,
+		agentId: runtime.agentId,
+		content: { text: 'Important information to remember' },
+		roomId: message.roomId,
+		embedding: await runtime.useModel(ModelType.TEXT_EMBEDDING, {
+			text: 'Important information to remember',
+		}),
+	},
+	'facts'
 );
 ```
 
@@ -1335,14 +1335,14 @@ await runtime.createMemory(
 
 ```typescript
 const embedding = await runtime.useModel(ModelType.TEXT_EMBEDDING, {
-  text: 'What did we discuss about databases?',
+	text: 'What did we discuss about databases?',
 });
 
 const relevantMemories = await runtime.searchMemories({
-  tableName: 'messages',
-  embedding,
-  roomId: message.roomId,
-  count: 5,
+	tableName: 'messages',
+	embedding,
+	roomId: message.roomId,
+	count: 5,
 });
 ```
 
@@ -1351,19 +1351,19 @@ const relevantMemories = await runtime.searchMemories({
 ```typescript
 // Create a relationship between entities
 await runtime.createRelationship({
-  sourceEntityId: userEntityId,
-  targetEntityId: agentEntityId,
-  tags: ['friend', 'frequent_interaction'],
-  metadata: {
-    interactions: 42,
-    trust_level: 'high',
-  },
+	sourceEntityId: userEntityId,
+	targetEntityId: agentEntityId,
+	tags: ['friend', 'frequent_interaction'],
+	metadata: {
+		interactions: 42,
+		trust_level: 'high',
+	},
 });
 
 // Retrieve relationships
 const relationships = await runtime.getRelationships({
-  entityId: userEntityId,
-  tags: ['friend'],
+	entityId: userEntityId,
+	tags: ['friend'],
 });
 ```
 
@@ -1413,15 +1413,15 @@ await adapter.ensureEmbeddingDimension(1536); // For OpenAI embeddings
 
 - Use **PGLite** for:
 
-  - Local development and testing
-  - Single-user deployments
-  - Situations where installing PostgreSQL is impractical
+	- Local development and testing
+	- Single-user deployments
+	- Situations where installing PostgreSQL is impractical
 
 - Use **PostgreSQL** for:
-  - Production deployments
-  - Multi-user systems
-  - High-volume data
-  - When you need advanced scaling features
+	- Production deployments
+	- Multi-user systems
+	- High-volume data
+	- When you need advanced scaling features
 
 ### How do I configure the database connection?
 
@@ -1468,15 +1468,15 @@ For example, a user entity might have profile, preferences, and authentication c
 
 - For **PostgreSQL**:
 
-  - Ensure the pgvector extension is properly installed
-  - Index frequently queried fields
-  - Use connection pooling
-  - Consider partitioning for large datasets
+	- Ensure the pgvector extension is properly installed
+	- Index frequently queried fields
+	- Use connection pooling
+	- Consider partitioning for large datasets
 
 - For **PGLite**:
-  - Keep database size reasonable (under 1GB)
-  - Regularly clean up old memories
-  - Limit the number of concurrent operations
+	- Keep database size reasonable (under 1GB)
+	- Regularly clean up old memories
+	- Limit the number of concurrent operations
 
 ### Will other database adapters be supported in the future?
 
@@ -1518,20 +1518,20 @@ An entity in ElizaOS has the following properties:
 
 ```typescript
 interface Entity {
-  /** Unique identifier, optional on creation */
-  id?: UUID;
+	/** Unique identifier, optional on creation */
+	id?: UUID;
 
-  /** Names of the entity */
-  names: string[];
+	/** Names of the entity */
+	names: string[];
 
-  /** Optional additional metadata */
-  metadata?: { [key: string]: any };
+	/** Optional additional metadata */
+	metadata?: { [key: string]: any };
 
-  /** Agent ID this account is related to, for agents should be themselves */
-  agentId: UUID;
+	/** Agent ID this account is related to, for agents should be themselves */
+	agentId: UUID;
 
-  /** Optional array of components */
-  components?: Component[];
+	/** Optional array of components */
+	components?: Component[];
 }
 ```
 
@@ -1549,16 +1549,16 @@ Components are modular pieces of data attached to entities with the following st
 
 ```typescript
 interface Component {
-  id: UUID;
-  entityId: UUID;
-  agentId: UUID;
-  roomId: UUID;
-  worldId: UUID;
-  sourceEntityId: UUID;
-  type: string;
-  data: {
-    [key: string]: any;
-  };
+	id: UUID;
+	entityId: UUID;
+	agentId: UUID;
+	roomId: UUID;
+	worldId: UUID;
+	sourceEntityId: UUID;
+	type: string;
+	data: {
+		[key: string]: any;
+	};
 }
 ```
 
@@ -1579,14 +1579,14 @@ interface Component {
 
 ```typescript
 const entityId = await runtime.createEntity({
-  names: ['John Doe', 'JohnD'],
-  agentId: runtime.agentId,
-  metadata: {
-    discord: {
-      username: 'john_doe',
-      name: 'John Doe',
-    },
-  },
+	names: ['John Doe', 'JohnD'],
+	agentId: runtime.agentId,
+	metadata: {
+		discord: {
+			username: 'john_doe',
+			name: 'John Doe',
+		},
+	},
 });
 ```
 
@@ -1604,12 +1604,12 @@ const entitiesInRoom = await runtime.getEntitiesForRoom(roomId, true); // true t
 
 ```typescript
 await runtime.updateEntity({
-  id: entityId,
-  names: [...entity.names, 'Johnny'],
-  metadata: {
-    ...entity.metadata,
-    customProperty: 'value',
-  },
+	id: entityId,
+	names: [...entity.names, 'Johnny'],
+	metadata: {
+		...entity.metadata,
+		customProperty: 'value',
+	},
 });
 ```
 
@@ -1621,18 +1621,18 @@ Components allow for flexible data modeling by attaching different types of data
 
 ```typescript
 await runtime.createComponent({
-  id: componentId,
-  entityId: entityId,
-  agentId: runtime.agentId,
-  roomId: roomId,
-  worldId: worldId,
-  sourceEntityId: creatorEntityId,
-  type: 'profile',
-  data: {
-    bio: 'Software developer interested in AI',
-    location: 'San Francisco',
-    website: 'https://example.com',
-  },
+	id: componentId,
+	entityId: entityId,
+	agentId: runtime.agentId,
+	roomId: roomId,
+	worldId: worldId,
+	sourceEntityId: creatorEntityId,
+	type: 'profile',
+	data: {
+		bio: 'Software developer interested in AI',
+		location: 'San Francisco',
+		website: 'https://example.com',
+	},
 });
 ```
 
@@ -1641,10 +1641,10 @@ await runtime.createComponent({
 ```typescript
 // Get a specific component type
 const profileComponent = await runtime.getComponent(
-  entityId,
-  'profile',
-  worldId, // optional filter by world
-  sourceEntityId // optional filter by source
+	entityId,
+	'profile',
+	worldId, // optional filter by world
+	sourceEntityId // optional filter by source
 );
 
 // Get all components for an entity
@@ -1655,11 +1655,11 @@ const allComponents = await runtime.getComponents(entityId, worldId, sourceEntit
 
 ```typescript
 await runtime.updateComponent({
-  id: profileComponent.id,
-  data: {
-    ...profileComponent.data,
-    bio: 'Updated bio information',
-  },
+	id: profileComponent.id,
+	data: {
+		...profileComponent.data,
+		bio: 'Updated bio information',
+	},
 });
 ```
 
@@ -1676,35 +1676,35 @@ Entities can have relationships with other entities, stored in the database:
 ```typescript
 // Create a relationship between entities
 await runtime.createRelationship({
-  sourceEntityId: entityId1,
-  targetEntityId: entityId2,
-  tags: ['friend', 'collaborator'],
-  metadata: {
-    interactions: 5,
-    lastInteraction: Date.now(),
-  },
+	sourceEntityId: entityId1,
+	targetEntityId: entityId2,
+	tags: ['friend', 'collaborator'],
+	metadata: {
+		interactions: 5,
+		lastInteraction: Date.now(),
+	},
 });
 
 // Get relationships for an entity
 const relationships = await runtime.getRelationships({
-  entityId: entityId1,
-  tags: ['friend'], // optional filter by tags
+	entityId: entityId1,
+	tags: ['friend'], // optional filter by tags
 });
 
 // Get a specific relationship
 const relationship = await runtime.getRelationship({
-  sourceEntityId: entityId1,
-  targetEntityId: entityId2,
+	sourceEntityId: entityId1,
+	targetEntityId: entityId2,
 });
 
 // Update a relationship
 await runtime.updateRelationship({
-  ...relationship,
-  metadata: {
-    ...relationship.metadata,
-    interactions: relationship.metadata.interactions + 1,
-    lastInteraction: Date.now(),
-  },
+	...relationship,
+	metadata: {
+		...relationship.metadata,
+		interactions: relationship.metadata.interactions + 1,
+		lastInteraction: Date.now(),
+	},
 });
 ```
 
@@ -1731,8 +1731,8 @@ To get formatted information about entities in a room:
 ```typescript
 // Get detailed information about entities in a room
 const entityDetails = await getEntityDetails({
-  runtime,
-  roomId,
+	runtime,
+	roomId,
 });
 
 // Format entities into a string representation
@@ -1807,13 +1807,13 @@ Evaluators are specialized functions that work with the [`AgentRuntime`](/api/cl
 
 ```typescript
 interface Evaluator {
-  name: string; // Unique identifier
-  similes?: string[]; // Alternative names/triggers
-  description: string; // Purpose explanation
-  examples: EvaluationExample[]; // Sample usage patterns
-  handler: Handler; // Implementation logic
-  validate: Validator; // Execution criteria check
-  alwaysRun?: boolean; // Run regardless of validation
+	name: string; // Unique identifier
+	similes?: string[]; // Alternative names/triggers
+	description: string; // Purpose explanation
+	examples: EvaluationExample[]; // Sample usage patterns
+	handler: Handler; // Implementation logic
+	validate: Validator; // Execution criteria check
+	alwaysRun?: boolean; // Run regardless of validation
 }
 ```
 
@@ -1839,9 +1839,9 @@ The Fact Evaluator serves as the agent's "episodic memory formation" system - si
 
 ```typescript
 validate: async (runtime: IAgentRuntime, message: Memory): Promise<boolean> => {
-  const messageCount = await runtime.messageManager.countMemories(message.roomId);
-  const reflectionCount = Math.ceil(runtime.getConversationLength() / 2);
-  return messageCount % reflectionCount === 0;
+	const messageCount = await runtime.messageManager.countMemories(message.roomId);
+	const reflectionCount = Math.ceil(runtime.getConversationLength() / 2);
+	return messageCount % reflectionCount === 0;
 };
 ```
 
@@ -1852,26 +1852,26 @@ Just like humans don't consciously analyze every single word in real-time, the F
 The evaluator uses a template-based approach to extract three types of information:
 
 - **Facts**: Unchanging truths about the world or people
-  - "Bob lives in New York"
-  - "Sarah has a degree in Computer Science"
+	- "Bob lives in New York"
+	- "Sarah has a degree in Computer Science"
 - **Status**: Temporary or changeable states
-  - "Bob is currently working on a new project"
-  - "Sarah is visiting Paris this week"
+	- "Bob is currently working on a new project"
+	- "Sarah is visiting Paris this week"
 - **Opinions**: Subjective views, feelings, or non-factual statements
-  - "Bob thinks the project will be successful"
-  - "Sarah loves French cuisine"
+	- "Bob thinks the project will be successful"
+	- "Sarah loves French cuisine"
 
 #### 3. Memory Deduplication (The "Is This New?" System)
 
 ```typescript
 const filteredFacts = facts.filter((fact) => {
-  return (
-    !fact.already_known &&
-    fact.type === 'fact' &&
-    !fact.in_bio &&
-    fact.claim &&
-    fact.claim.trim() !== ''
-  );
+	return (
+		!fact.already_known &&
+		fact.type === 'fact' &&
+		!fact.in_bio &&
+		fact.claim &&
+		fact.claim.trim() !== ''
+	);
 });
 ```
 
@@ -1885,11 +1885,11 @@ Just as humans don't need to consciously re-learn things they already know, the 
 
 ```typescript
 const factMemory = await factsManager.addEmbeddingToMemory({
-  userId: agentId!,
-  agentId,
-  content: { text: fact },
-  roomId,
-  createdAt: Date.now(),
+	userId: agentId!,
+	agentId,
+	content: { text: fact },
+	roomId,
+	createdAt: Date.now(),
 });
 ```
 
@@ -1913,24 +1913,24 @@ The Fact Evaluator might extract:
 
 ```json
 [
-  {
-    "claim": "User moved to Seattle last month",
-    "type": "fact",
-    "in_bio": false,
-    "already_known": false
-  },
-  {
-    "claim": "User works at a tech startup",
-    "type": "fact",
-    "in_bio": false,
-    "already_known": false
-  },
-  {
-    "claim": "User enjoys their new job",
-    "type": "opinion",
-    "in_bio": false,
-    "already_known": false
-  }
+	{
+		"claim": "User moved to Seattle last month",
+		"type": "fact",
+		"in_bio": false,
+		"already_known": false
+	},
+	{
+		"claim": "User works at a tech startup",
+		"type": "fact",
+		"in_bio": false,
+		"already_known": false
+	},
+	{
+		"claim": "User enjoys their new job",
+		"type": "opinion",
+		"in_bio": false,
+		"already_known": false
+	}
 ]
 ```
 
@@ -1938,22 +1938,22 @@ The Fact Evaluator might extract:
 
 1. **Episodic vs Semantic Memory**
 
-   - Facts build up the agent's semantic memory (general knowledge)
-   - The raw conversation remains in episodic memory (specific experiences)
+	 - Facts build up the agent's semantic memory (general knowledge)
+	 - The raw conversation remains in episodic memory (specific experiences)
 
 2. **Temporal Awareness**
 
-   - Facts are timestamped to track when they were learned
-   - Status facts can be updated as they change
+	 - Facts are timestamped to track when they were learned
+	 - Status facts can be updated as they change
 
 3. **Confidence and Verification**
 
-   - Multiple mentions of a fact increase confidence
-   - Contradictory facts can be flagged for verification
+	 - Multiple mentions of a fact increase confidence
+	 - Contradictory facts can be flagged for verification
 
 4. **Privacy and Relevance**
-   - Only stores relevant, conversation-appropriate facts
-   - Respects explicit and implicit privacy boundaries
+	 - Only stores relevant, conversation-appropriate facts
+	 - Respects explicit and implicit privacy boundaries
 
 ---
 
@@ -1971,42 +1971,42 @@ When triggered, the reflection evaluator:
 
 1. Analyzes recent conversations and existing knowledge
 2. Generates structured reflection output with:
-   - Self-reflective thoughts about conversation quality
-   - New facts extracted from conversation
-   - Identified relationships between entities
+	 - Self-reflective thoughts about conversation quality
+	 - New facts extracted from conversation
+	 - Identified relationships between entities
 3. Stores this information in the agent's memory for future reference
 
 ### Example Reflection Output
 
 ```json
 {
-  "thought": "I'm engaging appropriately with John, maintaining a welcoming and professional tone. My questions are helping learn more about him as a new community member.",
-  "facts": [
-    {
-      "claim": "John is new to the community",
-      "type": "fact",
-      "in_bio": false,
-      "already_known": false
-    },
-    {
-      "claim": "John found the community through a friend interested in AI",
-      "type": "fact",
-      "in_bio": false,
-      "already_known": false
-    }
-  ],
-  "relationships": [
-    {
-      "sourceEntityId": "sarah-agent",
-      "targetEntityId": "user-123",
-      "tags": ["group_interaction"]
-    },
-    {
-      "sourceEntityId": "user-123",
-      "targetEntityId": "sarah-agent",
-      "tags": ["group_interaction"]
-    }
-  ]
+	"thought": "I'm engaging appropriately with John, maintaining a welcoming and professional tone. My questions are helping learn more about him as a new community member.",
+	"facts": [
+		{
+			"claim": "John is new to the community",
+			"type": "fact",
+			"in_bio": false,
+			"already_known": false
+		},
+		{
+			"claim": "John found the community through a friend interested in AI",
+			"type": "fact",
+			"in_bio": false,
+			"already_known": false
+		}
+	],
+	"relationships": [
+		{
+			"sourceEntityId": "sarah-agent",
+			"targetEntityId": "user-123",
+			"tags": ["group_interaction"]
+		},
+		{
+			"sourceEntityId": "user-123",
+			"targetEntityId": "sarah-agent",
+			"tags": ["group_interaction"]
+		}
+	]
 }
 ```
 
@@ -2016,26 +2016,26 @@ The reflection evaluator uses a defined schema to ensure consistent output:
 
 ```typescript
 const reflectionSchema = z.object({
-  facts: z.array(
-    z.object({
-      claim: z.string(),
-      type: z.string(),
-      in_bio: z.boolean(),
-      already_known: z.boolean(),
-    })
-  ),
-  relationships: z.array(relationshipSchema),
+	facts: z.array(
+		z.object({
+			claim: z.string(),
+			type: z.string(),
+			in_bio: z.boolean(),
+			already_known: z.boolean(),
+		})
+	),
+	relationships: z.array(relationshipSchema),
 });
 
 const relationshipSchema = z.object({
-  sourceEntityId: z.string(),
-  targetEntityId: z.string(),
-  tags: z.array(z.string()),
-  metadata: z
-    .object({
-      interactions: z.number(),
-    })
-    .optional(),
+	sourceEntityId: z.string(),
+	targetEntityId: z.string(),
+	tags: z.array(z.string()),
+	metadata: z
+		.object({
+			interactions: z.number(),
+		})
+		.optional(),
 });
 ```
 
@@ -2045,25 +2045,25 @@ The reflection evaluator includes validation logic that determines when reflecti
 
 ```typescript
 validate: async (runtime: IAgentRuntime, message: Memory): Promise<boolean> => {
-  const lastMessageId = await runtime.getCache<string>(
-    `${message.roomId}-reflection-last-processed`
-  );
-  const messages = await runtime.getMemories({
-    tableName: 'messages',
-    roomId: message.roomId,
-    count: runtime.getConversationLength(),
-  });
+	const lastMessageId = await runtime.getCache<string>(
+		`${message.roomId}-reflection-last-processed`
+	);
+	const messages = await runtime.getMemories({
+		tableName: 'messages',
+		roomId: message.roomId,
+		count: runtime.getConversationLength(),
+	});
 
-  if (lastMessageId) {
-    const lastMessageIndex = messages.findIndex((msg) => msg.id === lastMessageId);
-    if (lastMessageIndex !== -1) {
-      messages.splice(0, lastMessageIndex + 1);
-    }
-  }
+	if (lastMessageId) {
+		const lastMessageIndex = messages.findIndex((msg) => msg.id === lastMessageId);
+		if (lastMessageIndex !== -1) {
+			messages.splice(0, lastMessageIndex + 1);
+		}
+	}
 
-  const reflectionInterval = Math.ceil(runtime.getConversationLength() / 4);
+	const reflectionInterval = Math.ceil(runtime.getConversationLength() / 4);
 
-  return messages.length > reflectionInterval;
+	return messages.length > reflectionInterval;
 };
 ```
 
@@ -2073,52 +2073,52 @@ This ensures reflections occur at appropriate intervals, typically after a set n
 
 1. **Progressive Learning**
 
-   ```typescript
-   // First conversation
-   "I live in Seattle" -> Stores as fact
+	 ```typescript
+	 // First conversation
+	 "I live in Seattle" -> Stores as fact
 
-   // Later conversation
-   "I live in the Ballard neighborhood" -> Updates/enhances existing fact
-   ```
+	 // Later conversation
+	 "I live in the Ballard neighborhood" -> Updates/enhances existing fact
+	 ```
 
 2. **Fact Chaining**
 
-   ```typescript
-   // Original facts
-   'Works at tech startup';
-   'Startup is in Seattle';
+	 ```typescript
+	 // Original facts
+	 'Works at tech startup';
+	 'Startup is in Seattle';
 
-   // Inference potential
-   'Works in Seattle tech industry';
-   ```
+	 // Inference potential
+	 'Works in Seattle tech industry';
+	 ```
 
 3. **Temporal Tracking**
 
-   ```typescript
-   // Status tracking
-   t0: 'Looking for a job'(status);
-   t1: 'Got a new job'(fact);
-   t2: 'Been at job for 3 months'(status);
-   ```
+	 ```typescript
+	 // Status tracking
+	 t0: 'Looking for a job'(status);
+	 t1: 'Got a new job'(fact);
+	 t2: 'Been at job for 3 months'(status);
+	 ```
 
 4. **Relationship Building**
 
-   ```typescript
-   // Initial relationship
-   {
-     "sourceEntityId": "user-123",
-     "targetEntityId": "sarah-agent",
-     "tags": ["new_interaction"]
-   }
+	 ```typescript
+	 // Initial relationship
+	 {
+		 "sourceEntityId": "user-123",
+		 "targetEntityId": "sarah-agent",
+		 "tags": ["new_interaction"]
+	 }
 
-   // Evolving relationship
-   {
-     "sourceEntityId": "user-123",
-     "targetEntityId": "sarah-agent",
-     "tags": ["frequent_interaction", "positive_sentiment"],
-     "metadata": { "interactions": 15 }
-   }
-   ```
+	 // Evolving relationship
+	 {
+		 "sourceEntityId": "user-123",
+		 "targetEntityId": "sarah-agent",
+		 "tags": ["frequent_interaction", "positive_sentiment"],
+		 "metadata": { "interactions": 15 }
+	 }
+	 ```
 
 ## Integration with Other Systems
 
@@ -2137,39 +2137,39 @@ You can create your own evaluators by implementing the `Evaluator` interface:
 
 ```typescript
 const customEvaluator: Evaluator = {
-  name: 'CUSTOM_EVALUATOR',
-  similes: ['ANALYZE', 'ASSESS'],
-  description: 'Performs custom analysis on conversations',
+	name: 'CUSTOM_EVALUATOR',
+	similes: ['ANALYZE', 'ASSESS'],
+	description: 'Performs custom analysis on conversations',
 
-  validate: async (runtime: IAgentRuntime, message: Memory): Promise<boolean> => {
-    // Your validation logic here
-    return true;
-  },
+	validate: async (runtime: IAgentRuntime, message: Memory): Promise<boolean> => {
+		// Your validation logic here
+		return true;
+	},
 
-  handler: async (runtime: IAgentRuntime, message: Memory, state?: State) => {
-    // Your evaluation logic here
+	handler: async (runtime: IAgentRuntime, message: Memory, state?: State) => {
+		// Your evaluation logic here
 
-    // Example of storing evaluation results
-    await runtime.addEmbeddingToMemory({
-      entityId: runtime.agentId,
-      content: { text: 'Evaluation result' },
-      roomId: message.roomId,
-      createdAt: Date.now(),
-    });
+		// Example of storing evaluation results
+		await runtime.addEmbeddingToMemory({
+			entityId: runtime.agentId,
+			content: { text: 'Evaluation result' },
+			roomId: message.roomId,
+			createdAt: Date.now(),
+		});
 
-    return { result: 'evaluation complete' };
-  },
+		return { result: 'evaluation complete' };
+	},
 
-  examples: [
-    {
-      prompt: `Example context`,
-      messages: [
-        { name: 'User', content: { text: 'Example message' } },
-        { name: 'Agent', content: { text: 'Example response' } },
-      ],
-      outcome: `{ "result": "example outcome" }`,
-    },
-  ],
+	examples: [
+		{
+			prompt: `Example context`,
+			messages: [
+				{ name: 'User', content: { text: 'Example message' } },
+				{ name: 'Agent', content: { text: 'Example response' } },
+			],
+			outcome: `{ "result": "example outcome" }`,
+		},
+	],
 };
 ```
 
@@ -2180,16 +2180,16 @@ Custom evaluators can be registered with the agent runtime:
 ```typescript
 // In your plugin's initialization
 export default {
-  name: 'custom-evaluator-plugin',
-  description: 'Adds custom evaluation capabilities',
+	name: 'custom-evaluator-plugin',
+	description: 'Adds custom evaluation capabilities',
 
-  init: async (config: any, runtime: IAgentRuntime) => {
-    // Register your custom evaluator
-    runtime.registerEvaluator(customEvaluator);
-  },
+	init: async (config: any, runtime: IAgentRuntime) => {
+		// Register your custom evaluator
+		runtime.registerEvaluator(customEvaluator);
+	},
 
-  // Include the evaluator in the plugin exports
-  evaluators: [customEvaluator],
+	// Include the evaluator in the plugin exports
+	evaluators: [customEvaluator],
 };
 ```
 
@@ -2197,32 +2197,32 @@ export default {
 
 1. **Validate Facts**
 
-   - Cross-reference with existing knowledge
-   - Consider source reliability
-   - Track fact confidence levels
+	 - Cross-reference with existing knowledge
+	 - Consider source reliability
+	 - Track fact confidence levels
 
 2. **Manage Memory Growth**
 
-   - Prioritize important facts
-   - Consolidate related facts
-   - Archive outdated status facts
+	 - Prioritize important facts
+	 - Consolidate related facts
+	 - Archive outdated status facts
 
 3. **Handle Contradictions**
 
-   - Flag conflicting facts
-   - Maintain fact history
-   - Update based on newest information
+	 - Flag conflicting facts
+	 - Maintain fact history
+	 - Update based on newest information
 
 4. **Respect Privacy**
 
-   - Filter sensitive information
-   - Consider contextual appropriateness
-   - Follow data retention policies
+	 - Filter sensitive information
+	 - Consider contextual appropriateness
+	 - Follow data retention policies
 
 5. **Balance Reflection Frequency**
-   - Too frequent: Computational overhead
-   - Too infrequent: Missing important information
-   - Adapt based on conversation complexity and pace
+	 - Too frequent: Computational overhead
+	 - Too infrequent: Missing important information
+	 - Adapt based on conversation complexity and pace
 
 ---
 
@@ -2287,18 +2287,18 @@ The simplest approach is to define knowledge directly in your character configur
 
 ```typescript
 const character: Character = {
-  name: 'My Agent',
-  // Other character properties...
-  knowledge: [
-    // Direct string knowledge
-    'Important fact: ElizaOS supports multiple knowledge formats',
+	name: 'My Agent',
+	// Other character properties...
+	knowledge: [
+		// Direct string knowledge
+		'Important fact: ElizaOS supports multiple knowledge formats',
 
-    // File references
-    { path: 'knowledge/documentation.md', shared: false },
+		// File references
+		{ path: 'knowledge/documentation.md', shared: false },
 
-    // Directory references
-    { directory: 'knowledge/guides', shared: true },
-  ],
+		// Directory references
+		{ directory: 'knowledge/guides', shared: true },
+	],
 };
 ```
 
@@ -2318,12 +2318,12 @@ const knowledge = [];
 
 // Example: Recursively load documentation files
 function loadDocumentation(directoryPath) {
-  const files = getFilesRecursively(directoryPath, ['.md']);
-  return files.map((filePath) => {
-    const relativePath = path.relative(basePath, filePath);
-    const content = fs.readFileSync(filePath, 'utf-8');
-    return `Path: ${relativePath}\n\n${content}`;
-  });
+	const files = getFilesRecursively(directoryPath, ['.md']);
+	return files.map((filePath) => {
+		const relativePath = path.relative(basePath, filePath);
+		const content = fs.readFileSync(filePath, 'utf-8');
+		return `Path: ${relativePath}\n\n${content}`;
+	});
 }
 
 // Load documentation
@@ -2332,8 +2332,8 @@ knowledge.push(...docKnowledge);
 
 // Then include in your character definition
 const character: Character = {
-  // Other character properties...
-  knowledge: knowledge,
+	// Other character properties...
+	knowledge: knowledge,
 };
 ```
 
@@ -2349,10 +2349,10 @@ import { createUniqueUuid } from '@elizaos/core';
 
 // Create a knowledge item
 const knowledgeItem = {
-  id: createUniqueUuid(runtime, 'unique-knowledge-identifier'),
-  content: {
-    text: 'Important information the agent should know...',
-  },
+	id: createUniqueUuid(runtime, 'unique-knowledge-identifier'),
+	content: {
+		text: 'Important information the agent should know...',
+	},
 };
 
 // Add to runtime with default chunking settings
@@ -2360,9 +2360,9 @@ await runtime.addKnowledge(knowledgeItem);
 
 // Or with custom chunking settings
 await runtime.addKnowledge(knowledgeItem, {
-  targetTokens: 1500, // Target chunk size (default: 3000)
-  overlap: 100, // Overlap between chunks (default: 200)
-  modelContextSize: 8192, // Context size of your model (default: 4096)
+	targetTokens: 1500, // Target chunk size (default: 3000)
+	overlap: 100, // Overlap between chunks (default: 200)
+	modelContextSize: 8192, // Context size of your model (default: 4096)
 });
 ```
 
@@ -2374,15 +2374,15 @@ You can dynamically process files at runtime:
 // For PDF files, use the PDF service
 const pdfService = runtime.getService<IPdfService>('pdf');
 if (pdfService) {
-  const pdfBuffer = fs.readFileSync('./knowledge/document.pdf');
-  const textContent = await pdfService.convertPdfToText(pdfBuffer);
+	const pdfBuffer = fs.readFileSync('./knowledge/document.pdf');
+	const textContent = await pdfService.convertPdfToText(pdfBuffer);
 
-  const knowledgeItem = {
-    id: createUniqueUuid(runtime, 'document.pdf'),
-    content: { text: textContent },
-  };
+	const knowledgeItem = {
+		id: createUniqueUuid(runtime, 'document.pdf'),
+		content: { text: textContent },
+	};
 
-  await runtime.addKnowledge(knowledgeItem);
+	await runtime.addKnowledge(knowledgeItem);
 }
 ```
 
@@ -2420,9 +2420,9 @@ ElizaOS supports two knowledge modes:
 - Chunks content and uses embeddings
 - Must be explicitly enabled (`settings.ragKnowledge: true`)
 - Supports three knowledge types:
-  1. Direct string knowledge
-  2. Single file references: `{ "path": "path/to/file.md", "shared": false }`
-  3. Directory references: `{ "directory": "knowledge/dir", "shared": false }`
+	1. Direct string knowledge
+	2. Single file references: `{ "path": "path/to/file.md", "shared": false }`
+	3. Directory references: `{ "directory": "knowledge/dir", "shared": false }`
 - Supported file types: .md, .txt, .pdf
 - Optional `shared` flag for knowledge reuse across characters
 
@@ -2430,10 +2430,10 @@ To enable RAG mode, add this to your character settings:
 
 ```typescript
 const character: Character = {
-  // Other character properties...
-  settings: {
-    ragKnowledge: true,
-  },
+	// Other character properties...
+	settings: {
+		ragKnowledge: true,
+	},
 };
 ```
 
@@ -2445,20 +2445,20 @@ The RAG system processes documents through several stages:
 
 1. **Directory Processing**
 
-   - The system scans configured directories in `knowledge/`
-   - Files are processed based on their shared/private status and file type
+	 - The system scans configured directories in `knowledge/`
+	 - Files are processed based on their shared/private status and file type
 
 2. **File Processing Pipeline**
 
-   - **Preprocessing**: Reading, cleaning, and normalizing text
-   - **Document-level Processing**: Generating embeddings for the entire document
-   - **Chunk Processing**: Splitting content into manageable chunks and generating embeddings for each
+	 - **Preprocessing**: Reading, cleaning, and normalizing text
+	 - **Document-level Processing**: Generating embeddings for the entire document
+	 - **Chunk Processing**: Splitting content into manageable chunks and generating embeddings for each
 
 3. **Retrieval Process**
-   - When a user message is received, its embedding is generated
-   - This embedding is compared to stored knowledge embeddings
-   - The most semantically similar chunks are retrieved
-   - Retrieved knowledge is incorporated into the agent's context
+	 - When a user message is received, its embedding is generated
+	 - This embedding is compared to stored knowledge embeddings
+	 - The most semantically similar chunks are retrieved
+	 - Retrieved knowledge is incorporated into the agent's context
 
 This multi-level approach enables:
 
@@ -2471,54 +2471,54 @@ This multi-level approach enables:
 
 ```mermaid
 graph TB
-    subgraph Directory_Processing
-        A[Read Files from Directory] --> B[File Content]
-    end
+		subgraph Directory_Processing
+				A[Read Files from Directory] --> B[File Content]
+		end
 
-    subgraph Preprocessing
-        B --> C[Clean & Normalize Text]
-    end
+		subgraph Preprocessing
+				B --> C[Clean & Normalize Text]
+		end
 
-    subgraph Document_Processing
-        C --> D[Generate Document Embedding]
-        D --> E[Store Full Document]
-        E --> |Metadata| F[File Path]
-        E --> |Metadata| G[File Type]
-        E --> |Metadata| H[Shared Status]
-    end
+		subgraph Document_Processing
+				C --> D[Generate Document Embedding]
+				D --> E[Store Full Document]
+				E --> |Metadata| F[File Path]
+				E --> |Metadata| G[File Type]
+				E --> |Metadata| H[Shared Status]
+		end
 
-    subgraph Chunk_Processing
-        C --> I[Split into Chunks]
-        I --> |512 tokens| J[Chunk 1]
-        I --> |20 token overlap| K[...]
-        I --> L[Chunk N]
+		subgraph Chunk_Processing
+				C --> I[Split into Chunks]
+				I --> |512 tokens| J[Chunk 1]
+				I --> |20 token overlap| K[...]
+				I --> L[Chunk N]
 
-        subgraph Parallel_Processing
-            J --> M1[Generate Embedding]
-            K --> M2[Generate Embedding]
-            L --> M3[Generate Embedding]
-        end
+				subgraph Parallel_Processing
+						J --> M1[Generate Embedding]
+						K --> M2[Generate Embedding]
+						L --> M3[Generate Embedding]
+				end
 
-        subgraph Chunk_Storage
-            M1 --> N1[Store Chunk]
-            M2 --> N2[Store Chunk]
-            M3 --> N3[Store Chunk]
+				subgraph Chunk_Storage
+						M1 --> N1[Store Chunk]
+						M2 --> N2[Store Chunk]
+						M3 --> N3[Store Chunk]
 
-            N1 --> |Metadata| O[Original Doc Reference]
-            N1 --> |Metadata| P[Chunk Index]
-            N2 --> |Metadata| O
-            N2 --> |Metadata| P
-            N3 --> |Metadata| O
-            N3 --> |Metadata| P
-        end
-    end
+						N1 --> |Metadata| O[Original Doc Reference]
+						N1 --> |Metadata| P[Chunk Index]
+						N2 --> |Metadata| O
+						N2 --> |Metadata| P
+						N3 --> |Metadata| O
+						N3 --> |Metadata| P
+				end
+		end
 
-    style Directory_Processing fill:#f9f,stroke:#333,stroke-width:2px
-    style Preprocessing fill:#bbf,stroke:#333,stroke-width:2px
-    style Document_Processing fill:#bfb,stroke:#333,stroke-width:2px
-    style Chunk_Processing fill:#fbf,stroke:#333,stroke-width:2px
-    style Parallel_Processing fill:#fbb,stroke:#333,stroke-width:2px
-    style Chunk_Storage fill:#bff,stroke:#333,stroke-width:2px
+		style Directory_Processing fill:#f9f,stroke:#333,stroke-width:2px
+		style Preprocessing fill:#bbf,stroke:#333,stroke-width:2px
+		style Document_Processing fill:#bfb,stroke:#333,stroke-width:2px
+		style Chunk_Processing fill:#fbf,stroke:#333,stroke-width:2px
+		style Parallel_Processing fill:#fbb,stroke:#333,stroke-width:2px
+		style Chunk_Storage fill:#bff,stroke:#333,stroke-width:2px
 ```
 
 ### Processing Parameters
@@ -2535,23 +2535,23 @@ graph TB
 
 1. **Document Structure**
 
-   - Use clear section headings and hierarchical organization
-   - Break large documents into logical smaller files
-   - Include metadata and context in markdown files
-   - Structure information from general to specific
+	 - Use clear section headings and hierarchical organization
+	 - Break large documents into logical smaller files
+	 - Include metadata and context in markdown files
+	 - Structure information from general to specific
 
 2. **File Management**
 
-   - Use descriptive filenames that reflect content
-   - Group related files in subdirectories
-   - Keep paths short and meaningful
-   - Avoid special characters in filenames
+	 - Use descriptive filenames that reflect content
+	 - Group related files in subdirectories
+	 - Keep paths short and meaningful
+	 - Avoid special characters in filenames
 
 3. **Knowledge Optimization**
-   - Keep individual documents focused on specific topics
-   - For very detailed information, use smaller chunks (200-300 tokens) by setting `targetTokens`
-   - Balance the total number of knowledge items for performance
-   - Prefer markdown (.md) files for best processing results
+	 - Keep individual documents focused on specific topics
+	 - For very detailed information, use smaller chunks (200-300 tokens) by setting `targetTokens`
+	 - Balance the total number of knowledge items for performance
+	 - Prefer markdown (.md) files for best processing results
 
 ### Processing Large Knowledge Bases
 
@@ -2565,14 +2565,14 @@ const semaphore = new Semaphore(10);
 
 // Process items with controlled concurrency
 await Promise.all(
-  items.map(async (item) => {
-    await semaphore.acquire();
-    try {
-      await runtime.addKnowledge(item);
-    } finally {
-      semaphore.release();
-    }
-  })
+	items.map(async (item) => {
+		await semaphore.acquire();
+		try {
+			await runtime.addKnowledge(item);
+		} finally {
+			semaphore.release();
+		}
+	})
 );
 ```
 
@@ -2593,31 +2593,31 @@ This ensures deterministic IDs that remain stable across sessions.
 
 1. **Knowledge Not Being Retrieved**:
 
-   - Verify the file is in a supported format (PDF, MD, TXT)
-   - Check if embeddings were properly generated
-   - Ensure similarity threshold isn't too high (default: 0.85)
-   - Test retrieval with more specific queries
-   - Verify RAG mode is enabled if using file/directory references
+	 - Verify the file is in a supported format (PDF, MD, TXT)
+	 - Check if embeddings were properly generated
+	 - Ensure similarity threshold isn't too high (default: 0.85)
+	 - Test retrieval with more specific queries
+	 - Verify RAG mode is enabled if using file/directory references
 
 2. **Poor Quality Retrievals**:
 
-   - Break down large documents into smaller, focused files
-   - Ensure document content is clear and well-structured
-   - Review the chunking size and overlap settings
-   - Check if the query contains too many common words
+	 - Break down large documents into smaller, focused files
+	 - Ensure document content is clear and well-structured
+	 - Review the chunking size and overlap settings
+	 - Check if the query contains too many common words
 
 3. **Performance Issues**:
 
-   - Monitor the total number of knowledge items
-   - Consider reducing the match count for faster retrieval
-   - Check embedding processing time for large documents
-   - Use shared knowledge efficiently across agents
+	 - Monitor the total number of knowledge items
+	 - Consider reducing the match count for faster retrieval
+	 - Check embedding processing time for large documents
+	 - Use shared knowledge efficiently across agents
 
 4. **File Processing Errors**:
-   - Verify file permissions
-   - Check if paths are correctly structured
-   - Ensure PDF files are readable and not password-protected
-   - Validate that text encoding is UTF-8
+	 - Verify file permissions
+	 - Check if paths are correctly structured
+	 - Ensure PDF files are readable and not password-protected
+	 - Validate that text encoding is UTF-8
 
 ## Technical Implementation Details
 
@@ -2627,25 +2627,25 @@ The RAG system uses a hierarchical ID structure to maintain relationships:
 
 ```mermaid
 classDiagram
-    class Document {
-        +UUID id
-        +String filePath
-        +String fileType
-        +Boolean isShared
-        +Float32Array embedding
-        +String content
-    }
+		class Document {
+				+UUID id
+				+String filePath
+				+String fileType
+				+Boolean isShared
+				+Float32Array embedding
+				+String content
+		}
 
-    class Fragment {
-        +UUID id
-        +UUID originalId
-        +Number chunkIndex
-        +String content
-        +Float32Array embedding
-        +String originalPath
-    }
+		class Fragment {
+				+UUID id
+				+UUID originalId
+				+Number chunkIndex
+				+String content
+				+Float32Array embedding
+				+String originalPath
+		}
 
-    Document "1" --> "*" Fragment : generates
+		Document "1" --> "*" Fragment : generates
 ```
 
 #### ID Generation and Linking
@@ -2661,32 +2661,32 @@ Documents IDs are generated using `createUniqueUuid(runtime, path, isShared)`, m
 Adds new knowledge to the agent.
 
 - Parameters:
-  - `item`: A knowledge item containing:
-    - `id`: UUID
-    - `content`: Object with `text` property
-  - `options`: Optional processing configuration:
-    - `targetTokens`: Number (default: 3000)
-    - `overlap`: Number (default: 200)
-    - `modelContextSize`: Number (default: 4096)
+	- `item`: A knowledge item containing:
+		- `id`: UUID
+		- `content`: Object with `text` property
+	- `options`: Optional processing configuration:
+		- `targetTokens`: Number (default: 3000)
+		- `overlap`: Number (default: 200)
+		- `modelContextSize`: Number (default: 4096)
 
 #### `runtime.getKnowledge(message: Memory): Promise<KnowledgeItem[]>`
 
 Retrieves knowledge based on a message's content.
 
 - Parameters:
-  - `message`: Memory object containing user message
+	- `message`: Memory object containing user message
 - Returns: Array of matching KnowledgeItem objects
 
 ### Knowledge Item Definition
 
 ```typescript
 interface KnowledgeItem {
-  id: UUID;
-  content: {
-    text: string;
-    // Optional additional metadata
-    [key: string]: any;
-  };
+	id: UUID;
+	content: {
+		text: string;
+		// Optional additional metadata
+		[key: string]: any;
+	};
 }
 ```
 
@@ -2694,27 +2694,27 @@ interface KnowledgeItem {
 
 1. **Access Control**:
 
-   - Use the `shared` flag appropriately to control document access
-   - Keep sensitive information in agent-specific directories
-   - Regularly audit knowledge access patterns
+	 - Use the `shared` flag appropriately to control document access
+	 - Keep sensitive information in agent-specific directories
+	 - Regularly audit knowledge access patterns
 
 2. **Data Privacy**:
-   - Do not store sensitive personal information in knowledge files
-   - Review documents for potentially sensitive content before adding
-   - Implement appropriate backup and recovery procedures
+	 - Do not store sensitive personal information in knowledge files
+	 - Review documents for potentially sensitive content before adding
+	 - Implement appropriate backup and recovery procedures
 
 ## Future Considerations
 
 1. **Scalability**:
 
-   - Monitor knowledge base size and performance
-   - Plan for regular maintenance and cleanup
-   - Consider implementing document versioning
+	 - Monitor knowledge base size and performance
+	 - Plan for regular maintenance and cleanup
+	 - Consider implementing document versioning
 
 2. **Integration**:
-   - Document integration points with other systems
-   - Plan for potential future file format support
-   - Consider implementing knowledge base analytics
+	 - Document integration points with other systems
+	 - Plan for potential future file format support
+	 - Consider implementing knowledge base analytics
 
 ## Support and Resources
 
@@ -2731,18 +2731,18 @@ title: ElizaOS Documentation
 slug: /
 description: Comprehensive framework for building AI agents with persistent personalities across multiple platforms
 keywords:
-  [
-    architecture,
-    components,
-    system design,
-    agents,
-    services,
-    database,
-    actions,
-    providers,
-    evaluators,
-    plugins,
-  ]
+	[
+		architecture,
+		components,
+		system design,
+		agents,
+		services,
+		database,
+		actions,
+		providers,
+		evaluators,
+		plugins,
+	]
 image: /img/eliza_banner.jpg
 ---
 
@@ -2758,92 +2758,92 @@ ElizaOS uses a modular architecture that separates concerns while providing a co
 
 ```mermaid
 graph TB
-    %% Main Components with vertical orientation
-    User((User)):::user
+		%% Main Components with vertical orientation
+		User((User)):::user
 
-    %% First Level - Services
-    PlatformServices[Services]:::services
+		%% First Level - Services
+		PlatformServices[Services]:::services
 
-    %% Second Level - Runtime
-    AgentRuntime[Agent Runtime]:::core
+		%% Second Level - Runtime
+		AgentRuntime[Agent Runtime]:::core
 
-    %% Core Processing Components - Side by side
-    subgraph "Core Processing"
-        direction LR
-        Providers[Providers]:::int
-        Actions[Actions]:::int
-        Evaluators[Evaluators]:::int
-    end
+		%% Core Processing Components - Side by side
+		subgraph "Core Processing"
+				direction LR
+				Providers[Providers]:::int
+				Actions[Actions]:::int
+				Evaluators[Evaluators]:::int
+		end
 
-    %% Knowledge and DB - Side by side
-    subgraph "Knowledge & Storage"
-        direction LR
-        Knowledge[Knowledge]:::int
-        DB[(Database)]:::db
-    end
+		%% Knowledge and DB - Side by side
+		subgraph "Knowledge & Storage"
+				direction LR
+				Knowledge[Knowledge]:::int
+				DB[(Database)]:::db
+		end
 
-    %% Organization Components - Vertical layout
-    subgraph "Organization"
-        direction TB
-        Worlds[Worlds]:::struct
-        Rooms[Rooms]:::struct
-        Entities[Entities]:::struct
-    end
+		%% Organization Components - Vertical layout
+		subgraph "Organization"
+				direction TB
+				Worlds[Worlds]:::struct
+				Rooms[Rooms]:::struct
+				Entities[Entities]:::struct
+		end
 
-    %% Development Components - Side by side
-    subgraph "Development & Integration"
-        direction LR
-        Plugins[Plugins]:::dev
-        Projects[Projects]:::dev
-        Tasks[Tasks]:::dev
-    end
+		%% Development Components - Side by side
+		subgraph "Development & Integration"
+				direction LR
+				Plugins[Plugins]:::dev
+				Projects[Projects]:::dev
+				Tasks[Tasks]:::dev
+		end
 
-    %% Main Flow - Vertical emphasis
-    User <-->|Interaction| PlatformServices
-    PlatformServices -->|Process| AgentRuntime
+		%% Main Flow - Vertical emphasis
+		User <-->|Interaction| PlatformServices
+		PlatformServices -->|Process| AgentRuntime
 
-    %% Runtime connections - Simplified
-    AgentRuntime ---|Context| Providers
-    AgentRuntime ---|Behavior| Actions
-    AgentRuntime ---|Analysis| Evaluators
+		%% Runtime connections - Simplified
+		AgentRuntime ---|Context| Providers
+		AgentRuntime ---|Behavior| Actions
+		AgentRuntime ---|Analysis| Evaluators
 
-    %% Data connections
-    AgentRuntime <-->|Storage| DB
-    Knowledge -->|Informs| Providers
+		%% Data connections
+		AgentRuntime <-->|Storage| DB
+		Knowledge -->|Informs| Providers
 
-    %% Structure connections - Clean vertical hierarchy
-    AgentRuntime -->|Manages| Worlds
-    Worlds -->|Contains| Rooms
-    Rooms -->|Has| Entities
+		%% Structure connections - Clean vertical hierarchy
+		AgentRuntime -->|Manages| Worlds
+		Worlds -->|Contains| Rooms
+		Rooms -->|Has| Entities
 
-    %% Development connections
-    Projects -->|Configure| AgentRuntime
-    Plugins -->|Extend| AgentRuntime
-    Tasks -->|Scheduled by| AgentRuntime
+		%% Development connections
+		Projects -->|Configure| AgentRuntime
+		Plugins -->|Extend| AgentRuntime
+		Tasks -->|Scheduled by| AgentRuntime
 
-    %% Clickable nodes with links to docs
-    click AgentRuntime "/docs/core/agents" "Learn about Agent Runtime"
-    click PlatformServices "/docs/core/services" "Learn about Services"
-    click DB "/docs/core/database" "Learn about Database Systems"
-    click Actions "/docs/core/actions" "Learn about Actions"
-    click Providers "/docs/core/providers" "Learn about Providers"
-    click Evaluators "/docs/core/evaluators" "Learn about Evaluators"
-    click Knowledge "/docs/core/knowledge" "Learn about Knowledge System"
-    click Worlds "/docs/core/worlds" "Learn about Worlds"
-    click Rooms "/docs/core/rooms" "Learn about Rooms"
-    click Entities "/docs/core/entities" "Learn about Entities"
-    click Plugins "/docs/core/plugins" "Learn about Plugins"
-    click Projects "/docs/core/project" "Learn about Projects"
-    click Tasks "/docs/core/tasks" "Learn about Tasks"
+		%% Clickable nodes with links to docs
+		click AgentRuntime "/docs/core/agents" "Learn about Agent Runtime"
+		click PlatformServices "/docs/core/services" "Learn about Services"
+		click DB "/docs/core/database" "Learn about Database Systems"
+		click Actions "/docs/core/actions" "Learn about Actions"
+		click Providers "/docs/core/providers" "Learn about Providers"
+		click Evaluators "/docs/core/evaluators" "Learn about Evaluators"
+		click Knowledge "/docs/core/knowledge" "Learn about Knowledge System"
+		click Worlds "/docs/core/worlds" "Learn about Worlds"
+		click Rooms "/docs/core/rooms" "Learn about Rooms"
+		click Entities "/docs/core/entities" "Learn about Entities"
+		click Plugins "/docs/core/plugins" "Learn about Plugins"
+		click Projects "/docs/core/project" "Learn about Projects"
+		click Tasks "/docs/core/tasks" "Learn about Tasks"
 
-    %% Styling
-    classDef core fill:#3498db,stroke:#2c3e50,stroke-width:1px,color:#fff,font-weight:bold
-    classDef services fill:#9b59b6,stroke:#2c3e50,stroke-width:1px,color:#fff,font-weight:bold
-    classDef db fill:#27ae60,stroke:#2c3e50,stroke-width:1px,color:#fff,font-weight:bold
-    classDef int fill:#e74c3c,stroke:#2c3e50,stroke-width:1px,color:#fff,font-weight:bold
-    classDef struct fill:#f39c12,stroke:#2c3e50,stroke-width:1px,color:#fff,font-weight:bold
-    classDef dev fill:#1abc9c,stroke:#2c3e50,stroke-width:1px,color:#fff,font-weight:bold
-    classDef user fill:#ecf0f1,stroke:#2c3e50,stroke-width:2px,color:#2c3e50,font-weight:bold,border-radius:50%
+		%% Styling
+		classDef core fill:#3498db,stroke:#2c3e50,stroke-width:1px,color:#fff,font-weight:bold
+		classDef services fill:#9b59b6,stroke:#2c3e50,stroke-width:1px,color:#fff,font-weight:bold
+		classDef db fill:#27ae60,stroke:#2c3e50,stroke-width:1px,color:#fff,font-weight:bold
+		classDef int fill:#e74c3c,stroke:#2c3e50,stroke-width:1px,color:#fff,font-weight:bold
+		classDef struct fill:#f39c12,stroke:#2c3e50,stroke-width:1px,color:#fff,font-weight:bold
+		classDef dev fill:#1abc9c,stroke:#2c3e50,stroke-width:1px,color:#fff,font-weight:bold
+		classDef user fill:#ecf0f1,stroke:#2c3e50,stroke-width:2px,color:#2c3e50,font-weight:bold,border-radius:50%
 ```
 
 ### How ElizaOS Works
@@ -2999,27 +2999,27 @@ The provider interface is defined in [types.ts](/packages/core/src/types.ts):
 
 ```typescript
 interface Provider {
-  /** Provider name */
-  name: string;
+	/** Provider name */
+	name: string;
 
-  /** Description of the provider */
-  description?: string;
+	/** Description of the provider */
+	description?: string;
 
-  /** Whether the provider is dynamic */
-  dynamic?: boolean;
+	/** Whether the provider is dynamic */
+	dynamic?: boolean;
 
-  /** Position of the provider in the provider list, positive or negative */
-  position?: number;
+	/** Position of the provider in the provider list, positive or negative */
+	position?: number;
 
-  /**
-   * Whether the provider is private
-   *
-   * Private providers are not displayed in the regular provider list, they have to be called explicitly
-   */
-  private?: boolean;
+	/**
+	 * Whether the provider is private
+	 *
+	 * Private providers are not displayed in the regular provider list, they have to be called explicitly
+	 */
+	private?: boolean;
 
-  /** Data retrieval function */
-  get: (runtime: IAgentRuntime, message: Memory, state: State) => Promise<ProviderResult>;
+	/** Data retrieval function */
+	get: (runtime: IAgentRuntime, message: Memory, state: State) => Promise<ProviderResult>;
 }
 ```
 
@@ -3033,13 +3033,13 @@ It returns a `ProviderResult` object that contains:
 
 ```typescript
 interface ProviderResult {
-  values?: {
-    [key: string]: any;
-  };
-  data?: {
-    [key: string]: any;
-  };
-  text?: string;
+	values?: {
+		[key: string]: any;
+	};
+	data?: {
+		[key: string]: any;
+	};
+	text?: string;
 }
 ```
 
@@ -3059,18 +3059,18 @@ Dynamic providers are not automatically included in the context. They must be ex
 
 ```typescript
 const dynamicProvider: Provider = {
-  name: 'dynamicExample',
-  description: 'A dynamic provider example',
-  dynamic: true,
-  get: async (runtime, message, state) => {
-    // ...implementation
-    return {
-      text: 'Dynamic information fetched on demand',
-      values: {
-        /* key-value pairs */
-      },
-    };
-  },
+	name: 'dynamicExample',
+	description: 'A dynamic provider example',
+	dynamic: true,
+	get: async (runtime, message, state) => {
+		// ...implementation
+		return {
+			text: 'Dynamic information fetched on demand',
+			values: {
+				/* key-value pairs */
+			},
+		};
+	},
 };
 ```
 
@@ -3080,18 +3080,18 @@ Private providers are not included in the regular provider list and must be expl
 
 ```typescript
 const privateProvider: Provider = {
-  name: 'privateExample',
-  description: 'A private provider example',
-  private: true,
-  get: async (runtime, message, state) => {
-    // ...implementation
-    return {
-      text: 'Private information only available when explicitly requested',
-      values: {
-        /* key-value pairs */
-      },
-    };
-  },
+	name: 'privateExample',
+	description: 'A private provider example',
+	private: true,
+	get: async (runtime, message, state) => {
+		// ...implementation
+		return {
+			text: 'Private information only available when explicitly requested',
+			values: {
+				/* key-value pairs */
+			},
+		};
+	},
 };
 ```
 
@@ -3101,33 +3101,33 @@ The `position` property determines the order in which providers are processed. L
 
 ```typescript
 const earlyProvider: Provider = {
-  name: 'earlyExample',
-  description: 'Runs early in the provider chain',
-  position: -100,
-  get: async (runtime, message, state) => {
-    // ...implementation
-    return {
-      text: 'Early information',
-      values: {
-        /* key-value pairs */
-      },
-    };
-  },
+	name: 'earlyExample',
+	description: 'Runs early in the provider chain',
+	position: -100,
+	get: async (runtime, message, state) => {
+		// ...implementation
+		return {
+			text: 'Early information',
+			values: {
+				/* key-value pairs */
+			},
+		};
+	},
 };
 
 const lateProvider: Provider = {
-  name: 'lateExample',
-  description: 'Runs late in the provider chain',
-  position: 100,
-  get: async (runtime, message, state) => {
-    // ...implementation
-    return {
-      text: 'Late information that might depend on earlier providers',
-      values: {
-        /* key-value pairs */
-      },
-    };
-  },
+	name: 'lateExample',
+	description: 'Runs late in the provider chain',
+	position: 100,
+	get: async (runtime, message, state) => {
+		// ...implementation
+		return {
+			text: 'Late information that might depend on earlier providers',
+			values: {
+				/* key-value pairs */
+			},
+		};
+	},
 };
 ```
 
@@ -3143,16 +3143,16 @@ const state = await runtime.composeState(message);
 
 // Get state with specific providers only
 const filteredState = await runtime.composeState(
-  message,
-  ['timeProvider', 'factsProvider'], // Only include these providers
-  null
+	message,
+	['timeProvider', 'factsProvider'], // Only include these providers
+	null
 );
 
 // Include private or dynamic providers
 const enhancedState = await runtime.composeState(
-  message,
-  null,
-  ['privateExample', 'dynamicExample'] // Include these private/dynamic providers
+	message,
+	null,
+	['privateExample', 'dynamicExample'] // Include these private/dynamic providers
 );
 ```
 
@@ -3190,26 +3190,26 @@ Visit the [ElizaOS Plugin Registry](https://github.com/elizaos-plugins/registry)
 
 ```typescript
 const timeProvider: Provider = {
-  name: 'time',
-  description: 'Provides the current date and time',
-  position: -10, // Run early to ensure time is available for other providers
-  get: async (_runtime: IAgentRuntime, _message: Memory) => {
-    const currentDate = new Date();
-    const options = {
-      timeZone: 'UTC',
-      dateStyle: 'full' as const,
-      timeStyle: 'long' as const,
-    };
-    const humanReadable = new Intl.DateTimeFormat('en-US', options).format(currentDate);
+	name: 'time',
+	description: 'Provides the current date and time',
+	position: -10, // Run early to ensure time is available for other providers
+	get: async (_runtime: IAgentRuntime, _message: Memory) => {
+		const currentDate = new Date();
+		const options = {
+			timeZone: 'UTC',
+			dateStyle: 'full' as const,
+			timeStyle: 'long' as const,
+		};
+		const humanReadable = new Intl.DateTimeFormat('en-US', options).format(currentDate);
 
-    return {
-      text: `The current date and time is ${humanReadable}. Please use this as your reference for any time-based operations or responses.`,
-      values: {
-        currentDate: currentDate.toISOString(),
-        humanReadableDate: humanReadable,
-      },
-    };
-  },
+		return {
+			text: `The current date and time is ${humanReadable}. Please use this as your reference for any time-based operations or responses.`,
+			values: {
+				currentDate: currentDate.toISOString(),
+				humanReadableDate: humanReadable,
+			},
+		};
+	},
 };
 ```
 
@@ -3217,42 +3217,42 @@ const timeProvider: Provider = {
 
 ```typescript
 const weatherProvider: Provider = {
-  name: 'weather',
-  description: 'Provides weather information for a location',
-  dynamic: true, // Only used when explicitly requested
-  get: async (runtime: IAgentRuntime, message: Memory, state: State) => {
-    // Extract location from state if available
-    const location = state?.values?.location || 'San Francisco';
+	name: 'weather',
+	description: 'Provides weather information for a location',
+	dynamic: true, // Only used when explicitly requested
+	get: async (runtime: IAgentRuntime, message: Memory, state: State) => {
+		// Extract location from state if available
+		const location = state?.values?.location || 'San Francisco';
 
-    try {
-      // Fetch weather data from an API
-      const weatherData = await fetchWeatherData(location);
+		try {
+			// Fetch weather data from an API
+			const weatherData = await fetchWeatherData(location);
 
-      return {
-        text: `The current weather in ${location} is ${weatherData.description} with a temperature of ${weatherData.temperature}°C.`,
-        values: {
-          weather: {
-            location,
-            temperature: weatherData.temperature,
-            description: weatherData.description,
-            humidity: weatherData.humidity,
-          },
-        },
-        data: {
-          // Additional detailed data that doesn't go into the context
-          weatherDetails: weatherData,
-        },
-      };
-    } catch (error) {
-      // Handle errors gracefully
-      return {
-        text: `I couldn't retrieve weather information for ${location} at this time.`,
-        values: {
-          weather: { error: true },
-        },
-      };
-    }
-  },
+			return {
+				text: `The current weather in ${location} is ${weatherData.description} with a temperature of ${weatherData.temperature}°C.`,
+				values: {
+					weather: {
+						location,
+						temperature: weatherData.temperature,
+						description: weatherData.description,
+						humidity: weatherData.humidity,
+					},
+				},
+				data: {
+					// Additional detailed data that doesn't go into the context
+					weatherDetails: weatherData,
+				},
+			};
+		} catch (error) {
+			// Handle errors gracefully
+			return {
+				text: `I couldn't retrieve weather information for ${location} at this time.`,
+				values: {
+					weather: { error: true },
+				},
+			};
+		}
+	},
 };
 ```
 
@@ -3268,33 +3268,33 @@ const weatherProvider: Provider = {
 
 ```typescript
 const efficientProvider: Provider = {
-  name: 'efficientExample',
-  description: 'Efficiently provides cached data',
-  get: async (runtime, message) => {
-    // Check for cached data
-    const cacheKey = `data:${message.roomId}`;
-    const cachedData = await runtime.getCache(cacheKey);
+	name: 'efficientExample',
+	description: 'Efficiently provides cached data',
+	get: async (runtime, message) => {
+		// Check for cached data
+		const cacheKey = `data:${message.roomId}`;
+		const cachedData = await runtime.getCache(cacheKey);
 
-    if (cachedData) {
-      return cachedData;
-    }
+		if (cachedData) {
+			return cachedData;
+		}
 
-    // Fetch fresh data if not cached
-    const result = {
-      text: 'Freshly generated information',
-      values: {
-        /* key-value pairs */
-      },
-      data: {
-        /* structured data */
-      },
-    };
+		// Fetch fresh data if not cached
+		const result = {
+			text: 'Freshly generated information',
+			values: {
+				/* key-value pairs */
+			},
+			data: {
+				/* structured data */
+			},
+		};
 
-    // Cache the result with appropriate TTL
-    await runtime.setCache(cacheKey, result, { expires: 30 * 60 * 1000 }); // 30 minutes
+		// Cache the result with appropriate TTL
+		await runtime.setCache(cacheKey, result, { expires: 30 * 60 * 1000 }); // 30 minutes
 
-    return result;
-  },
+		return result;
+	},
 };
 ```
 
@@ -3304,12 +3304,12 @@ Always handle errors without throwing exceptions that would interrupt the agent'
 
 ```typescript
 try {
-  // Risky operation
+	// Risky operation
 } catch (error) {
-  return {
-    text: "I couldn't retrieve that information right now.",
-    values: { error: true },
-  };
+	return {
+		text: "I couldn't retrieve that information right now.",
+		values: { error: true },
+	};
 }
 ```
 
@@ -3353,16 +3353,16 @@ Yes, providers can use services through the runtime. For example, a wallet provi
 
 ```typescript
 const walletProvider: Provider = {
-  name: 'wallet',
-  get: async (runtime, message) => {
-    const solanaService = runtime.getService('solana');
-    if (!solanaService) {
-      return { text: '' };
-    }
+	name: 'wallet',
+	get: async (runtime, message) => {
+		const solanaService = runtime.getService('solana');
+		if (!solanaService) {
+			return { text: '' };
+		}
 
-    const walletData = await solanaService.getCachedData();
-    // Process and return wallet data
-  },
+		const walletData = await solanaService.getCachedData();
+		// Process and return wallet data
+	},
 };
 ```
 
@@ -3413,15 +3413,15 @@ A room in ElizaOS has the following properties:
 
 ```typescript
 type Room = {
-  id: UUID;
-  name?: string;
-  agentId?: UUID;
-  source: string;
-  type: ChannelType;
-  channelId?: string;
-  serverId?: string;
-  worldId?: UUID;
-  metadata?: Record<string, unknown>;
+	id: UUID;
+	name?: string;
+	agentId?: UUID;
+	source: string;
+	type: ChannelType;
+	channelId?: string;
+	serverId?: string;
+	worldId?: UUID;
+	metadata?: Record<string, unknown>;
 };
 ```
 
@@ -3462,12 +3462,12 @@ You can create a new room using the AgentRuntime:
 
 ```typescript
 const roomId = await runtime.createRoom({
-  name: 'general-chat',
-  source: 'discord',
-  type: ChannelType.GROUP,
-  channelId: 'external-channel-id',
-  serverId: 'external-server-id',
-  worldId: parentWorldId,
+	name: 'general-chat',
+	source: 'discord',
+	type: ChannelType.GROUP,
+	channelId: 'external-channel-id',
+	serverId: 'external-server-id',
+	worldId: parentWorldId,
 });
 ```
 
@@ -3477,13 +3477,13 @@ To create a room if it doesn't already exist:
 
 ```typescript
 await runtime.ensureRoomExists({
-  id: roomId,
-  name: 'general-chat',
-  source: 'discord',
-  type: ChannelType.GROUP,
-  channelId: 'external-channel-id',
-  serverId: 'external-server-id',
-  worldId: parentWorldId,
+	id: roomId,
+	name: 'general-chat',
+	source: 'discord',
+	type: ChannelType.GROUP,
+	channelId: 'external-channel-id',
+	serverId: 'external-server-id',
+	worldId: parentWorldId,
 });
 ```
 
@@ -3501,12 +3501,12 @@ const worldRooms = await runtime.getRooms(worldId);
 
 ```typescript
 await runtime.updateRoom({
-  id: roomId,
-  name: 'renamed-channel',
-  metadata: {
-    ...room.metadata,
-    customProperty: 'value',
-  },
+	id: roomId,
+	name: 'renamed-channel',
+	metadata: {
+		...room.metadata,
+		customProperty: 'value',
+	},
 });
 ```
 
@@ -3576,26 +3576,26 @@ Rooms store messages as memories in the database:
 ```typescript
 // Create a new message in a room
 const messageId = await runtime.createMemory(
-  {
-    entityId: senderEntityId,
-    agentId: runtime.agentId,
-    roomId: roomId,
-    content: {
-      text: 'Hello, world!',
-      source: 'discord',
-    },
-    metadata: {
-      type: 'message',
-    },
-  },
-  'messages'
+	{
+		entityId: senderEntityId,
+		agentId: runtime.agentId,
+		roomId: roomId,
+		content: {
+			text: 'Hello, world!',
+			source: 'discord',
+		},
+		metadata: {
+			type: 'message',
+		},
+	},
+	'messages'
 );
 
 // Retrieve recent messages from a room
 const messages = await runtime.getMemories({
-  roomId: roomId,
-  count: 10,
-  unique: true,
+	roomId: roomId,
+	count: 10,
+	unique: true,
 });
 ```
 
@@ -3615,24 +3615,24 @@ ElizaOS emits events related to room activities:
 ```typescript
 // Register event handlers in your plugin
 const myPlugin: Plugin = {
-  name: 'my-room-plugin',
-  description: 'Handles room events',
+	name: 'my-room-plugin',
+	description: 'Handles room events',
 
-  events: {
-    [EventTypes.ROOM_JOINED]: [
-      async (payload) => {
-        const { runtime, entityId, roomId } = payload;
-        console.log(`Entity ${entityId} joined room ${roomId}`);
-      },
-    ],
+	events: {
+		[EventTypes.ROOM_JOINED]: [
+			async (payload) => {
+				const { runtime, entityId, roomId } = payload;
+				console.log(`Entity ${entityId} joined room ${roomId}`);
+			},
+		],
 
-    [EventTypes.MESSAGE_RECEIVED]: [
-      async (payload: MessagePayload) => {
-        const { runtime, message } = payload;
-        console.log(`Message received in room ${message.roomId}`);
-      },
-    ],
-  },
+		[EventTypes.MESSAGE_RECEIVED]: [
+			async (payload: MessagePayload) => {
+				const { runtime, message } = payload;
+				console.log(`Message received in room ${message.roomId}`);
+			},
+		],
+	},
 };
 ```
 
@@ -3643,15 +3643,15 @@ When integrating with external platforms, rooms are typically mapped to channels
 ```typescript
 // Ensure the connection exists for a room from an external system
 await runtime.ensureConnection({
-  entityId: userEntityId,
-  roomId: roomId,
-  userName: 'username',
-  name: 'display-name',
-  source: 'discord',
-  channelId: 'external-channel-id',
-  serverId: 'external-server-id',
-  type: ChannelType.GROUP,
-  worldId: parentWorldId,
+	entityId: userEntityId,
+	roomId: roomId,
+	userName: 'username',
+	name: 'display-name',
+	source: 'discord',
+	channelId: 'external-channel-id',
+	serverId: 'external-server-id',
+	type: ChannelType.GROUP,
+	worldId: parentWorldId,
 });
 ```
 
@@ -3713,23 +3713,23 @@ Services serve as bridges between Eliza agents and various platforms, providing 
 
 1. **Message Processing**
 
-   - Platform-specific message formatting and delivery
-   - Media handling and attachments via [`Memory`](/api/interfaces/Memory) objects
-   - Reply threading and context management
-   - Support for different content types
+	 - Platform-specific message formatting and delivery
+	 - Media handling and attachments via [`Memory`](/api/interfaces/Memory) objects
+	 - Reply threading and context management
+	 - Support for different content types
 
 2. **State & Memory Management**
 
-   - Each service maintains independent state to prevent cross-platform contamination
-   - Integrates with runtime memory managers for different types of content:
-   - Messages processed by one service don't automatically appear in other services' contexts
-   - [`State`](/api/interfaces/State) persists across agent restarts through the database adapter
+	 - Each service maintains independent state to prevent cross-platform contamination
+	 - Integrates with runtime memory managers for different types of content:
+	 - Messages processed by one service don't automatically appear in other services' contexts
+	 - [`State`](/api/interfaces/State) persists across agent restarts through the database adapter
 
 3. **Platform Integration**
-   - Authentication and API compliance
-   - Event processing and webhooks
-   - Rate limiting and cache management
-   - Platform-specific feature support
+	 - Authentication and API compliance
+	 - Event processing and webhooks
+	 - Rate limiting and cache management
+	 - Platform-specific feature support
 
 ## Service Configuration
 
@@ -3737,42 +3737,42 @@ Services are configured through the [`Character`](/api/type-aliases/Character) c
 
 ```typescript
 export type Character = {
-  // ... other properties ...
-  settings?: {
-    discord?: {
-      shouldIgnoreBotMessages?: boolean;
-      shouldIgnoreDirectMessages?: boolean;
-      shouldRespondOnlyToMentions?: boolean;
-      messageSimilarityThreshold?: number;
-      isPartOfTeam?: boolean;
-      teamAgentIds?: string[];
-      teamLeaderId?: string;
-      teamMemberInterestKeywords?: string[];
-      allowedChannelIds?: string[];
-      autoPost?: {
-        enabled?: boolean;
-        monitorTime?: number;
-        inactivityThreshold?: number;
-        mainChannelId?: string;
-        announcementChannelIds?: string[];
-        minTimeBetweenPosts?: number;
-      };
-    };
-    telegram?: {
-      shouldIgnoreBotMessages?: boolean;
-      shouldIgnoreDirectMessages?: boolean;
-      shouldRespondOnlyToMentions?: boolean;
-      shouldOnlyJoinInAllowedGroups?: boolean;
-      allowedGroupIds?: string[];
-      messageSimilarityThreshold?: number;
-      // ... other telegram-specific settings
-    };
-    slack?: {
-      shouldIgnoreBotMessages?: boolean;
-      shouldIgnoreDirectMessages?: boolean;
-    };
-    // ... other service configs
-  };
+	// ... other properties ...
+	settings?: {
+		discord?: {
+			shouldIgnoreBotMessages?: boolean;
+			shouldIgnoreDirectMessages?: boolean;
+			shouldRespondOnlyToMentions?: boolean;
+			messageSimilarityThreshold?: number;
+			isPartOfTeam?: boolean;
+			teamAgentIds?: string[];
+			teamLeaderId?: string;
+			teamMemberInterestKeywords?: string[];
+			allowedChannelIds?: string[];
+			autoPost?: {
+				enabled?: boolean;
+				monitorTime?: number;
+				inactivityThreshold?: number;
+				mainChannelId?: string;
+				announcementChannelIds?: string[];
+				minTimeBetweenPosts?: number;
+			};
+		};
+		telegram?: {
+			shouldIgnoreBotMessages?: boolean;
+			shouldIgnoreDirectMessages?: boolean;
+			shouldRespondOnlyToMentions?: boolean;
+			shouldOnlyJoinInAllowedGroups?: boolean;
+			allowedGroupIds?: string[];
+			messageSimilarityThreshold?: number;
+			// ... other telegram-specific settings
+		};
+		slack?: {
+			shouldIgnoreBotMessages?: boolean;
+			shouldIgnoreDirectMessages?: boolean;
+		};
+		// ... other service configs
+	};
 };
 ```
 
@@ -3793,26 +3793,26 @@ Example of a basic service implementation:
 import { Service, IAgentRuntime } from '@elizaos/core';
 
 export class CustomService extends Service {
-  static serviceType = 'custom';
-  capabilityDescription = 'The agent is able to interact with the custom platform';
+	static serviceType = 'custom';
+	capabilityDescription = 'The agent is able to interact with the custom platform';
 
-  constructor(protected runtime: IAgentRuntime) {
-    super();
-    // Initialize platform connection
-    // Set up event handlers
-    // Configure message processing
-  }
+	constructor(protected runtime: IAgentRuntime) {
+		super();
+		// Initialize platform connection
+		// Set up event handlers
+		// Configure message processing
+	}
 
-  static async start(runtime: IAgentRuntime): Promise<CustomService> {
-    const service = new CustomService(runtime);
-    // Additional initialization if needed
-    return service;
-  }
+	static async start(runtime: IAgentRuntime): Promise<CustomService> {
+		const service = new CustomService(runtime);
+		// Additional initialization if needed
+		return service;
+	}
 
-  async stop(): Promise<void> {
-    // Cleanup resources
-    // Close connections
-  }
+	async stop(): Promise<void> {
+		// Cleanup resources
+		// Close connections
+	}
 }
 ```
 
@@ -3838,11 +3838,11 @@ Services use the runtime's memory managers to persist conversation data (source:
 ```typescript
 // Store a new message
 await runtime.messageManager.createMemory({
-    id: messageId,
-    content: { text: message.content },
-    userId: userId,
-    roomId: roomId,
-    agentId: runtime.agentId
+		id: messageId,
+		content: { text: message.content },
+		userId: userId,
+		roomId: roomId,
+		agentId: runtime.agentId
 });
 
 // Retrieve recent messages
@@ -3916,23 +3916,23 @@ A task in ElizaOS has the following properties:
 
 ```typescript
 interface Task {
-  id?: UUID; // Unique identifier (auto-generated if not provided)
-  name: string; // Name of the task (must match a registered task worker)
-  updatedAt?: number; // Timestamp when the task was last updated
-  metadata?: {
-    // Optional additional configuration
-    updateInterval?: number; // For repeating tasks: milliseconds between executions
-    options?: {
-      // For choice tasks: options for user selection
-      name: string;
-      description: string;
-    }[];
-    [key: string]: unknown; // Additional custom metadata
-  };
-  description: string; // Human-readable description of the task
-  roomId?: UUID; // Optional room association (for room-specific tasks)
-  worldId?: UUID; // Optional world association (for world-specific tasks)
-  tags: string[]; // Tags for categorizing and filtering tasks
+	id?: UUID; // Unique identifier (auto-generated if not provided)
+	name: string; // Name of the task (must match a registered task worker)
+	updatedAt?: number; // Timestamp when the task was last updated
+	metadata?: {
+		// Optional additional configuration
+		updateInterval?: number; // For repeating tasks: milliseconds between executions
+		options?: {
+			// For choice tasks: options for user selection
+			name: string;
+			description: string;
+		}[];
+		[key: string]: unknown; // Additional custom metadata
+	};
+	description: string; // Human-readable description of the task
+	roomId?: UUID; // Optional room association (for room-specific tasks)
+	worldId?: UUID; // Optional world association (for world-specific tasks)
+	tags: string[]; // Tags for categorizing and filtering tasks
 }
 ```
 
@@ -3942,18 +3942,18 @@ Task workers define the actual logic that executes when a task runs. Each task w
 
 ```typescript
 interface TaskWorker {
-  name: string; // Matches the name in the Task
-  execute: (
-    runtime: IAgentRuntime,
-    options: { [key: string]: unknown }, // Options passed during execution
-    task: Task // The task being executed
-  ) => Promise<void>;
-  validate?: (
-    // Optional validation before execution
-    runtime: IAgentRuntime,
-    message: Memory,
-    state: State
-  ) => Promise<boolean>;
+	name: string; // Matches the name in the Task
+	execute: (
+		runtime: IAgentRuntime,
+		options: { [key: string]: unknown }, // Options passed during execution
+		task: Task // The task being executed
+	) => Promise<void>;
+	validate?: (
+		// Optional validation before execution
+		runtime: IAgentRuntime,
+		message: Memory,
+		state: State
+	) => Promise<boolean>;
 }
 ```
 
@@ -3965,30 +3965,30 @@ Before creating tasks, you must register a worker to handle the execution:
 
 ```typescript
 runtime.registerTaskWorker({
-  name: 'SEND_REMINDER',
-  validate: async (runtime, message, state) => {
-    // Optional validation logic
-    return true;
-  },
-  execute: async (runtime, options, task) => {
-    // Task execution logic
-    const { roomId } = task;
-    const { reminder, userId } = options;
+	name: 'SEND_REMINDER',
+	validate: async (runtime, message, state) => {
+		// Optional validation logic
+		return true;
+	},
+	execute: async (runtime, options, task) => {
+		// Task execution logic
+		const { roomId } = task;
+		const { reminder, userId } = options;
 
-    await runtime.createMemory(
-      {
-        entityId: runtime.agentId,
-        roomId,
-        content: {
-          text: `Reminder for <@${userId}>: ${reminder}`,
-        },
-      },
-      'messages'
-    );
+		await runtime.createMemory(
+			{
+				entityId: runtime.agentId,
+				roomId,
+				content: {
+					text: `Reminder for <@${userId}>: ${reminder}`,
+				},
+			},
+			'messages'
+		);
 
-    // Delete the task after it's completed
-    await runtime.deleteTask(task.id);
-  },
+		// Delete the task after it's completed
+		await runtime.deleteTask(task.id);
+	},
 });
 ```
 
@@ -3998,15 +3998,15 @@ Create a task that will execute once:
 
 ```typescript
 await runtime.createTask({
-  name: 'SEND_REMINDER',
-  description: 'Send a reminder message to the user',
-  roomId: currentRoomId,
-  tags: ['reminder', 'one-time'],
-  metadata: {
-    userId: message.entityId,
-    reminder: 'Submit your weekly report',
-    scheduledFor: Date.now() + 86400000, // 24 hours from now
-  },
+	name: 'SEND_REMINDER',
+	description: 'Send a reminder message to the user',
+	roomId: currentRoomId,
+	tags: ['reminder', 'one-time'],
+	metadata: {
+		userId: message.entityId,
+		reminder: 'Submit your weekly report',
+		scheduledFor: Date.now() + 86400000, // 24 hours from now
+	},
 });
 ```
 
@@ -4016,15 +4016,15 @@ Create a task that repeats at regular intervals:
 
 ```typescript
 await runtime.createTask({
-  name: 'DAILY_REPORT',
-  description: 'Generate and post the daily report',
-  roomId: announcementChannelId,
-  worldId: serverWorldId,
-  tags: ['report', 'repeat', 'daily'],
-  metadata: {
-    updateInterval: 86400000, // 24 hours in milliseconds
-    updatedAt: Date.now(), // When the task was last updated/executed
-  },
+	name: 'DAILY_REPORT',
+	description: 'Generate and post the daily report',
+	roomId: announcementChannelId,
+	worldId: serverWorldId,
+	tags: ['report', 'repeat', 'daily'],
+	metadata: {
+		updateInterval: 86400000, // 24 hours in milliseconds
+		updatedAt: Date.now(), // When the task was last updated/executed
+	},
 });
 ```
 
@@ -4034,18 +4034,18 @@ Create a task that presents options and waits for user input:
 
 ```typescript
 await runtime.createTask({
-  name: 'CONFIRM_ACTION',
-  description: 'Confirm the requested action',
-  roomId: message.roomId,
-  tags: ['confirmation', 'AWAITING_CHOICE'],
-  metadata: {
-    options: [
-      { name: 'confirm', description: 'Proceed with the action' },
-      { name: 'cancel', description: 'Cancel the action' },
-    ],
-    action: 'DELETE_FILES',
-    files: ['document1.txt', 'document2.txt'],
-  },
+	name: 'CONFIRM_ACTION',
+	description: 'Confirm the requested action',
+	roomId: message.roomId,
+	tags: ['confirmation', 'AWAITING_CHOICE'],
+	metadata: {
+		options: [
+			{ name: 'confirm', description: 'Proceed with the action' },
+			{ name: 'cancel', description: 'Cancel the action' },
+		],
+		action: 'DELETE_FILES',
+		files: ['document1.txt', 'document2.txt'],
+	},
 });
 ```
 
@@ -4056,8 +4056,8 @@ Retrieve, update, and delete tasks as needed:
 ```typescript
 // Get tasks by specific criteria
 const reminderTasks = await runtime.getTasks({
-  roomId: currentRoomId,
-  tags: ['reminder'],
+	roomId: currentRoomId,
+	tags: ['reminder'],
 });
 
 // Get tasks by name
@@ -4068,11 +4068,11 @@ const task = await runtime.getTask(taskId);
 
 // Update a task
 await runtime.updateTask(taskId, {
-  description: 'Updated description',
-  metadata: {
-    ...task.metadata,
-    priority: 'high',
-  },
+	description: 'Updated description',
+	metadata: {
+		...task.metadata,
+		priority: 'high',
+	},
 });
 
 // Delete a task
@@ -4099,36 +4099,36 @@ To process recurring tasks, implement logic like this:
 ```typescript
 // In an initialization function or periodic check
 async function processRecurringTasks() {
-  const now = Date.now();
-  const recurringTasks = await runtime.getTasks({
-    tags: ['repeat'],
-  });
+	const now = Date.now();
+	const recurringTasks = await runtime.getTasks({
+		tags: ['repeat'],
+	});
 
-  for (const task of recurringTasks) {
-    if (!task.metadata?.updateInterval) continue;
+	for (const task of recurringTasks) {
+		if (!task.metadata?.updateInterval) continue;
 
-    const lastUpdate = task.metadata.updatedAt || 0;
-    const interval = task.metadata.updateInterval;
+		const lastUpdate = task.metadata.updatedAt || 0;
+		const interval = task.metadata.updateInterval;
 
-    if (now >= lastUpdate + interval) {
-      const worker = runtime.getTaskWorker(task.name);
-      if (worker) {
-        try {
-          await worker.execute(runtime, {}, task);
+		if (now >= lastUpdate + interval) {
+			const worker = runtime.getTaskWorker(task.name);
+			if (worker) {
+				try {
+					await worker.execute(runtime, {}, task);
 
-          // Update the task's last update time
-          await runtime.updateTask(task.id, {
-            metadata: {
-              ...task.metadata,
-              updatedAt: now,
-            },
-          });
-        } catch (error) {
-          logger.error(`Error executing task ${task.name}: ${error}`);
-        }
-      }
-    }
-  }
+					// Update the task's last update time
+					await runtime.updateTask(task.id, {
+						metadata: {
+							...task.metadata,
+							updatedAt: now,
+						},
+					});
+				} catch (error) {
+					logger.error(`Error executing task ${task.name}: ${error}`);
+				}
+			}
+		}
+	}
 }
 ```
 
@@ -4147,37 +4147,37 @@ Create a task to follow up with a user later:
 
 ```typescript
 runtime.registerTaskWorker({
-  name: 'FOLLOW_UP',
-  execute: async (runtime, options, task) => {
-    const { roomId } = task;
-    const { userId, topic } = task.metadata;
+	name: 'FOLLOW_UP',
+	execute: async (runtime, options, task) => {
+		const { roomId } = task;
+		const { userId, topic } = task.metadata;
 
-    await runtime.createMemory(
-      {
-        entityId: runtime.agentId,
-        roomId,
-        content: {
-          text: `Hi <@${userId}>, I'm following up about ${topic}. Do you have any updates?`,
-        },
-      },
-      'messages'
-    );
+		await runtime.createMemory(
+			{
+				entityId: runtime.agentId,
+				roomId,
+				content: {
+					text: `Hi <@${userId}>, I'm following up about ${topic}. Do you have any updates?`,
+				},
+			},
+			'messages'
+		);
 
-    await runtime.deleteTask(task.id);
-  },
+		await runtime.deleteTask(task.id);
+	},
 });
 
 // Create a follow-up task for 2 days later
 await runtime.createTask({
-  name: 'FOLLOW_UP',
-  description: 'Follow up with user about project status',
-  roomId: message.roomId,
-  tags: ['follow-up', 'one-time'],
-  metadata: {
-    userId: message.entityId,
-    topic: 'the project timeline',
-    scheduledFor: Date.now() + 2 * 86400000, // 2 days
-  },
+	name: 'FOLLOW_UP',
+	description: 'Follow up with user about project status',
+	roomId: message.roomId,
+	tags: ['follow-up', 'one-time'],
+	metadata: {
+		userId: message.entityId,
+		topic: 'the project timeline',
+		scheduledFor: Date.now() + 2 * 86400000, // 2 days
+	},
 });
 ```
 
@@ -4188,60 +4188,60 @@ Implement complex workflows that span multiple interactions:
 ```typescript
 // First step: Gather requirements
 runtime.registerTaskWorker({
-  name: 'GATHER_REQUIREMENTS',
-  execute: async (runtime, options, task) => {
-    // Ask user for requirements and create a new task for the next step
-    await runtime.createTask({
-      name: 'CONFIRM_REQUIREMENTS',
-      description: 'Confirm gathered requirements',
-      roomId: task.roomId,
-      tags: ['workflow', 'AWAITING_CHOICE'],
-      metadata: {
-        previousStep: 'GATHER_REQUIREMENTS',
-        requirements: options.requirements,
-        options: [
-          { name: 'confirm', description: 'Confirm requirements are correct' },
-          { name: 'revise', description: 'Need to revise requirements' },
-        ],
-      },
-    });
+	name: 'GATHER_REQUIREMENTS',
+	execute: async (runtime, options, task) => {
+		// Ask user for requirements and create a new task for the next step
+		await runtime.createTask({
+			name: 'CONFIRM_REQUIREMENTS',
+			description: 'Confirm gathered requirements',
+			roomId: task.roomId,
+			tags: ['workflow', 'AWAITING_CHOICE'],
+			metadata: {
+				previousStep: 'GATHER_REQUIREMENTS',
+				requirements: options.requirements,
+				options: [
+					{ name: 'confirm', description: 'Confirm requirements are correct' },
+					{ name: 'revise', description: 'Need to revise requirements' },
+				],
+			},
+		});
 
-    await runtime.deleteTask(task.id);
-  },
+		await runtime.deleteTask(task.id);
+	},
 });
 
 // Second step: Confirm requirements
 runtime.registerTaskWorker({
-  name: 'CONFIRM_REQUIREMENTS',
-  execute: async (runtime, options, task) => {
-    if (options.option === 'confirm') {
-      // Move to the next step
-      await runtime.createTask({
-        name: 'GENERATE_SOLUTION',
-        description: 'Generate solution based on requirements',
-        roomId: task.roomId,
-        tags: ['workflow'],
-        metadata: {
-          previousStep: 'CONFIRM_REQUIREMENTS',
-          requirements: task.metadata.requirements,
-        },
-      });
-    } else {
-      // Go back to requirements gathering
-      await runtime.createTask({
-        name: 'GATHER_REQUIREMENTS',
-        description: 'Revise requirements',
-        roomId: task.roomId,
-        tags: ['workflow'],
-        metadata: {
-          previousStep: 'CONFIRM_REQUIREMENTS',
-          previousRequirements: task.metadata.requirements,
-        },
-      });
-    }
+	name: 'CONFIRM_REQUIREMENTS',
+	execute: async (runtime, options, task) => {
+		if (options.option === 'confirm') {
+			// Move to the next step
+			await runtime.createTask({
+				name: 'GENERATE_SOLUTION',
+				description: 'Generate solution based on requirements',
+				roomId: task.roomId,
+				tags: ['workflow'],
+				metadata: {
+					previousStep: 'CONFIRM_REQUIREMENTS',
+					requirements: task.metadata.requirements,
+				},
+			});
+		} else {
+			// Go back to requirements gathering
+			await runtime.createTask({
+				name: 'GATHER_REQUIREMENTS',
+				description: 'Revise requirements',
+				roomId: task.roomId,
+				tags: ['workflow'],
+				metadata: {
+					previousStep: 'CONFIRM_REQUIREMENTS',
+					previousRequirements: task.metadata.requirements,
+				},
+			});
+		}
 
-    await runtime.deleteTask(task.id);
-  },
+		await runtime.deleteTask(task.id);
+	},
 });
 ```
 
@@ -4251,41 +4251,41 @@ Create tasks that generate and post reports on a schedule:
 
 ```typescript
 runtime.registerTaskWorker({
-  name: 'GENERATE_WEEKLY_REPORT',
-  execute: async (runtime, options, task) => {
-    const { roomId } = task;
+	name: 'GENERATE_WEEKLY_REPORT',
+	execute: async (runtime, options, task) => {
+		const { roomId } = task;
 
-    // Generate report content
-    const reportData = await generateWeeklyReport(runtime);
+		// Generate report content
+		const reportData = await generateWeeklyReport(runtime);
 
-    // Post the report
-    await runtime.createMemory(
-      {
-        entityId: runtime.agentId,
-        roomId,
-        content: {
-          text: `# Weekly Report\n\n${reportData}`,
-        },
-      },
-      'messages'
-    );
+		// Post the report
+		await runtime.createMemory(
+			{
+				entityId: runtime.agentId,
+				roomId,
+				content: {
+					text: `# Weekly Report\n\n${reportData}`,
+				},
+			},
+			'messages'
+		);
 
-    // The task stays active for next week (updateInterval handles timing)
-  },
+		// The task stays active for next week (updateInterval handles timing)
+	},
 });
 
 // Create a weekly report task
 await runtime.createTask({
-  name: 'GENERATE_WEEKLY_REPORT',
-  description: 'Generate and post weekly activity report',
-  roomId: reportChannelId,
-  worldId: serverWorldId,
-  tags: ['report', 'repeat', 'weekly'],
-  metadata: {
-    updateInterval: 7 * 86400000, // 7 days
-    updatedAt: Date.now(),
-    format: 'markdown',
-  },
+	name: 'GENERATE_WEEKLY_REPORT',
+	description: 'Generate and post weekly activity report',
+	roomId: reportChannelId,
+	worldId: serverWorldId,
+	tags: ['report', 'repeat', 'weekly'],
+	metadata: {
+		updateInterval: 7 * 86400000, // 7 days
+		updatedAt: Date.now(),
+		format: 'markdown',
+	},
 });
 ```
 
@@ -4296,34 +4296,34 @@ ElizaOS doesn't currently provide built-in events for task lifecycle, so impleme
 ```typescript
 // Custom monitoring for task execution
 async function executeTaskWithMonitoring(runtime, taskWorker, task) {
-  try {
-    // Create a start log
-    await runtime.log({
-      body: { taskId: task.id, action: 'start' },
-      entityId: runtime.agentId,
-      roomId: task.roomId,
-      type: 'TASK_EXECUTION',
-    });
+	try {
+		// Create a start log
+		await runtime.log({
+			body: { taskId: task.id, action: 'start' },
+			entityId: runtime.agentId,
+			roomId: task.roomId,
+			type: 'TASK_EXECUTION',
+		});
 
-    // Execute the task
-    await taskWorker.execute(runtime, {}, task);
+		// Execute the task
+		await taskWorker.execute(runtime, {}, task);
 
-    // Create a completion log
-    await runtime.log({
-      body: { taskId: task.id, action: 'complete', success: true },
-      entityId: runtime.agentId,
-      roomId: task.roomId,
-      type: 'TASK_EXECUTION',
-    });
-  } catch (error) {
-    // Create an error log
-    await runtime.log({
-      body: { taskId: task.id, action: 'error', error: error.message },
-      entityId: runtime.agentId,
-      roomId: task.roomId,
-      type: 'TASK_EXECUTION',
-    });
-  }
+		// Create a completion log
+		await runtime.log({
+			body: { taskId: task.id, action: 'complete', success: true },
+			entityId: runtime.agentId,
+			roomId: task.roomId,
+			type: 'TASK_EXECUTION',
+		});
+	} catch (error) {
+		// Create an error log
+		await runtime.log({
+			body: { taskId: task.id, action: 'error', error: error.message },
+			entityId: runtime.agentId,
+			roomId: task.roomId,
+			type: 'TASK_EXECUTION',
+		});
+	}
 }
 ```
 
@@ -4376,19 +4376,19 @@ A world in ElizaOS has the following properties:
 
 ```typescript
 type World = {
-  id: UUID;
-  name?: string;
-  agentId: UUID;
-  serverId: string;
-  metadata?: {
-    ownership?: {
-      ownerId: string;
-    };
-    roles?: {
-      [entityId: UUID]: Role;
-    };
-    [key: string]: unknown;
-  };
+	id: UUID;
+	name?: string;
+	agentId: UUID;
+	serverId: string;
+	metadata?: {
+		ownership?: {
+			ownerId: string;
+		};
+		roles?: {
+			[entityId: UUID]: Role;
+		};
+		[key: string]: unknown;
+	};
 };
 ```
 
@@ -4410,14 +4410,14 @@ You can create a new world using the AgentRuntime:
 
 ```typescript
 const worldId = await runtime.createWorld({
-  name: 'My Project Space',
-  agentId: runtime.agentId,
-  serverId: 'external-system-id',
-  metadata: {
-    ownership: {
-      ownerId: ownerEntityId,
-    },
-  },
+	name: 'My Project Space',
+	agentId: runtime.agentId,
+	serverId: 'external-system-id',
+	metadata: {
+		ownership: {
+			ownerId: ownerEntityId,
+		},
+	},
 });
 ```
 
@@ -4429,10 +4429,10 @@ If you're not sure if a world exists, you can use `ensureWorldExists()`:
 
 ```typescript
 await runtime.ensureWorldExists({
-  id: worldId,
-  name: 'My Project Space',
-  agentId: runtime.agentId,
-  serverId: 'external-system-id',
+	id: worldId,
+	name: 'My Project Space',
+	agentId: runtime.agentId,
+	serverId: 'external-system-id',
 });
 ```
 
@@ -4450,12 +4450,12 @@ const allWorlds = await runtime.getAllWorlds();
 
 ```typescript
 await runtime.updateWorld({
-  id: worldId,
-  name: 'Updated Name',
-  metadata: {
-    ...world.metadata,
-    customProperty: 'value',
-  },
+	id: worldId,
+	name: 'Updated Name',
+	metadata: {
+		...world.metadata,
+		customProperty: 'value',
+	},
 });
 ```
 
@@ -4495,7 +4495,7 @@ import { canModifyRole, findWorldForOwner } from '@elizaos/core';
 
 // Check if user can modify roles
 if (canModifyRole(userRole, targetRole, newRole)) {
-  // Allow role change
+	// Allow role change
 }
 
 // Find world where user is owner
@@ -4512,10 +4512,10 @@ const worldSettings = await getWorldSettings(runtime, serverId);
 
 // Update world settings
 worldSettings.MY_SETTING = {
-  name: 'My Setting',
-  description: 'Description for users',
-  value: 'setting-value',
-  required: false,
+	name: 'My Setting',
+	description: 'Description for users',
+	value: 'setting-value',
+	required: false,
 };
 
 // Save settings
@@ -4537,24 +4537,24 @@ ElizaOS emits events related to world activities:
 ```typescript
 // Register event handlers in your plugin
 const myPlugin: Plugin = {
-  name: 'my-world-plugin',
-  description: 'Handles world events',
+	name: 'my-world-plugin',
+	description: 'Handles world events',
 
-  events: {
-    [EventTypes.WORLD_JOINED]: [
-      async (payload: WorldPayload) => {
-        const { world, runtime } = payload;
-        console.log(`Joined world: ${world.name}`);
-      },
-    ],
+	events: {
+		[EventTypes.WORLD_JOINED]: [
+			async (payload: WorldPayload) => {
+				const { world, runtime } = payload;
+				console.log(`Joined world: ${world.name}`);
+			},
+		],
 
-    [EventTypes.WORLD_LEFT]: [
-      async (payload: WorldPayload) => {
-        const { world, runtime } = payload;
-        console.log(`Left world: ${world.name}`);
-      },
-    ],
-  },
+		[EventTypes.WORLD_LEFT]: [
+			async (payload: WorldPayload) => {
+				const { world, runtime } = payload;
+				console.log(`Left world: ${world.name}`);
+			},
+		],
+	},
 };
 ```
 
@@ -4585,7 +4585,7 @@ sidebar_position: 2
 title: Quickstart Guide
 description: Get started quickly with ElizaOS - from installation to running your first AI agent
 keywords:
-  [quickstart, installation, setup, configuration, CLI, agents, plugins, development, deployment]
+	[quickstart, installation, setup, configuration, CLI, agents, plugins, development, deployment]
 image: /img/eliza_banner.jpg
 ---
 
@@ -4603,7 +4603,7 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
 <Tabs>
-  <TabItem value="global" label="Install Globally (Recommended)" default>
+	<TabItem value="global" label="Install Globally (Recommended)" default>
 
 ```bash
 # Install globally
@@ -4612,16 +4612,16 @@ npm install -g @elizaos/cli
 elizaos start
 ```
 
-  </TabItem>
-  <TabItem value="npx" label="Test with NPX">
+	</TabItem>
+	<TabItem value="npx" label="Test with NPX">
 
 ```bash
 # Use directly with npx
 npx @elizaos/cli start
 ```
 
-  </TabItem>
-  <TabItem value="source" label="Install from Source">
+	</TabItem>
+	<TabItem value="source" label="Install from Source">
 
 ```bash
 # Clone the repository
@@ -4641,7 +4641,7 @@ bun run build
 bun start
 ```
 
-  </TabItem>
+	</TabItem>
 </Tabs>
 
 This will:
@@ -4814,1855 +4814,1855 @@ Join the [Discord community](https://discord.gg/elizaOS) for support and to shar
 ````yaml
 openapi: 3.0.0
 info:
-  title: Eliza OS API
-  description: |-
-    API documentation for Eliza OS v1.0.0-alpha - A flexible and scalable AI agent framework.
-    This API is designed to be used with a locally running Eliza instance. Endpoints allow for creating,
-    managing, and interacting with AI agents through a REST interface.
-  version: 1.0.0-alpha
-  contact:
-    name: Eliza OS Community
-    url: https://github.com/elizaos/eliza
+	title: Eliza OS API
+	description: |-
+		API documentation for Eliza OS v1.0.0-alpha - A flexible and scalable AI agent framework.
+		This API is designed to be used with a locally running Eliza instance. Endpoints allow for creating,
+		managing, and interacting with AI agents through a REST interface.
+	version: 1.0.0-alpha
+	contact:
+		name: Eliza OS Community
+		url: https://github.com/elizaos/eliza
 servers:
-  - url: http://localhost:3000
-    description: Local development server
+	- url: http://localhost:3000
+		description: Local development server
 tags:
-  - name: system
-    description: System-wide operations
-  - name: agents
-    description: Operations for managing AI agents
-  - name: rooms
-    description: Operations for managing conversation rooms
-  - name: messages
-    description: Operations for interacting with agents via text messages
-  - name: memories
-    description: Operations for accessing agent memories
-  - name: logs
-    description: Operations for accessing system and agent logs
-  - name: speech
-    description: Operations for speech and audio processing
-  - name: tee
-    description: Trusted Execution Environment operations
+	- name: system
+		description: System-wide operations
+	- name: agents
+		description: Operations for managing AI agents
+	- name: rooms
+		description: Operations for managing conversation rooms
+	- name: messages
+		description: Operations for interacting with agents via text messages
+	- name: memories
+		description: Operations for accessing agent memories
+	- name: logs
+		description: Operations for accessing system and agent logs
+	- name: speech
+		description: Operations for speech and audio processing
+	- name: tee
+		description: Trusted Execution Environment operations
 paths:
-  /api/server/hello:
-    get:
-      tags:
-        - system
-      summary: Basic health check
-      description: Simple hello world test endpoint
-      operationId: getHello
-      responses:
-        '200':
-          description: Hello world response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: 'Hello World!'
-  /api/server/status:
-    get:
-      tags:
-        - system
-      summary: Get system status
-      description: Returns the current status of the system with agent count and timestamp
-      operationId: getStatus
-      responses:
-        '200':
-          description: System status information
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: 'ok'
-                  agentCount:
-                    type: integer
-                    description: Number of active agents
-                  timestamp:
-                    type: string
-                    format: date-time
-                    description: Current timestamp
-  /api/server/health:
-    get:
-      tags:
-        - system
-      summary: Health check endpoint
-      description: Detailed health check for the system
-      operationId: getHealth
-      responses:
-        '200':
-          description: System is healthy
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: 'OK'
-                  version:
-                    type: string
-                  timestamp:
-                    type: string
-                    format: date-time
-                  dependencies:
-                    type: object
-                    properties:
-                      agents:
-                        type: string
-                        example: 'healthy'
-        '503':
-          description: System is unhealthy
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /api/server/logs:
-    get:
-      tags:
-        - logs
-      summary: Get system logs
-      description: Retrieve system logs with optional filtering
-      operationId: getLogs
-      parameters:
-        - name: since
-          in: query
-          schema:
-            type: integer
-            description: Timestamp (ms) to get logs from
-        - name: level
-          in: query
-          schema:
-            type: string
-            enum: [all, trace, debug, info, warn, error, fatal]
-            default: info
-        - name: agentName
-          in: query
-          schema:
-            type: string
-        - name: agentId
-          in: query
-          schema:
-            type: string
-            format: uuid
-        - name: limit
-          in: query
-          schema:
-            type: integer
-            default: 100
-            maximum: 1000
-      responses:
-        '200':
-          description: System logs
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  logs:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/LogEntry'
-                  count:
-                    type: integer
-                  total:
-                    type: integer
-                  level:
-                    type: string
-                  levels:
-                    type: array
-                    items:
-                      type: string
-        '500':
-          description: Error retrieving logs
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-    post:
-      tags:
-        - logs
-      summary: Get system logs (POST)
-      description: Retrieve system logs with optional filtering using POST method
-      operationId: postLogs
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                since:
-                  type: integer
-                  description: Timestamp (ms) to get logs from
-                level:
-                  type: string
-                  enum: [all, trace, debug, info, warn, error, fatal]
-                  default: info
-                agentName:
-                  type: string
-                agentId:
-                  type: string
-                  format: uuid
-                limit:
-                  type: integer
-                  default: 100
-                  maximum: 1000
-      responses:
-        '200':
-          description: System logs
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  logs:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/LogEntry'
-                  count:
-                    type: integer
-                  total:
-                    type: integer
-                  level:
-                    type: string
-                  levels:
-                    type: array
-                    items:
-                      type: string
-        '500':
-          description: Error retrieving logs
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /api/server/stop:
-    post:
-      tags:
-        - system
-      summary: Stop the server
-      description: Initiates server shutdown
-      operationId: stopServer
-      responses:
-        '200':
-          description: Server is shutting down
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: 'Server stopping...'
-  /api/agents:
-    get:
-      tags:
-        - agents
-      summary: List all agents
-      description: Returns a list of all available agents
-      operationId: listAgents
-      responses:
-        '200':
-          description: List of agents
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  data:
-                    type: object
-                    properties:
-                      agents:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/AgentInfo'
-        '500':
-          description: Error retrieving agents
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-    post:
-      tags:
-        - agents
-      summary: Create a new agent
-      description: Creates a new agent from character configuration
-      operationId: createAgent
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                characterPath:
-                  type: string
-                  description: Path to a character file
-                characterJson:
-                  type: object
-                  description: Character configuration in JSON format
-      responses:
-        '201':
-          description: Agent created successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  data:
-                    type: object
-                    properties:
-                      character:
-                        $ref: '#/components/schemas/Character'
-        '400':
-          description: Error creating agent
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /api/agents/{agentId}:
-    get:
-      tags:
-        - agents
-      summary: Get agent details
-      description: Returns detailed information about a specific agent
-      operationId: getAgent
-      parameters:
-        - name: agentId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: ID of the agent to retrieve
-      responses:
-        '200':
-          description: Agent details
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  data:
-                    $ref: '#/components/schemas/AgentInfo'
-        '400':
-          description: Invalid agent ID
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: Agent not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '500':
-          description: Server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-    post:
-      tags:
-        - agents
-      summary: Start an agent
-      description: Starts an existing agent
-      operationId: startAgent
-      parameters:
-        - name: agentId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: ID of the agent to start
-      responses:
-        '200':
-          description: Agent started successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  data:
-                    type: object
-                    properties:
-                      id:
-                        type: string
-                        format: uuid
-                      name:
-                        type: string
-                      status:
-                        type: string
-                        enum: [active]
-        '400':
-          description: Invalid agent ID
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: Agent not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '500':
-          description: Error starting agent
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-    patch:
-      tags:
-        - agents
-      summary: Update agent
-      description: Update an existing agent
-      operationId: updateAgent
-      parameters:
-        - name: agentId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: ID of the agent to update
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              description: Agent updates
-      responses:
-        '200':
-          description: Agent updated successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  data:
-                    $ref: '#/components/schemas/AgentInfo'
-        '400':
-          description: Invalid agent ID
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: Agent not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '500':
-          description: Error updating agent
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-    put:
-      tags:
-        - agents
-      summary: Stop an agent
-      description: Stops a running agent
-      operationId: stopAgent
-      parameters:
-        - name: agentId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: ID of the agent to stop
-      responses:
-        '200':
-          description: Agent stopped successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  data:
-                    type: object
-                    properties:
-                      message:
-                        type: string
-                        example: 'Agent stopped'
-        '400':
-          description: Invalid agent ID
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: Agent not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-    delete:
-      tags:
-        - agents
-      summary: Delete an agent
-      description: Deletes an agent from the system
-      operationId: deleteAgent
-      parameters:
-        - name: agentId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: ID of the agent to delete
-      responses:
-        '204':
-          description: Agent deleted successfully
-        '400':
-          description: Invalid agent ID
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '500':
-          description: Error deleting agent
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /api/agents/{agentId}/logs:
-    get:
-      tags:
-        - logs
-        - agents
-      summary: Get agent logs
-      description: Retrieves logs for a specific agent
-      operationId: getAgentLogs
-      parameters:
-        - name: agentId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: ID of the agent
-        - name: worldId
-          in: query
-          schema:
-            type: string
-            format: uuid
-          description: ID of the world (defaults to zero UUID)
-        - name: roomId
-          in: query
-          schema:
-            type: string
-            format: uuid
-          description: Filter logs by room ID
-        - name: type
-          in: query
-          schema:
-            type: string
-          description: Filter logs by type
-        - name: count
-          in: query
-          schema:
-            type: integer
-          description: Maximum number of logs to return
-        - name: offset
-          in: query
-          schema:
-            type: integer
-          description: Log offset for pagination
-      responses:
-        '200':
-          description: Agent logs
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/LogEntry'
-        '400':
-          description: Invalid agent ID
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: Agent not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /api/agents/{agentId}/logs/{logId}:
-    delete:
-      tags:
-        - logs
-        - agents
-      summary: Delete an agent log
-      description: Deletes a specific log entry for an agent
-      operationId: deleteAgentLog
-      parameters:
-        - name: agentId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: ID of the agent
-        - name: logId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: ID of the log to delete
-      responses:
-        '204':
-          description: Log deleted successfully
-        '400':
-          description: Invalid agent ID or log ID
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: Agent or log not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /api/agents/{agentId}/memories:
-    get:
-      tags:
-        - memories
-        - agents
-      summary: Get agent memories
-      description: Retrieves all memories for a specific agent
-      operationId: getAgentMemories
-      parameters:
-        - name: agentId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: ID of the agent
-      responses:
-        '200':
-          description: Agent memories
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Memory'
-        '400':
-          description: Invalid agent ID
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: Agent not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /api/agents/{agentId}/memories/{memoryId}:
-    patch:
-      tags:
-        - memories
-        - agents
-      summary: Update a memory
-      description: Updates a specific memory for an agent
-      operationId: updateMemory
-      parameters:
-        - name: agentId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: ID of the agent
-        - name: memoryId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: ID of the memory to update
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Memory'
-      responses:
-        '200':
-          description: Memory updated successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  data:
-                    type: object
-                    properties:
-                      id:
-                        type: string
-                        format: uuid
-                      message:
-                        type: string
-                        example: 'Memory updated successfully'
-        '400':
-          description: Invalid agent ID or memory ID
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: Agent or memory not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '500':
-          description: Error updating memory
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-    delete:
-      tags:
-        - memories
-        - agents
-      summary: Delete a memory
-      description: Deletes a specific memory for an agent
-      operationId: deleteMemory
-      parameters:
-        - name: agentId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: ID of the agent
-        - name: memoryId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: ID of the memory to delete
-      responses:
-        '204':
-          description: Memory deleted successfully
-        '400':
-          description: Invalid agent ID or memory ID
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: Agent or memory not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /api/agents/{agentId}/rooms:
-    get:
-      tags:
-        - rooms
-        - agents
-      summary: Get agent rooms
-      description: Retrieves all rooms for a specific agent
-      operationId: getAgentRooms
-      parameters:
-        - name: agentId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: ID of the agent
-        - name: worldId
-          in: query
-          schema:
-            type: string
-            format: uuid
-          description: Filter rooms by world ID
-      responses:
-        '200':
-          description: Agent rooms
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Room'
-        '400':
-          description: Invalid agent ID
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: Agent not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '500':
-          description: Error retrieving rooms
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-    post:
-      tags:
-        - rooms
-        - agents
-      summary: Create a room
-      description: Creates a new room for an agent
-      operationId: createRoom
-      parameters:
-        - name: agentId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: ID of the agent
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                  description: Name of the room
-                worldId:
-                  type: string
-                  format: uuid
-                  description: ID of the world
-                roomId:
-                  type: string
-                  format: uuid
-                  description: Optional custom room ID
-                entityId:
-                  type: string
-                  format: uuid
-                  description: Entity ID to add to the room
-      responses:
-        '201':
-          description: Room created successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  data:
-                    $ref: '#/components/schemas/Room'
-        '400':
-          description: Invalid agent ID
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: Agent not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '500':
-          description: Error creating room
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /api/agents/{agentId}/rooms/{roomId}:
-    get:
-      tags:
-        - rooms
-        - agents
-      summary: Get room details
-      description: Retrieves details about a specific room
-      operationId: getRoom
-      parameters:
-        - name: agentId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: ID of the agent
-        - name: roomId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: ID of the room
-      responses:
-        '200':
-          description: Room details
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  data:
-                    $ref: '#/components/schemas/Room'
-        '400':
-          description: Invalid agent ID or room ID
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: Agent or room not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '500':
-          description: Error retrieving room
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-    patch:
-      tags:
-        - rooms
-        - agents
-      summary: Update a room
-      description: Updates a specific room
-      operationId: updateRoom
-      parameters:
-        - name: agentId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: ID of the agent
-        - name: roomId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: ID of the room to update
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                  description: New name for the room
-      responses:
-        '200':
-          description: Room updated successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  data:
-                    $ref: '#/components/schemas/Room'
-        '400':
-          description: Invalid agent ID or room ID
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: Agent or room not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '500':
-          description: Error updating room
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-    delete:
-      tags:
-        - rooms
-        - agents
-      summary: Delete a room
-      description: Deletes a specific room
-      operationId: deleteRoom
-      parameters:
-        - name: agentId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: ID of the agent
-        - name: roomId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: ID of the room to delete
-      responses:
-        '204':
-          description: Room deleted successfully
-        '400':
-          description: Invalid agent ID or room ID
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: Agent or room not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '500':
-          description: Error deleting room
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /api/agents/{agentId}/rooms/{roomId}/memories:
-    get:
-      tags:
-        - memories
-        - rooms
-        - agents
-      summary: Get room memories
-      description: Retrieves memories for a specific room
-      operationId: getRoomMemories
-      parameters:
-        - name: agentId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: ID of the agent
-        - name: roomId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: ID of the room
-        - name: limit
-          in: query
-          schema:
-            type: integer
-            default: 20
-          description: Maximum number of memories to return
-        - name: before
-          in: query
-          schema:
-            type: integer
-          description: Return memories created before this timestamp
-        - name: worldId
-          in: query
-          schema:
-            type: string
-            format: uuid
-          description: Filter memories by world ID
-      responses:
-        '200':
-          description: Room memories
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  data:
-                    type: object
-                    properties:
-                      memories:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/Memory'
-        '400':
-          description: Invalid agent ID or room ID
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: Agent or room not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '500':
-          description: Error retrieving memories
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /api/agents/{agentId}/message:
-    post:
-      tags:
-        - messages
-        - agents
-      summary: Send a message to an agent
-      description: Sends a message to an agent and receives a response
-      operationId: sendMessage
-      parameters:
-        - name: agentId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: ID of the agent
-        - name: worldId
-          in: query
-          schema:
-            type: string
-            format: uuid
-          description: ID of the world (defaults to zero UUID)
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                senderId:
-                  type: string
-                  description: ID of the sender
-                roomId:
-                  type: string
-                  description: ID of the room
-                text:
-                  type: string
-                  description: Message text
-                source:
-                  type: string
-                  description: Source of the message
-      responses:
-        '201':
-          description: Message sent and processed successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  data:
-                    type: object
-                    properties:
-                      message:
-                        $ref: '#/components/schemas/Content'
-                      messageId:
-                        type: string
-                        format: uuid
-                      name:
-                        type: string
-                      roomId:
-                        type: string
-                      source:
-                        type: string
-        '400':
-          description: Invalid agent ID or request body
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: Agent not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '500':
-          description: Error processing message
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /api/agents/{agentId}/audio-messages:
-    post:
-      tags:
-        - speech
-        - agents
-      summary: Send an audio message
-      description: Sends an audio message to an agent for processing
-      operationId: sendAudioMessage
-      parameters:
-        - name: agentId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: ID of the agent
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                file:
-                  type: string
-                  format: binary
-                  description: Audio file
-      responses:
-        '201':
-          description: Audio message processed successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  data:
-                    type: object
-                    properties:
-                      message:
-                        $ref: '#/components/schemas/Content'
-        '400':
-          description: Invalid agent ID or missing audio file
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: Agent not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '500':
-          description: Error processing audio
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /api/agents/{agentId}/audio-messages/synthesize:
-    post:
-      tags:
-        - speech
-        - agents
-      summary: Convert text to speech
-      description: Converts text to speech using the agent's voice
-      operationId: synthesizeSpeech
-      parameters:
-        - name: agentId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: ID of the agent
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                text:
-                  type: string
-                  description: Text to convert to speech
-      responses:
-        '200':
-          description: Audio stream with synthesized speech
-          content:
-            audio/mpeg:
-              schema:
-                type: string
-                format: binary
-        '400':
-          description: Invalid agent ID or missing text
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: Agent not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '500':
-          description: Error generating speech
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /api/agents/{agentId}/speech/generate:
-    post:
-      tags:
-        - speech
-        - agents
-      summary: Generate speech from text
-      description: Generates speech from text using the agent's voice
-      operationId: generateSpeech
-      parameters:
-        - name: agentId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: ID of the agent
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                text:
-                  type: string
-                  description: Text to convert to speech
-      responses:
-        '200':
-          description: Audio stream with generated speech
-          content:
-            audio/mpeg:
-              schema:
-                type: string
-                format: binary
-        '400':
-          description: Invalid agent ID or missing text
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: Agent not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '500':
-          description: Error generating speech
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /api/agents/{agentId}/speech/conversation:
-    post:
-      tags:
-        - speech
-        - agents
-      summary: Process conversation and return speech
-      description: Processes a conversational message and returns synthesized speech
-      operationId: conversationToSpeech
-      parameters:
-        - name: agentId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: ID of the agent
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                text:
-                  type: string
-                  description: Text message
-                roomId:
-                  type: string
-                  description: Room ID
-                entityId:
-                  type: string
-                  description: Entity ID
-                userName:
-                  type: string
-                  description: User name
-                name:
-                  type: string
-                  description: Entity name
-      responses:
-        '200':
-          description: Audio stream with synthesized speech
-          content:
-            audio/mpeg:
-              schema:
-                type: string
-                format: binary
-        '400':
-          description: Invalid agent ID or missing text
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: Agent not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '500':
-          description: Error processing conversation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /api/audio/{agentId}/transcriptions:
-    post:
-      tags:
-        - speech
-        - agents
-      summary: Transcribe audio to text
-      description: Transcribes an audio file to text
-      operationId: transcribeAudio
-      parameters:
-        - name: agentId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: ID of the agent
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                file:
-                  type: string
-                  format: binary
-                  description: Audio file to transcribe
-      responses:
-        '200':
-          description: Transcription result
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  data:
-                    type: object
-                    properties:
-                      text:
-                        type: string
-                        description: Transcribed text
-        '400':
-          description: Invalid agent ID or missing audio file
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: Agent not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '500':
-          description: Error transcribing audio
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /api/tee/agents:
-    get:
-      tags:
-        - tee
-      summary: List TEE agents
-      description: Lists all agents with TEE (Trusted Execution Environment) support
-      operationId: listTeeAgents
-      responses:
-        '200':
-          description: TEE agent list with attestation
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  agents:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/TeeAgent'
-                  attestation:
-                    type: string
-                    description: TEE attestation
-        '500':
-          description: Error retrieving TEE agents
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /api/tee/agents/{agentId}:
-    get:
-      tags:
-        - tee
-      summary: Get TEE agent details
-      description: Gets details about a specific TEE agent with attestation
-      operationId: getTeeAgent
-      parameters:
-        - name: agentId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: ID of the TEE agent
-      responses:
-        '200':
-          description: TEE agent details with attestation
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  agent:
-                    $ref: '#/components/schemas/TeeAgent'
-                  attestation:
-                    type: string
-                    description: TEE attestation
-        '404':
-          description: Agent not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '500':
-          description: Error retrieving TEE agent
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /api/tee/logs:
-    post:
-      tags:
-        - tee
-        - logs
-      summary: Query TEE logs
-      description: Queries logs from the Trusted Execution Environment
-      operationId: queryTeeLogs
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                query:
-                  type: object
-                  properties:
-                    agentId:
-                      type: string
-                      format: uuid
-                    roomId:
-                      type: string
-                      format: uuid
-                    entityId:
-                      type: string
-                      format: uuid
-                    type:
-                      type: string
-                    containsContent:
-                      type: string
-                    startTimestamp:
-                      type: integer
-                      format: int64
-                    endTimestamp:
-                      type: integer
-                      format: int64
-                page:
-                  type: integer
-                  default: 1
-                pageSize:
-                  type: integer
-                  default: 10
-      responses:
-        '200':
-          description: TEE logs with attestation
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  logs:
-                    type: object
-                    description: Log query results
-                  attestation:
-                    type: string
-                    description: TEE attestation
-        '500':
-          description: Error retrieving TEE logs
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+	/api/server/hello:
+		get:
+			tags:
+				- system
+			summary: Basic health check
+			description: Simple hello world test endpoint
+			operationId: getHello
+			responses:
+				'200':
+					description: Hello world response
+					content:
+						application/json:
+							schema:
+								type: object
+								properties:
+									message:
+										type: string
+										example: 'Hello World!'
+	/api/server/status:
+		get:
+			tags:
+				- system
+			summary: Get system status
+			description: Returns the current status of the system with agent count and timestamp
+			operationId: getStatus
+			responses:
+				'200':
+					description: System status information
+					content:
+						application/json:
+							schema:
+								type: object
+								properties:
+									status:
+										type: string
+										example: 'ok'
+									agentCount:
+										type: integer
+										description: Number of active agents
+									timestamp:
+										type: string
+										format: date-time
+										description: Current timestamp
+	/api/server/health:
+		get:
+			tags:
+				- system
+			summary: Health check endpoint
+			description: Detailed health check for the system
+			operationId: getHealth
+			responses:
+				'200':
+					description: System is healthy
+					content:
+						application/json:
+							schema:
+								type: object
+								properties:
+									status:
+										type: string
+										example: 'OK'
+									version:
+										type: string
+									timestamp:
+										type: string
+										format: date-time
+									dependencies:
+										type: object
+										properties:
+											agents:
+												type: string
+												example: 'healthy'
+				'503':
+					description: System is unhealthy
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+	/api/server/logs:
+		get:
+			tags:
+				- logs
+			summary: Get system logs
+			description: Retrieve system logs with optional filtering
+			operationId: getLogs
+			parameters:
+				- name: since
+					in: query
+					schema:
+						type: integer
+						description: Timestamp (ms) to get logs from
+				- name: level
+					in: query
+					schema:
+						type: string
+						enum: [all, trace, debug, info, warn, error, fatal]
+						default: info
+				- name: agentName
+					in: query
+					schema:
+						type: string
+				- name: agentId
+					in: query
+					schema:
+						type: string
+						format: uuid
+				- name: limit
+					in: query
+					schema:
+						type: integer
+						default: 100
+						maximum: 1000
+			responses:
+				'200':
+					description: System logs
+					content:
+						application/json:
+							schema:
+								type: object
+								properties:
+									logs:
+										type: array
+										items:
+											$ref: '#/components/schemas/LogEntry'
+									count:
+										type: integer
+									total:
+										type: integer
+									level:
+										type: string
+									levels:
+										type: array
+										items:
+											type: string
+				'500':
+					description: Error retrieving logs
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+		post:
+			tags:
+				- logs
+			summary: Get system logs (POST)
+			description: Retrieve system logs with optional filtering using POST method
+			operationId: postLogs
+			requestBody:
+				content:
+					application/json:
+						schema:
+							type: object
+							properties:
+								since:
+									type: integer
+									description: Timestamp (ms) to get logs from
+								level:
+									type: string
+									enum: [all, trace, debug, info, warn, error, fatal]
+									default: info
+								agentName:
+									type: string
+								agentId:
+									type: string
+									format: uuid
+								limit:
+									type: integer
+									default: 100
+									maximum: 1000
+			responses:
+				'200':
+					description: System logs
+					content:
+						application/json:
+							schema:
+								type: object
+								properties:
+									logs:
+										type: array
+										items:
+											$ref: '#/components/schemas/LogEntry'
+									count:
+										type: integer
+									total:
+										type: integer
+									level:
+										type: string
+									levels:
+										type: array
+										items:
+											type: string
+				'500':
+					description: Error retrieving logs
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+	/api/server/stop:
+		post:
+			tags:
+				- system
+			summary: Stop the server
+			description: Initiates server shutdown
+			operationId: stopServer
+			responses:
+				'200':
+					description: Server is shutting down
+					content:
+						application/json:
+							schema:
+								type: object
+								properties:
+									message:
+										type: string
+										example: 'Server stopping...'
+	/api/agents:
+		get:
+			tags:
+				- agents
+			summary: List all agents
+			description: Returns a list of all available agents
+			operationId: listAgents
+			responses:
+				'200':
+					description: List of agents
+					content:
+						application/json:
+							schema:
+								type: object
+								properties:
+									success:
+										type: boolean
+										example: true
+									data:
+										type: object
+										properties:
+											agents:
+												type: array
+												items:
+													$ref: '#/components/schemas/AgentInfo'
+				'500':
+					description: Error retrieving agents
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+		post:
+			tags:
+				- agents
+			summary: Create a new agent
+			description: Creates a new agent from character configuration
+			operationId: createAgent
+			requestBody:
+				required: true
+				content:
+					application/json:
+						schema:
+							type: object
+							properties:
+								characterPath:
+									type: string
+									description: Path to a character file
+								characterJson:
+									type: object
+									description: Character configuration in JSON format
+			responses:
+				'201':
+					description: Agent created successfully
+					content:
+						application/json:
+							schema:
+								type: object
+								properties:
+									success:
+										type: boolean
+										example: true
+									data:
+										type: object
+										properties:
+											character:
+												$ref: '#/components/schemas/Character'
+				'400':
+					description: Error creating agent
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+	/api/agents/{agentId}:
+		get:
+			tags:
+				- agents
+			summary: Get agent details
+			description: Returns detailed information about a specific agent
+			operationId: getAgent
+			parameters:
+				- name: agentId
+					in: path
+					required: true
+					schema:
+						type: string
+						format: uuid
+					description: ID of the agent to retrieve
+			responses:
+				'200':
+					description: Agent details
+					content:
+						application/json:
+							schema:
+								type: object
+								properties:
+									success:
+										type: boolean
+										example: true
+									data:
+										$ref: '#/components/schemas/AgentInfo'
+				'400':
+					description: Invalid agent ID
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+				'404':
+					description: Agent not found
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+				'500':
+					description: Server error
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+		post:
+			tags:
+				- agents
+			summary: Start an agent
+			description: Starts an existing agent
+			operationId: startAgent
+			parameters:
+				- name: agentId
+					in: path
+					required: true
+					schema:
+						type: string
+						format: uuid
+					description: ID of the agent to start
+			responses:
+				'200':
+					description: Agent started successfully
+					content:
+						application/json:
+							schema:
+								type: object
+								properties:
+									success:
+										type: boolean
+										example: true
+									data:
+										type: object
+										properties:
+											id:
+												type: string
+												format: uuid
+											name:
+												type: string
+											status:
+												type: string
+												enum: [active]
+				'400':
+					description: Invalid agent ID
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+				'404':
+					description: Agent not found
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+				'500':
+					description: Error starting agent
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+		patch:
+			tags:
+				- agents
+			summary: Update agent
+			description: Update an existing agent
+			operationId: updateAgent
+			parameters:
+				- name: agentId
+					in: path
+					required: true
+					schema:
+						type: string
+						format: uuid
+					description: ID of the agent to update
+			requestBody:
+				required: true
+				content:
+					application/json:
+						schema:
+							type: object
+							description: Agent updates
+			responses:
+				'200':
+					description: Agent updated successfully
+					content:
+						application/json:
+							schema:
+								type: object
+								properties:
+									success:
+										type: boolean
+										example: true
+									data:
+										$ref: '#/components/schemas/AgentInfo'
+				'400':
+					description: Invalid agent ID
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+				'404':
+					description: Agent not found
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+				'500':
+					description: Error updating agent
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+		put:
+			tags:
+				- agents
+			summary: Stop an agent
+			description: Stops a running agent
+			operationId: stopAgent
+			parameters:
+				- name: agentId
+					in: path
+					required: true
+					schema:
+						type: string
+						format: uuid
+					description: ID of the agent to stop
+			responses:
+				'200':
+					description: Agent stopped successfully
+					content:
+						application/json:
+							schema:
+								type: object
+								properties:
+									success:
+										type: boolean
+										example: true
+									data:
+										type: object
+										properties:
+											message:
+												type: string
+												example: 'Agent stopped'
+				'400':
+					description: Invalid agent ID
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+				'404':
+					description: Agent not found
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+		delete:
+			tags:
+				- agents
+			summary: Delete an agent
+			description: Deletes an agent from the system
+			operationId: deleteAgent
+			parameters:
+				- name: agentId
+					in: path
+					required: true
+					schema:
+						type: string
+						format: uuid
+					description: ID of the agent to delete
+			responses:
+				'204':
+					description: Agent deleted successfully
+				'400':
+					description: Invalid agent ID
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+				'500':
+					description: Error deleting agent
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+	/api/agents/{agentId}/logs:
+		get:
+			tags:
+				- logs
+				- agents
+			summary: Get agent logs
+			description: Retrieves logs for a specific agent
+			operationId: getAgentLogs
+			parameters:
+				- name: agentId
+					in: path
+					required: true
+					schema:
+						type: string
+						format: uuid
+					description: ID of the agent
+				- name: worldId
+					in: query
+					schema:
+						type: string
+						format: uuid
+					description: ID of the world (defaults to zero UUID)
+				- name: roomId
+					in: query
+					schema:
+						type: string
+						format: uuid
+					description: Filter logs by room ID
+				- name: type
+					in: query
+					schema:
+						type: string
+					description: Filter logs by type
+				- name: count
+					in: query
+					schema:
+						type: integer
+					description: Maximum number of logs to return
+				- name: offset
+					in: query
+					schema:
+						type: integer
+					description: Log offset for pagination
+			responses:
+				'200':
+					description: Agent logs
+					content:
+						application/json:
+							schema:
+								type: object
+								properties:
+									success:
+										type: boolean
+										example: true
+									data:
+										type: array
+										items:
+											$ref: '#/components/schemas/LogEntry'
+				'400':
+					description: Invalid agent ID
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+				'404':
+					description: Agent not found
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+	/api/agents/{agentId}/logs/{logId}:
+		delete:
+			tags:
+				- logs
+				- agents
+			summary: Delete an agent log
+			description: Deletes a specific log entry for an agent
+			operationId: deleteAgentLog
+			parameters:
+				- name: agentId
+					in: path
+					required: true
+					schema:
+						type: string
+						format: uuid
+					description: ID of the agent
+				- name: logId
+					in: path
+					required: true
+					schema:
+						type: string
+						format: uuid
+					description: ID of the log to delete
+			responses:
+				'204':
+					description: Log deleted successfully
+				'400':
+					description: Invalid agent ID or log ID
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+				'404':
+					description: Agent or log not found
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+	/api/agents/{agentId}/memories:
+		get:
+			tags:
+				- memories
+				- agents
+			summary: Get agent memories
+			description: Retrieves all memories for a specific agent
+			operationId: getAgentMemories
+			parameters:
+				- name: agentId
+					in: path
+					required: true
+					schema:
+						type: string
+						format: uuid
+					description: ID of the agent
+			responses:
+				'200':
+					description: Agent memories
+					content:
+						application/json:
+							schema:
+								type: object
+								properties:
+									success:
+										type: boolean
+										example: true
+									data:
+										type: array
+										items:
+											$ref: '#/components/schemas/Memory'
+				'400':
+					description: Invalid agent ID
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+				'404':
+					description: Agent not found
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+	/api/agents/{agentId}/memories/{memoryId}:
+		patch:
+			tags:
+				- memories
+				- agents
+			summary: Update a memory
+			description: Updates a specific memory for an agent
+			operationId: updateMemory
+			parameters:
+				- name: agentId
+					in: path
+					required: true
+					schema:
+						type: string
+						format: uuid
+					description: ID of the agent
+				- name: memoryId
+					in: path
+					required: true
+					schema:
+						type: string
+						format: uuid
+					description: ID of the memory to update
+			requestBody:
+				required: true
+				content:
+					application/json:
+						schema:
+							$ref: '#/components/schemas/Memory'
+			responses:
+				'200':
+					description: Memory updated successfully
+					content:
+						application/json:
+							schema:
+								type: object
+								properties:
+									success:
+										type: boolean
+										example: true
+									data:
+										type: object
+										properties:
+											id:
+												type: string
+												format: uuid
+											message:
+												type: string
+												example: 'Memory updated successfully'
+				'400':
+					description: Invalid agent ID or memory ID
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+				'404':
+					description: Agent or memory not found
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+				'500':
+					description: Error updating memory
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+		delete:
+			tags:
+				- memories
+				- agents
+			summary: Delete a memory
+			description: Deletes a specific memory for an agent
+			operationId: deleteMemory
+			parameters:
+				- name: agentId
+					in: path
+					required: true
+					schema:
+						type: string
+						format: uuid
+					description: ID of the agent
+				- name: memoryId
+					in: path
+					required: true
+					schema:
+						type: string
+						format: uuid
+					description: ID of the memory to delete
+			responses:
+				'204':
+					description: Memory deleted successfully
+				'400':
+					description: Invalid agent ID or memory ID
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+				'404':
+					description: Agent or memory not found
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+	/api/agents/{agentId}/rooms:
+		get:
+			tags:
+				- rooms
+				- agents
+			summary: Get agent rooms
+			description: Retrieves all rooms for a specific agent
+			operationId: getAgentRooms
+			parameters:
+				- name: agentId
+					in: path
+					required: true
+					schema:
+						type: string
+						format: uuid
+					description: ID of the agent
+				- name: worldId
+					in: query
+					schema:
+						type: string
+						format: uuid
+					description: Filter rooms by world ID
+			responses:
+				'200':
+					description: Agent rooms
+					content:
+						application/json:
+							schema:
+								type: object
+								properties:
+									success:
+										type: boolean
+										example: true
+									data:
+										type: array
+										items:
+											$ref: '#/components/schemas/Room'
+				'400':
+					description: Invalid agent ID
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+				'404':
+					description: Agent not found
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+				'500':
+					description: Error retrieving rooms
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+		post:
+			tags:
+				- rooms
+				- agents
+			summary: Create a room
+			description: Creates a new room for an agent
+			operationId: createRoom
+			parameters:
+				- name: agentId
+					in: path
+					required: true
+					schema:
+						type: string
+						format: uuid
+					description: ID of the agent
+			requestBody:
+				required: true
+				content:
+					application/json:
+						schema:
+							type: object
+							properties:
+								name:
+									type: string
+									description: Name of the room
+								worldId:
+									type: string
+									format: uuid
+									description: ID of the world
+								roomId:
+									type: string
+									format: uuid
+									description: Optional custom room ID
+								entityId:
+									type: string
+									format: uuid
+									description: Entity ID to add to the room
+			responses:
+				'201':
+					description: Room created successfully
+					content:
+						application/json:
+							schema:
+								type: object
+								properties:
+									success:
+										type: boolean
+										example: true
+									data:
+										$ref: '#/components/schemas/Room'
+				'400':
+					description: Invalid agent ID
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+				'404':
+					description: Agent not found
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+				'500':
+					description: Error creating room
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+	/api/agents/{agentId}/rooms/{roomId}:
+		get:
+			tags:
+				- rooms
+				- agents
+			summary: Get room details
+			description: Retrieves details about a specific room
+			operationId: getRoom
+			parameters:
+				- name: agentId
+					in: path
+					required: true
+					schema:
+						type: string
+						format: uuid
+					description: ID of the agent
+				- name: roomId
+					in: path
+					required: true
+					schema:
+						type: string
+						format: uuid
+					description: ID of the room
+			responses:
+				'200':
+					description: Room details
+					content:
+						application/json:
+							schema:
+								type: object
+								properties:
+									success:
+										type: boolean
+										example: true
+									data:
+										$ref: '#/components/schemas/Room'
+				'400':
+					description: Invalid agent ID or room ID
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+				'404':
+					description: Agent or room not found
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+				'500':
+					description: Error retrieving room
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+		patch:
+			tags:
+				- rooms
+				- agents
+			summary: Update a room
+			description: Updates a specific room
+			operationId: updateRoom
+			parameters:
+				- name: agentId
+					in: path
+					required: true
+					schema:
+						type: string
+						format: uuid
+					description: ID of the agent
+				- name: roomId
+					in: path
+					required: true
+					schema:
+						type: string
+						format: uuid
+					description: ID of the room to update
+			requestBody:
+				required: true
+				content:
+					application/json:
+						schema:
+							type: object
+							properties:
+								name:
+									type: string
+									description: New name for the room
+			responses:
+				'200':
+					description: Room updated successfully
+					content:
+						application/json:
+							schema:
+								type: object
+								properties:
+									success:
+										type: boolean
+										example: true
+									data:
+										$ref: '#/components/schemas/Room'
+				'400':
+					description: Invalid agent ID or room ID
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+				'404':
+					description: Agent or room not found
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+				'500':
+					description: Error updating room
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+		delete:
+			tags:
+				- rooms
+				- agents
+			summary: Delete a room
+			description: Deletes a specific room
+			operationId: deleteRoom
+			parameters:
+				- name: agentId
+					in: path
+					required: true
+					schema:
+						type: string
+						format: uuid
+					description: ID of the agent
+				- name: roomId
+					in: path
+					required: true
+					schema:
+						type: string
+						format: uuid
+					description: ID of the room to delete
+			responses:
+				'204':
+					description: Room deleted successfully
+				'400':
+					description: Invalid agent ID or room ID
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+				'404':
+					description: Agent or room not found
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+				'500':
+					description: Error deleting room
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+	/api/agents/{agentId}/rooms/{roomId}/memories:
+		get:
+			tags:
+				- memories
+				- rooms
+				- agents
+			summary: Get room memories
+			description: Retrieves memories for a specific room
+			operationId: getRoomMemories
+			parameters:
+				- name: agentId
+					in: path
+					required: true
+					schema:
+						type: string
+						format: uuid
+					description: ID of the agent
+				- name: roomId
+					in: path
+					required: true
+					schema:
+						type: string
+						format: uuid
+					description: ID of the room
+				- name: limit
+					in: query
+					schema:
+						type: integer
+						default: 20
+					description: Maximum number of memories to return
+				- name: before
+					in: query
+					schema:
+						type: integer
+					description: Return memories created before this timestamp
+				- name: worldId
+					in: query
+					schema:
+						type: string
+						format: uuid
+					description: Filter memories by world ID
+			responses:
+				'200':
+					description: Room memories
+					content:
+						application/json:
+							schema:
+								type: object
+								properties:
+									success:
+										type: boolean
+										example: true
+									data:
+										type: object
+										properties:
+											memories:
+												type: array
+												items:
+													$ref: '#/components/schemas/Memory'
+				'400':
+					description: Invalid agent ID or room ID
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+				'404':
+					description: Agent or room not found
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+				'500':
+					description: Error retrieving memories
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+	/api/agents/{agentId}/message:
+		post:
+			tags:
+				- messages
+				- agents
+			summary: Send a message to an agent
+			description: Sends a message to an agent and receives a response
+			operationId: sendMessage
+			parameters:
+				- name: agentId
+					in: path
+					required: true
+					schema:
+						type: string
+						format: uuid
+					description: ID of the agent
+				- name: worldId
+					in: query
+					schema:
+						type: string
+						format: uuid
+					description: ID of the world (defaults to zero UUID)
+			requestBody:
+				required: true
+				content:
+					application/json:
+						schema:
+							type: object
+							properties:
+								senderId:
+									type: string
+									description: ID of the sender
+								roomId:
+									type: string
+									description: ID of the room
+								text:
+									type: string
+									description: Message text
+								source:
+									type: string
+									description: Source of the message
+			responses:
+				'201':
+					description: Message sent and processed successfully
+					content:
+						application/json:
+							schema:
+								type: object
+								properties:
+									success:
+										type: boolean
+										example: true
+									data:
+										type: object
+										properties:
+											message:
+												$ref: '#/components/schemas/Content'
+											messageId:
+												type: string
+												format: uuid
+											name:
+												type: string
+											roomId:
+												type: string
+											source:
+												type: string
+				'400':
+					description: Invalid agent ID or request body
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+				'404':
+					description: Agent not found
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+				'500':
+					description: Error processing message
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+	/api/agents/{agentId}/audio-messages:
+		post:
+			tags:
+				- speech
+				- agents
+			summary: Send an audio message
+			description: Sends an audio message to an agent for processing
+			operationId: sendAudioMessage
+			parameters:
+				- name: agentId
+					in: path
+					required: true
+					schema:
+						type: string
+						format: uuid
+					description: ID of the agent
+			requestBody:
+				required: true
+				content:
+					multipart/form-data:
+						schema:
+							type: object
+							properties:
+								file:
+									type: string
+									format: binary
+									description: Audio file
+			responses:
+				'201':
+					description: Audio message processed successfully
+					content:
+						application/json:
+							schema:
+								type: object
+								properties:
+									success:
+										type: boolean
+										example: true
+									data:
+										type: object
+										properties:
+											message:
+												$ref: '#/components/schemas/Content'
+				'400':
+					description: Invalid agent ID or missing audio file
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+				'404':
+					description: Agent not found
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+				'500':
+					description: Error processing audio
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+	/api/agents/{agentId}/audio-messages/synthesize:
+		post:
+			tags:
+				- speech
+				- agents
+			summary: Convert text to speech
+			description: Converts text to speech using the agent's voice
+			operationId: synthesizeSpeech
+			parameters:
+				- name: agentId
+					in: path
+					required: true
+					schema:
+						type: string
+						format: uuid
+					description: ID of the agent
+			requestBody:
+				required: true
+				content:
+					application/json:
+						schema:
+							type: object
+							properties:
+								text:
+									type: string
+									description: Text to convert to speech
+			responses:
+				'200':
+					description: Audio stream with synthesized speech
+					content:
+						audio/mpeg:
+							schema:
+								type: string
+								format: binary
+				'400':
+					description: Invalid agent ID or missing text
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+				'404':
+					description: Agent not found
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+				'500':
+					description: Error generating speech
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+	/api/agents/{agentId}/speech/generate:
+		post:
+			tags:
+				- speech
+				- agents
+			summary: Generate speech from text
+			description: Generates speech from text using the agent's voice
+			operationId: generateSpeech
+			parameters:
+				- name: agentId
+					in: path
+					required: true
+					schema:
+						type: string
+						format: uuid
+					description: ID of the agent
+			requestBody:
+				required: true
+				content:
+					application/json:
+						schema:
+							type: object
+							properties:
+								text:
+									type: string
+									description: Text to convert to speech
+			responses:
+				'200':
+					description: Audio stream with generated speech
+					content:
+						audio/mpeg:
+							schema:
+								type: string
+								format: binary
+				'400':
+					description: Invalid agent ID or missing text
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+				'404':
+					description: Agent not found
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+				'500':
+					description: Error generating speech
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+	/api/agents/{agentId}/speech/conversation:
+		post:
+			tags:
+				- speech
+				- agents
+			summary: Process conversation and return speech
+			description: Processes a conversational message and returns synthesized speech
+			operationId: conversationToSpeech
+			parameters:
+				- name: agentId
+					in: path
+					required: true
+					schema:
+						type: string
+						format: uuid
+					description: ID of the agent
+			requestBody:
+				required: true
+				content:
+					application/json:
+						schema:
+							type: object
+							properties:
+								text:
+									type: string
+									description: Text message
+								roomId:
+									type: string
+									description: Room ID
+								entityId:
+									type: string
+									description: Entity ID
+								userName:
+									type: string
+									description: User name
+								name:
+									type: string
+									description: Entity name
+			responses:
+				'200':
+					description: Audio stream with synthesized speech
+					content:
+						audio/mpeg:
+							schema:
+								type: string
+								format: binary
+				'400':
+					description: Invalid agent ID or missing text
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+				'404':
+					description: Agent not found
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+				'500':
+					description: Error processing conversation
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+	/api/audio/{agentId}/transcriptions:
+		post:
+			tags:
+				- speech
+				- agents
+			summary: Transcribe audio to text
+			description: Transcribes an audio file to text
+			operationId: transcribeAudio
+			parameters:
+				- name: agentId
+					in: path
+					required: true
+					schema:
+						type: string
+						format: uuid
+					description: ID of the agent
+			requestBody:
+				required: true
+				content:
+					multipart/form-data:
+						schema:
+							type: object
+							properties:
+								file:
+									type: string
+									format: binary
+									description: Audio file to transcribe
+			responses:
+				'200':
+					description: Transcription result
+					content:
+						application/json:
+							schema:
+								type: object
+								properties:
+									success:
+										type: boolean
+										example: true
+									data:
+										type: object
+										properties:
+											text:
+												type: string
+												description: Transcribed text
+				'400':
+					description: Invalid agent ID or missing audio file
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+				'404':
+					description: Agent not found
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+				'500':
+					description: Error transcribing audio
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+	/api/tee/agents:
+		get:
+			tags:
+				- tee
+			summary: List TEE agents
+			description: Lists all agents with TEE (Trusted Execution Environment) support
+			operationId: listTeeAgents
+			responses:
+				'200':
+					description: TEE agent list with attestation
+					content:
+						application/json:
+							schema:
+								type: object
+								properties:
+									agents:
+										type: array
+										items:
+											$ref: '#/components/schemas/TeeAgent'
+									attestation:
+										type: string
+										description: TEE attestation
+				'500':
+					description: Error retrieving TEE agents
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+	/api/tee/agents/{agentId}:
+		get:
+			tags:
+				- tee
+			summary: Get TEE agent details
+			description: Gets details about a specific TEE agent with attestation
+			operationId: getTeeAgent
+			parameters:
+				- name: agentId
+					in: path
+					required: true
+					schema:
+						type: string
+						format: uuid
+					description: ID of the TEE agent
+			responses:
+				'200':
+					description: TEE agent details with attestation
+					content:
+						application/json:
+							schema:
+								type: object
+								properties:
+									agent:
+										$ref: '#/components/schemas/TeeAgent'
+									attestation:
+										type: string
+										description: TEE attestation
+				'404':
+					description: Agent not found
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+				'500':
+					description: Error retrieving TEE agent
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
+	/api/tee/logs:
+		post:
+			tags:
+				- tee
+				- logs
+			summary: Query TEE logs
+			description: Queries logs from the Trusted Execution Environment
+			operationId: queryTeeLogs
+			requestBody:
+				required: true
+				content:
+					application/json:
+						schema:
+							type: object
+							properties:
+								query:
+									type: object
+									properties:
+										agentId:
+											type: string
+											format: uuid
+										roomId:
+											type: string
+											format: uuid
+										entityId:
+											type: string
+											format: uuid
+										type:
+											type: string
+										containsContent:
+											type: string
+										startTimestamp:
+											type: integer
+											format: int64
+										endTimestamp:
+											type: integer
+											format: int64
+								page:
+									type: integer
+									default: 1
+								pageSize:
+									type: integer
+									default: 10
+			responses:
+				'200':
+					description: TEE logs with attestation
+					content:
+						application/json:
+							schema:
+								type: object
+								properties:
+									logs:
+										type: object
+										description: Log query results
+									attestation:
+										type: string
+										description: TEE attestation
+				'500':
+					description: Error retrieving TEE logs
+					content:
+						application/json:
+							schema:
+								$ref: '#/components/schemas/Error'
 components:
-  schemas:
-    Error:
-      type: object
-      properties:
-        success:
-          type: boolean
-          example: false
-        error:
-          type: object
-          properties:
-            code:
-              type: string
-              description: Error code
-            message:
-              type: string
-              description: Error message
-            details:
-              type: string
-              description: Detailed error information
-    AgentInfo:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: Unique identifier for the agent
-        name:
-          type: string
-          description: Name of the agent
-        status:
-          type: string
-          enum: [active, inactive]
-          description: Current status of the agent
-    Character:
-      type: object
-      required:
-        - name
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: Unique identifier for the character
-        name:
-          type: string
-          description: Name of the character
-        bio:
-          type: string
-          description: Short biography of the character
-        settings:
-          type: object
-          description: Character-specific settings
-        system:
-          type: string
-          description: System prompt for the character
-        style:
-          type: object
-          description: Character's communication style
-        lore:
-          type: array
-          items:
-            type: string
-          description: Extended lore and background information
-        messageExamples:
-          type: array
-          items:
-            type: string
-          description: Example messages for character training
-        topics:
-          type: array
-          items:
-            type: string
-          description: Topics the character is knowledgeable about
-        plugins:
-          type: array
-          items:
-            type: string
-          description: Plugins used by the character
-    Content:
-      type: object
-      properties:
-        text:
-          type: string
-          description: Text content of the message
-        thought:
-          type: string
-          description: Agent's internal thought process
-        plan:
-          type: string
-          description: Agent's plan or reasoning
-        actions:
-          type: array
-          items:
-            type: string
-          description: Actions the agent wants to take
-        source:
-          type: string
-          description: Source of the message
-        inReplyTo:
-          type: string
-          format: uuid
-          description: ID of the message this is in reply to
-    Memory:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: Unique identifier for the memory
-        entityId:
-          type: string
-          format: uuid
-          description: ID of the entity associated with this memory
-        agentId:
-          type: string
-          format: uuid
-          description: ID of the agent associated with this memory
-        roomId:
-          type: string
-          format: uuid
-          description: ID of the room this memory belongs to
-        createdAt:
-          type: integer
-          format: int64
-          description: Unix timestamp when the memory was created
-        content:
-          $ref: '#/components/schemas/Content'
-    Room:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: Unique identifier for the room
-        name:
-          type: string
-          description: Name of the room
-        source:
-          type: string
-          description: Source of the room
-        worldId:
-          type: string
-          format: uuid
-          description: ID of the world this room belongs to
-        entities:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: string
-                format: uuid
-              name:
-                type: string
-          description: Entities in this room
-    LogEntry:
-      type: object
-      properties:
-        level:
-          type: number
-          description: Log level
-        time:
-          type: number
-          format: int64
-          description: Timestamp of the log entry
-        msg:
-          type: string
-          description: Log message
-        agentId:
-          type: string
-          format: uuid
-          description: ID of the related agent (if applicable)
-        agentName:
-          type: string
-          description: Name of the related agent (if applicable)
-    TeeAgent:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: Unique identifier for the TEE agent
-        name:
-          type: string
-          description: Name of the TEE agent
-        attestation:
-          type: object
-          description: TEE attestation data
+	schemas:
+		Error:
+			type: object
+			properties:
+				success:
+					type: boolean
+					example: false
+				error:
+					type: object
+					properties:
+						code:
+							type: string
+							description: Error code
+						message:
+							type: string
+							description: Error message
+						details:
+							type: string
+							description: Detailed error information
+		AgentInfo:
+			type: object
+			properties:
+				id:
+					type: string
+					format: uuid
+					description: Unique identifier for the agent
+				name:
+					type: string
+					description: Name of the agent
+				status:
+					type: string
+					enum: [active, inactive]
+					description: Current status of the agent
+		Character:
+			type: object
+			required:
+				- name
+			properties:
+				id:
+					type: string
+					format: uuid
+					description: Unique identifier for the character
+				name:
+					type: string
+					description: Name of the character
+				bio:
+					type: string
+					description: Short biography of the character
+				settings:
+					type: object
+					description: Character-specific settings
+				system:
+					type: string
+					description: System prompt for the character
+				style:
+					type: object
+					description: Character's communication style
+				lore:
+					type: array
+					items:
+						type: string
+					description: Extended lore and background information
+				messageExamples:
+					type: array
+					items:
+						type: string
+					description: Example messages for character training
+				topics:
+					type: array
+					items:
+						type: string
+					description: Topics the character is knowledgeable about
+				plugins:
+					type: array
+					items:
+						type: string
+					description: Plugins used by the character
+		Content:
+			type: object
+			properties:
+				text:
+					type: string
+					description: Text content of the message
+				thought:
+					type: string
+					description: Agent's internal thought process
+				plan:
+					type: string
+					description: Agent's plan or reasoning
+				actions:
+					type: array
+					items:
+						type: string
+					description: Actions the agent wants to take
+				source:
+					type: string
+					description: Source of the message
+				inReplyTo:
+					type: string
+					format: uuid
+					description: ID of the message this is in reply to
+		Memory:
+			type: object
+			properties:
+				id:
+					type: string
+					format: uuid
+					description: Unique identifier for the memory
+				entityId:
+					type: string
+					format: uuid
+					description: ID of the entity associated with this memory
+				agentId:
+					type: string
+					format: uuid
+					description: ID of the agent associated with this memory
+				roomId:
+					type: string
+					format: uuid
+					description: ID of the room this memory belongs to
+				createdAt:
+					type: integer
+					format: int64
+					description: Unix timestamp when the memory was created
+				content:
+					$ref: '#/components/schemas/Content'
+		Room:
+			type: object
+			properties:
+				id:
+					type: string
+					format: uuid
+					description: Unique identifier for the room
+				name:
+					type: string
+					description: Name of the room
+				source:
+					type: string
+					description: Source of the room
+				worldId:
+					type: string
+					format: uuid
+					description: ID of the world this room belongs to
+				entities:
+					type: array
+					items:
+						type: object
+						properties:
+							id:
+								type: string
+								format: uuid
+							name:
+								type: string
+					description: Entities in this room
+		LogEntry:
+			type: object
+			properties:
+				level:
+					type: number
+					description: Log level
+				time:
+					type: number
+					format: int64
+					description: Timestamp of the log entry
+				msg:
+					type: string
+					description: Log message
+				agentId:
+					type: string
+					format: uuid
+					description: ID of the related agent (if applicable)
+				agentName:
+					type: string
+					description: Name of the related agent (if applicable)
+		TeeAgent:
+			type: object
+			properties:
+				id:
+					type: string
+					format: uuid
+					description: Unique identifier for the TEE agent
+				name:
+					type: string
+					description: Name of the TEE agent
+				attestation:
+					type: object
+					description: TEE attestation data
 ````
 
 ## File: packages/core/src/entities.ts
@@ -6670,34 +6670,34 @@ components:
 import { logger, stringToUuid } from './index';
 import { composePrompt, parseJSONObjectFromText } from './utils';
 import {
-  type Entity,
-  type IAgentRuntime,
-  type Memory,
-  ModelType,
-  type Relationship,
-  type State,
-  type UUID,
+	type Entity,
+	type IAgentRuntime,
+	type Memory,
+	ModelType,
+	type Relationship,
+	type State,
+	type UUID,
 } from './types';
 ⋮----
 async function getRecentInteractions(
-  runtime: IAgentRuntime,
-  sourceEntityId: UUID,
-  candidateEntities: Entity[],
-  roomId: UUID,
-  relationships: Relationship[]
+	runtime: IAgentRuntime,
+	sourceEntityId: UUID,
+	candidateEntities: Entity[],
+	roomId: UUID,
+	relationships: Relationship[]
 ): Promise<
 export async function findEntityByName(
-  runtime: IAgentRuntime,
-  message: Memory,
-  state: State
+	runtime: IAgentRuntime,
+	message: Memory,
+	state: State
 ): Promise<Entity | null>
 export const createUniqueUuid = (runtime, baseUserId: UUID | string): UUID =>
 export async function getEntityDetails({
-  runtime,
-  roomId,
+	runtime,
+	roomId,
 }: {
-  runtime: IAgentRuntime;
-  roomId: UUID;
+	runtime: IAgentRuntime;
+	roomId: UUID;
 })
 export function formatEntities(
 ````
@@ -6708,8 +6708,8 @@ import pino, { type DestinationStream, type LogFn } from 'pino';
 import { Sentry } from './sentry/instrument';
 import { parseBooleanFromText } from './utils';
 interface LogEntry {
-  time?: number;
-  [key: string]: unknown;
+	time?: number;
+	[key: string]: unknown;
 }
 class InMemoryDestination implements DestinationStream
 ⋮----
@@ -6731,7 +6731,7 @@ const formatError = (err: Error) => (
 const createLogger = (bindings: any | boolean = false) =>
 ⋮----
 interface LoggerWithClear extends pino.Logger {
-  clear: () => void;
+	clear: () => void;
 }
 ````
 
@@ -6763,7 +6763,7 @@ Key Improvements in V2
 6. **No Monorepo Required**: Complete plugin development without touching the core codebase
 7. **Plugin Registry**: Manages the catalog of available plugins and handles their registration with the runtime
 8. **Bootstrap Plugin**: Initializes core functionality required for all agents to operate
-   :::
+	 :::
 
 The ElizaOS plugin system maintains the same basic concept as previous versions, with several new extension points (events, routes, tests, models) and features that significantly improve the developer experience.
 
@@ -6806,39 +6806,39 @@ When prompted, select "Plugin" as the type to create. The CLI will guide you thr
 There are several ways to add plugins to your ElizaOS project:
 
 <Tabs>
-  <TabItem value="package" label="Via package.json">
-    ```json
-    {
-      "dependencies": {
-        "@elizaos/plugin-solana": "github:elizaos-plugins/plugin-solana",
-        "@elizaos/plugin-farcaster": "github:elizaos-plugins/plugin-farcaster"
-      }
-    }
-    ```
-  </TabItem>
-  <TabItem value="character" label="Via Character Definition">
-    ```typescript
-    // In src/index.ts
-    export const character: Character = {
-      name: 'MyAgent',
-      plugins: ['@elizaos/plugin-farcaster', '@elizaos/plugin-example'],
-      // ...
-    };
-    ```
-  </TabItem>
-  <TabItem value="cli" label="Via CLI Commands">
-    ```bash
-    # Add a plugin
-    elizaos plugins add @elizaos/plugin-farcaster
+	<TabItem value="package" label="Via package.json">
+		```json
+		{
+			"dependencies": {
+				"@elizaos/plugin-solana": "github:elizaos-plugins/plugin-solana",
+				"@elizaos/plugin-farcaster": "github:elizaos-plugins/plugin-farcaster"
+			}
+		}
+		```
+	</TabItem>
+	<TabItem value="character" label="Via Character Definition">
+		```typescript
+		// In src/index.ts
+		export const character: Character = {
+			name: 'MyAgent',
+			plugins: ['@elizaos/plugin-farcaster', '@elizaos/plugin-example'],
+			// ...
+		};
+		```
+	</TabItem>
+	<TabItem value="cli" label="Via CLI Commands">
+		```bash
+		# Add a plugin
+		elizaos plugins add @elizaos/plugin-farcaster
 
-    # Remove a plugin
-    elizaos plugins remove @elizaos/plugin-farcaster
+		# Remove a plugin
+		elizaos plugins remove @elizaos/plugin-farcaster
 
-    # List available plugins
-    elizaos plugins list
-    ```
+		# List available plugins
+		elizaos plugins list
+		```
 
-  </TabItem>
+	</TabItem>
 </Tabs>
 
 ---
@@ -6849,13 +6849,13 @@ Configure plugin settings in your character definition:
 
 ```json
 {
-  "name": "MyAgent",
-  "plugins": ["@elizaos/plugin-example"],
-  "settings": {
-    "example": {
-      "enableFeatureX": true
-    }
-  }
+	"name": "MyAgent",
+	"plugins": ["@elizaos/plugin-example"],
+	"settings": {
+		"example": {
+			"enableFeatureX": true
+		}
+	}
 }
 ```
 
@@ -6865,16 +6865,16 @@ The AgentRuntime automatically loads the Bootstrap Plugin during initialization,
 
 ```typescript
 async initialize() {
-  // Register bootstrap plugin
-  await this.registerPlugin(bootstrapPlugin);
+	// Register bootstrap plugin
+	await this.registerPlugin(bootstrapPlugin);
 
-  // Then register additional plugins
-  for (const plugin of this.plugins) {
-    await this.registerPlugin(plugin);
-  }
+	// Then register additional plugins
+	for (const plugin of this.plugins) {
+		await this.registerPlugin(plugin);
+	}
 
-  // Initialize other components
-  // ...
+	// Initialize other components
+	// ...
 }
 ```
 
@@ -6895,88 +6895,88 @@ npm run build
 ```
 
 <Tabs>
-  <TabItem value="github" label="GitHub Publishing">
-    Publishing to GitHub is the recommended approach for sharing your plugin with the ElizaOS community:
+	<TabItem value="github" label="GitHub Publishing">
+		Publishing to GitHub is the recommended approach for sharing your plugin with the ElizaOS community:
 
-    ```bash
-    # Publish to GitHub
-    elizaos publish
-    ```
+		```bash
+		# Publish to GitHub
+		elizaos publish
+		```
 
-    This will:
-    1. Build and package your plugin
-    2. Create or update a GitHub repository in the elizaos-plugins organization
-    3. Add your plugin to the ElizaOS registry (if you're a registry maintainer)
+		This will:
+		1. Build and package your plugin
+		2. Create or update a GitHub repository in the elizaos-plugins organization
+		3. Add your plugin to the ElizaOS registry (if you're a registry maintainer)
 
-    For first-time publishers, the CLI will guide you through setting up GitHub credentials for publishing.
+		For first-time publishers, the CLI will guide you through setting up GitHub credentials for publishing.
 
-    GitHub publishing is ideal for open-source plugins that you want to share with the community and have listed in the official registry.
+		GitHub publishing is ideal for open-source plugins that you want to share with the community and have listed in the official registry.
 
-  </TabItem>
+	</TabItem>
 
-  <TabItem value="npm" label="npm Publishing">
-    You can also publish your plugin to npm:
+	<TabItem value="npm" label="npm Publishing">
+		You can also publish your plugin to npm:
 
-    ```bash
-    # Publish to npm
-    elizaos publish --npm
-    ```
+		```bash
+		# Publish to npm
+		elizaos publish --npm
+		```
 
-    This allows users to install your plugin using standard npm commands:
+		This allows users to install your plugin using standard npm commands:
 
-    ```bash
-    npm install @your-scope/plugin-name
-    ```
+		```bash
+		npm install @your-scope/plugin-name
+		```
 
-    npm publishing is useful when you want to:
-    - Maintain your own package namespace
-    - Integrate with existing npm workflows
-    - Set up automated versioning and releases
+		npm publishing is useful when you want to:
+		- Maintain your own package namespace
+		- Integrate with existing npm workflows
+		- Set up automated versioning and releases
 
-    Make sure your package.json is properly configured with the correct name, version, and access permissions.
+		Make sure your package.json is properly configured with the correct name, version, and access permissions.
 
-  </TabItem>
+	</TabItem>
 
-  <TabItem value="testing" label="Test Mode">
-    Before publishing, you can validate the process without making any external changes:
+	<TabItem value="testing" label="Test Mode">
+		Before publishing, you can validate the process without making any external changes:
 
-    ```bash
-    # Test the publish process
-    elizaos publish --test
-    ```
+		```bash
+		# Test the publish process
+		elizaos publish --test
+		```
 
-    This runs through all the packaging and validation steps without actually publishing anything.
+		This runs through all the packaging and validation steps without actually publishing anything.
 
-    Test mode is helpful for:
-    - Verifying your plugin structure is correct
-    - Ensuring all required files are present
-    - Checking that dependencies are properly configured
-    - Validating that your plugin can be built successfully
+		Test mode is helpful for:
+		- Verifying your plugin structure is correct
+		- Ensuring all required files are present
+		- Checking that dependencies are properly configured
+		- Validating that your plugin can be built successfully
 
-    Always run in test mode before your first public release to avoid issues.
+		Always run in test mode before your first public release to avoid issues.
 
-  </TabItem>
+	</TabItem>
 
-  <TabItem value="customizing" label="Additional Options">
-    The publish command supports several additional options to customize the publishing process:
+	<TabItem value="customizing" label="Additional Options">
+		The publish command supports several additional options to customize the publishing process:
 
-    ```bash
-    # Specify platform compatibility
-    elizaos publish --platform node
+		```bash
+		# Specify platform compatibility
+		elizaos publish --platform node
 
-    # Set custom version number
-    elizaos publish --version 1.2.3
+		# Set custom version number
+		elizaos publish --version 1.2.3
 
-    # Provide a custom registry URL
-    elizaos publish --registry https://custom-registry.com
+		# Provide a custom registry URL
+		elizaos publish --registry https://custom-registry.com
 
-    # Publish with public access
-    elizaos publish --access public
-    ```
+		# Publish with public access
+		elizaos publish --access public
+		```
 
-    These options give you fine-grained control over how and where your plugin is published. Refer to `elizaos publish --help` for a complete list of options.
+		These options give you fine-grained control over how and where your plugin is published. Refer to `elizaos publish --help` for a complete list of options.
 
-  </TabItem>
+	</TabItem>
 </Tabs>
 
 :::info
@@ -6985,7 +6985,7 @@ When submitting a plugin to the [elizaOS Registry](https://github.com/elizaos-pl
 1. **Working Demo**: Screenshots or video of your plugin in action
 2. **Test Results**: Evidence of successful integration and error handling
 3. **Configuration Example**: Show how to properly configure your plugin
-   :::
+	 :::
 
 ---
 
@@ -7015,24 +7015,24 @@ All plugins implement the core Plugin interface:
 
 ```typescript
 interface Plugin {
-  name: string;
-  description: string;
-  config?: { [key: string]: any };
+	name: string;
+	description: string;
+	config?: { [key: string]: any };
 
-  // Optional initialization method
-  init?: (config: Record<string, string>, runtime: IAgentRuntime) => Promise<void>;
+	// Optional initialization method
+	init?: (config: Record<string, string>, runtime: IAgentRuntime) => Promise<void>;
 
-  // Components
-  services?: (typeof Service)[];
-  actions?: Action[];
-  providers?: Provider[];
-  evaluators?: Evaluator[];
-  adapters?: Adapter[];
+	// Components
+	services?: (typeof Service)[];
+	actions?: Action[];
+	providers?: Provider[];
+	evaluators?: Evaluator[];
+	adapters?: Adapter[];
 
-  // Additional features
-  routes?: Route[];
-  tests?: TestSuite[];
-  events?: { [key: string]: ((params: any) => Promise<any>)[] };
+	// Additional features
+	routes?: Route[];
+	tests?: TestSuite[];
+	events?: { [key: string]: ((params: any) => Promise<any>)[] };
 }
 ```
 
@@ -7044,34 +7044,34 @@ Services are the core integration points for external platforms. A properly impl
 import { Service, IAgentRuntime } from '@elizaos/core';
 
 export class ExampleService extends Service {
-  // Required: Define the service type (used for runtime registration)
-  static serviceType = 'example';
+	// Required: Define the service type (used for runtime registration)
+	static serviceType = 'example';
 
-  // Required: Describe what this service enables the agent to do
-  capabilityDescription = 'Enables the agent to interact with the Example platform';
+	// Required: Describe what this service enables the agent to do
+	capabilityDescription = 'Enables the agent to interact with the Example platform';
 
-  // Store runtime for service operations
-  constructor(protected runtime: IAgentRuntime) {
-    super();
-    // Initialize connections, setup event handlers, etc.
-  }
+	// Store runtime for service operations
+	constructor(protected runtime: IAgentRuntime) {
+		super();
+		// Initialize connections, setup event handlers, etc.
+	}
 
-  // Required: Static method to create and initialize service instance
-  static async start(runtime: IAgentRuntime): Promise<ExampleService> {
-    const service = new ExampleService(runtime);
-    // Additional initialization if needed
-    return service;
-  }
+	// Required: Static method to create and initialize service instance
+	static async start(runtime: IAgentRuntime): Promise<ExampleService> {
+		const service = new ExampleService(runtime);
+		// Additional initialization if needed
+		return service;
+	}
 
-  // Required: Clean up resources when service is stopped
-  async stop(): Promise<void> {
-    // Close connections, release resources
-  }
+	// Required: Clean up resources when service is stopped
+	async stop(): Promise<void> {
+		// Close connections, release resources
+	}
 
-  // Optional: Custom methods for your service functionality
-  async sendMessage(content: string, channelId: string): Promise<void> {
-    // Implementation
-  }
+	// Optional: Custom methods for your service functionality
+	async sendMessage(content: string, channelId: string): Promise<void> {
+		// Implementation
+	}
 }
 ```
 
@@ -7109,18 +7109,18 @@ import { searchAction } from './actions/search';
 import { statusProvider } from './providers/status';
 
 const examplePlugin: Plugin = {
-  name: 'example',
-  description: 'Example platform integration for ElizaOS',
-  services: [ExampleService],
-  actions: [searchAction],
-  providers: [statusProvider],
-  init: async (config, runtime) => {
-    // Perform any necessary initialization
-    const apiKey = runtime.getSetting('EXAMPLE_API_KEY');
-    if (!apiKey) {
-      console.warn('EXAMPLE_API_KEY not provided');
-    }
-  },
+	name: 'example',
+	description: 'Example platform integration for ElizaOS',
+	services: [ExampleService],
+	actions: [searchAction],
+	providers: [statusProvider],
+	init: async (config, runtime) => {
+		// Perform any necessary initialization
+		const apiKey = runtime.getSetting('EXAMPLE_API_KEY');
+		if (!apiKey) {
+			console.warn('EXAMPLE_API_KEY not provided');
+		}
+	},
 };
 
 export default examplePlugin;
@@ -7132,17 +7132,17 @@ Your plugin's `package.json` should include an `agentConfig` section:
 
 ```json
 {
-  "name": "@elizaos/plugin-example",
-  "version": "1.0.0",
-  "agentConfig": {
-    "pluginType": "elizaos:plugin:1.0.0",
-    "pluginParameters": {
-      "API_KEY": {
-        "type": "string",
-        "description": "API key for the Example service"
-      }
-    }
-  }
+	"name": "@elizaos/plugin-example",
+	"version": "1.0.0",
+	"agentConfig": {
+		"pluginType": "elizaos:plugin:1.0.0",
+		"pluginParameters": {
+			"API_KEY": {
+				"type": "string",
+				"description": "API key for the Example service"
+			}
+		}
+	}
 }
 ```
 
@@ -7166,16 +7166,16 @@ const debugMode = runtime.getSetting('EXAMPLE_DEBUG_MODE'); // Returns boolean f
 
 ```json
 {
-  "name": "MyAgent",
-  "plugins": ["@elizaos/plugin-example"],
-  "settings": {
-    "example": {
-      "enableFeatureX": true
-    },
-    "secrets": {
-      "EXAMPLE_API_KEY": "your-api-key-here"
-    }
-  }
+	"name": "MyAgent",
+	"plugins": ["@elizaos/plugin-example"],
+	"settings": {
+		"example": {
+			"enableFeatureX": true
+		},
+		"secrets": {
+			"EXAMPLE_API_KEY": "your-api-key-here"
+		}
+	}
 }
 ```
 
@@ -7187,103 +7187,103 @@ The Bootstrap Plugin is a foundational component of ElizaOS that initializes the
 
 ```typescript
 export const bootstrapPlugin: Plugin = {
-  name: 'bootstrap',
-  description: 'Agent bootstrap with basic actions and evaluators',
-  actions: [...],
-  events: {...},
-  evaluators: [...],
-  providers: [...],
-  services: [TaskService, ScenarioService],
+	name: 'bootstrap',
+	description: 'Agent bootstrap with basic actions and evaluators',
+	actions: [...],
+	events: {...},
+	evaluators: [...],
+	providers: [...],
+	services: [TaskService, ScenarioService],
 };
 ```
 
 The Bootstrap Plugin registers essential components across several categories to provide a foundation for all agents. These components can be extended by custom plugins.
 
 <Tabs>
-  <TabItem value="actions" label="Actions">
-    | Action                 | Description                                     |
-    | ---------------------- | ----------------------------------------------- |
-    | `replyAction`          | Generates and sends a response to a message     |
-    | `followRoomAction`     | Enables an agent to actively follow a room      |
-    | `unfollowRoomAction`   | Stops an agent from following a room            |
-    | `muteRoomAction`       | Mutes notifications from a room                 |
-    | `unmuteRoomAction`     | Unmutes notifications from a room               |
-    | `sendMessageAction`    | Sends a message to a specific room              |
-    | `ignoreAction`         | Explicitly ignores a message                    |
-    | `noneAction`           | Acknowledges a message without taking action    |
-    | `updateEntityAction`   | Updates properties of an entity                 |
-    | `choiceAction`         | Presents choices to users and handles responses |
-    | `updateRoleAction`     | Updates a user's role in a world                |
-    | `updateSettingsAction` | Updates agent or world settings                 |
-  </TabItem>
-  
-  <TabItem value="providers" label="Providers">
-    | Provider                 | Description                                                |
-    | ------------------------ | ---------------------------------------------------------- |
-    | `characterProvider`      | Provides the agent's personality and configuration         |
-    | `recentMessagesProvider` | Retrieves recent conversation history                      |
-    | `knowledgeProvider`      | Supplies factual information from the knowledge base       |
-    | `timeProvider`           | Provides awareness of current time and date                |
-    | `entitiesProvider`       | Supplies information about entities in the current context |
-    | `relationshipsProvider`  | Provides information about entity relationships            |
-    | `factsProvider`          | Retrieves relevant facts from memory                       |
-    | `roleProvider`           | Provides role information within worlds                    |
-    | `settingsProvider`       | Supplies configured settings                               |
-    | `anxietyProvider`        | Informs agent of potential issues to be careful about      |
-    | `attachmentsProvider`    | Handles media and file attachments                         |
-    | `providersProvider`      | Meta-provider with information about available providers   |
-    | `actionsProvider`        | Meta-provider with information about available actions     |
-    | `evaluatorsProvider`     | Meta-provider with information about available evaluators  |
-    | `choiceProvider`         | Manages choice-based interactions                          |
-    | `capabilitiesProvider`   | Provides information about agent capabilities              |
-  </TabItem>
-  
-  <TabItem value="services" label="Services & Evaluators">
-    **Services:**
+	<TabItem value="actions" label="Actions">
+		| Action                 | Description                                     |
+		| ---------------------- | ----------------------------------------------- |
+		| `replyAction`          | Generates and sends a response to a message     |
+		| `followRoomAction`     | Enables an agent to actively follow a room      |
+		| `unfollowRoomAction`   | Stops an agent from following a room            |
+		| `muteRoomAction`       | Mutes notifications from a room                 |
+		| `unmuteRoomAction`     | Unmutes notifications from a room               |
+		| `sendMessageAction`    | Sends a message to a specific room              |
+		| `ignoreAction`         | Explicitly ignores a message                    |
+		| `noneAction`           | Acknowledges a message without taking action    |
+		| `updateEntityAction`   | Updates properties of an entity                 |
+		| `choiceAction`         | Presents choices to users and handles responses |
+		| `updateRoleAction`     | Updates a user's role in a world                |
+		| `updateSettingsAction` | Updates agent or world settings                 |
+	</TabItem>
+	
+	<TabItem value="providers" label="Providers">
+		| Provider                 | Description                                                |
+		| ------------------------ | ---------------------------------------------------------- |
+		| `characterProvider`      | Provides the agent's personality and configuration         |
+		| `recentMessagesProvider` | Retrieves recent conversation history                      |
+		| `knowledgeProvider`      | Supplies factual information from the knowledge base       |
+		| `timeProvider`           | Provides awareness of current time and date                |
+		| `entitiesProvider`       | Supplies information about entities in the current context |
+		| `relationshipsProvider`  | Provides information about entity relationships            |
+		| `factsProvider`          | Retrieves relevant facts from memory                       |
+		| `roleProvider`           | Provides role information within worlds                    |
+		| `settingsProvider`       | Supplies configured settings                               |
+		| `anxietyProvider`        | Informs agent of potential issues to be careful about      |
+		| `attachmentsProvider`    | Handles media and file attachments                         |
+		| `providersProvider`      | Meta-provider with information about available providers   |
+		| `actionsProvider`        | Meta-provider with information about available actions     |
+		| `evaluatorsProvider`     | Meta-provider with information about available evaluators  |
+		| `choiceProvider`         | Manages choice-based interactions                          |
+		| `capabilitiesProvider`   | Provides information about agent capabilities              |
+	</TabItem>
+	
+	<TabItem value="services" label="Services & Evaluators">
+		**Services:**
 
-    | Service           | Purpose                                          |
-    | ----------------- | ------------------------------------------------ |
-    | `TaskService`     | Manages deferred, scheduled, and repeating tasks |
-    | `ScenarioService` | Handles scenario-based interactions and testing  |
+		| Service           | Purpose                                          |
+		| ----------------- | ------------------------------------------------ |
+		| `TaskService`     | Manages deferred, scheduled, and repeating tasks |
+		| `ScenarioService` | Handles scenario-based interactions and testing  |
 
-    **Evaluators:**
+		**Evaluators:**
 
-    | Evaluator             | Description                                           |
-    | --------------------- | ----------------------------------------------------- |
-    | `reflectionEvaluator` | Enables self-awareness and learning from interactions |
+		| Evaluator             | Description                                           |
+		| --------------------- | ----------------------------------------------------- |
+		| `reflectionEvaluator` | Enables self-awareness and learning from interactions |
 
-  </TabItem>
-  
-  <TabItem value="events" label="Event Handlers">
-    The Bootstrap Plugin registers handlers for key system events that enable the core message processing flow:
+	</TabItem>
+	
+	<TabItem value="events" label="Event Handlers">
+		The Bootstrap Plugin registers handlers for key system events that enable the core message processing flow:
 
-    **Core Events:**
-    - `MESSAGE_RECEIVED` - Processes new messages and generates responses
-    - `REACTION_RECEIVED` - Tracks reactions to messages
-    - `VOICE_MESSAGE_RECEIVED` - Handles audio messages
-    - `POST_GENERATED` - Creates social media content
-    - `MESSAGE_SENT` - Logs outgoing messages
+		**Core Events:**
+		- `MESSAGE_RECEIVED` - Processes new messages and generates responses
+		- `REACTION_RECEIVED` - Tracks reactions to messages
+		- `VOICE_MESSAGE_RECEIVED` - Handles audio messages
+		- `POST_GENERATED` - Creates social media content
+		- `MESSAGE_SENT` - Logs outgoing messages
 
-    **World Events:**
-    - `WORLD_JOINED` / `WORLD_CONNECTED` - Synchronizes data when joining worlds
-    - `ENTITY_JOINED` / `ENTITY_LEFT` - Manages entity presence
+		**World Events:**
+		- `WORLD_JOINED` / `WORLD_CONNECTED` - Synchronizes data when joining worlds
+		- `ENTITY_JOINED` / `ENTITY_LEFT` - Manages entity presence
 
-    **Lifecycle Events:**
-    - `ACTION_STARTED` / `ACTION_COMPLETED` - Tracks action execution
-    - `EVALUATOR_STARTED` / `EVALUATOR_COMPLETED` - Monitors evaluator processing
-    - `RUN_STARTED` / `RUN_ENDED` / `RUN_TIMEOUT` - Manages message processing lifecycle
+		**Lifecycle Events:**
+		- `ACTION_STARTED` / `ACTION_COMPLETED` - Tracks action execution
+		- `EVALUATOR_STARTED` / `EVALUATOR_COMPLETED` - Monitors evaluator processing
+		- `RUN_STARTED` / `RUN_ENDED` / `RUN_TIMEOUT` - Manages message processing lifecycle
 
-    The message processing flow follows these steps:
-    1. Receive message via `MESSAGE_RECEIVED` event
-    2. Save message to memory
-    3. Check if agent should respond
-    4. If responding, compose state from providers
-    5. Generate a response using the language model
-    6. Process any actions specified in the response
-    7. Run evaluators on the conversation
-    8. Emit lifecycle events throughout the process
+		The message processing flow follows these steps:
+		1. Receive message via `MESSAGE_RECEIVED` event
+		2. Save message to memory
+		3. Check if agent should respond
+		4. If responding, compose state from providers
+		5. Generate a response using the language model
+		6. Process any actions specified in the response
+		7. Run evaluators on the conversation
+		8. Emit lifecycle events throughout the process
 
-  </TabItem>
+	</TabItem>
 </Tabs>
 
 ### Extending Bootstrap Functionality
@@ -7336,12 +7336,12 @@ When submitting a plugin to the [elizaOS Registry](https://github.com/elizaos-pl
 2. **Test Results**: Evidence of successful integration and error handling
 3. **Configuration Example**: Show how to properly configure your plugin
 4. **Quality Checklist**:
-   - [ ] Plugin follows the standard structure
-   - [ ] Required branding assets are included
-   - [ ] Documentation is complete
-   - [ ] GitHub topics properly set
-   - [ ] Tests are passing
-   - [ ] Includes error handling
+	 - [ ] Plugin follows the standard structure
+	 - [ ] Required branding assets are included
+	 - [ ] Documentation is complete
+	 - [ ] GitHub topics properly set
+	 - [ ] Tests are passing
+	 - [ ] Includes error handling
 
 ---
 
@@ -7437,25 +7437,25 @@ import customPlugin from './plugin';
 
 // Define the character
 export const character: Character = {
-  name: 'Agent Name',
-  plugins: ['@elizaos/plugin-discord', '@elizaos/plugin-direct'],
-  // Other character properties
+	name: 'Agent Name',
+	plugins: ['@elizaos/plugin-discord', '@elizaos/plugin-direct'],
+	// Other character properties
 };
 
 // Create a ProjectAgent that includes the character
 export const projectAgent: ProjectAgent = {
-  character,
-  init: async (runtime: IAgentRuntime) => {
-    // Initialize agent-specific functionality
-    console.log('Initializing agent:', character.name);
-  },
-  plugins: [customPlugin],
-  tests: [], // Optional tests for your agent
+	character,
+	init: async (runtime: IAgentRuntime) => {
+		// Initialize agent-specific functionality
+		console.log('Initializing agent:', character.name);
+	},
+	plugins: [customPlugin],
+	tests: [], // Optional tests for your agent
 };
 
 // Export the full project with all agents
 const project: Project = {
-  agents: [projectAgent],
+	agents: [projectAgent],
 };
 
 export default project;
@@ -7469,20 +7469,20 @@ Each agent in your project requires a character definition that controls its per
 
 ```typescript
 {
-  name: "agentName", // Character's display name
-  plugins: ["@elizaos/plugin-discord"], // Example plugins
-  settings: {
-    // Configuration settings
-    secrets: {}, // API keys and sensitive data
-    voice: {}, // Voice configuration
-  },
-  bio: [], // Character background as a string or array of statements
-  style: {
-    // Interaction style guide
-    all: [], // General style rules
-    chat: [], // Chat-specific style
-    post: [] // Post-specific style
-  }
+	name: "agentName", // Character's display name
+	plugins: ["@elizaos/plugin-discord"], // Example plugins
+	settings: {
+		// Configuration settings
+		secrets: {}, // API keys and sensitive data
+		voice: {}, // Voice configuration
+	},
+	bio: [], // Character background as a string or array of statements
+	style: {
+		// Interaction style guide
+		all: [], // General style rules
+		chat: [], // Chat-specific style
+		post: [] // Post-specific style
+	}
 }
 ```
 
@@ -7505,17 +7505,17 @@ The `settings` object supports various configurations:
 
 ```typescript
 {
-  "settings": {
-    "ragKnowledge": false, // Enable RAG knowledge mode
-    "voice": {
-      "model": "string", // Voice synthesis model
-      "url": "string" // Optional voice API URL
-    },
-    "secrets": {
-      // API keys (use env vars in production)
-      "API_KEY": "string"
-    },
-  }
+	"settings": {
+		"ragKnowledge": false, // Enable RAG knowledge mode
+		"voice": {
+			"model": "string", // Voice synthesis model
+			"url": "string" // Optional voice API URL
+		},
+		"secrets": {
+			// API keys (use env vars in production)
+			"API_KEY": "string"
+		},
+	}
 }
 ```
 
@@ -7525,24 +7525,24 @@ Define your agent's personality and communication style:
 
 ```typescript
 {
-  "bio": ["Expert in blockchain development", "Specializes in DeFi protocols"],
-  "style": {
-    "all": [
-      // Applied to all interactions
-      "Keep responses clear",
-      "Maintain professional tone"
-    ],
-    "chat": [
-      // Chat-specific style
-      "Engage with curiosity",
-      "Provide explanations"
-    ],
-    "post": [
-      // Social post style
-      "Keep posts informative",
-      "Focus on key points"
-    ]
-  }
+	"bio": ["Expert in blockchain development", "Specializes in DeFi protocols"],
+	"style": {
+		"all": [
+			// Applied to all interactions
+			"Keep responses clear",
+			"Maintain professional tone"
+		],
+		"chat": [
+			// Chat-specific style
+			"Engage with curiosity",
+			"Provide explanations"
+		],
+		"post": [
+			// Social post style
+			"Keep posts informative",
+			"Focus on key points"
+		]
+	}
 }
 ```
 
@@ -7556,19 +7556,19 @@ Define your agent's personality and communication style:
 
 ```typescript
 {
-  "username": "handle", // Character's username/handle
-  "system": "System prompt text", // Custom system prompt
-  "lore": [], // Additional background/history
-  "knowledge": [
-    // Knowledge base entries
-    "Direct string knowledge",
-    { "path": "file/path.md", "shared": false },
-    { "directory": "knowledge/path", "shared": false }
-  ],
-  "messageExamples": [], // Example conversations
-  "postExamples": [], // Example social posts
-  "topics": [], // Areas of expertise
-  "adjectives": [] // Character traits
+	"username": "handle", // Character's username/handle
+	"system": "System prompt text", // Custom system prompt
+	"lore": [], // Additional background/history
+	"knowledge": [
+		// Knowledge base entries
+		"Direct string knowledge",
+		{ "path": "file/path.md", "shared": false },
+		{ "directory": "knowledge/path", "shared": false }
+	],
+	"messageExamples": [], // Example conversations
+	"postExamples": [], // Example social posts
+	"topics": [], // Areas of expertise
+	"adjectives": [] // Character traits
 }
 ```
 
@@ -7590,9 +7590,9 @@ ElizaOS supports two knowledge modes:
 - Chunks content and uses embeddings
 - Must be explicitly enabled (`settings.ragKnowledge: true`)
 - Supports three knowledge types:
-  1. Direct string knowledge
-  2. Single file references: `{ "path": "path/to/file.md", "shared": false }`
-  3. Directory references: `{ "directory": "knowledge/dir", "shared": false }`
+	1. Direct string knowledge
+	2. Single file references: `{ "path": "path/to/file.md", "shared": false }`
+	3. Directory references: `{ "directory": "knowledge/dir", "shared": false }`
 - Supported file types: .md, .txt, .pdf
 - Optional `shared` flag for knowledge reuse across characters
 
@@ -7611,58 +7611,58 @@ Here's a complete example of a project configuration:
 import type { Character, IAgentRuntime, Project, ProjectAgent } from '@elizaos/core';
 
 export const character: Character = {
-  name: 'Tech Helper',
-  plugins: ['@elizaos/plugin-discord', '@elizaos/plugin-direct'],
-  settings: {
-    ragKnowledge: true,
-    voice: {
-      model: 'en_US-male-medium',
-    },
-    discord: {
-      shouldRespondOnlyToMentions: false,
-      allowedChannelIds: ['123456789012345678'],
-    },
-  },
-  bio: ['Friendly technical assistant', 'Specializes in explaining complex topics simply'],
-  lore: ['Pioneer in open-source AI development', 'Advocate for AI accessibility'],
-  messageExamples: [
-    [
-      {
-        name: 'user1',
-        content: { text: 'Can you explain how AI models work?' },
-      },
-      {
-        name: 'TechAI',
-        content: {
-          text: 'Think of AI models like pattern recognition systems.',
-        },
-      },
-    ],
-  ],
-  topics: ['artificial intelligence', 'machine learning', 'technology education'],
-  knowledge: [
-    {
-      directory: 'tech_guides',
-      shared: true,
-    },
-  ],
-  style: {
-    all: ['Clear', 'Patient', 'Educational'],
-    chat: ['Interactive', 'Supportive'],
-    post: ['Concise', 'Informative'],
-  },
+	name: 'Tech Helper',
+	plugins: ['@elizaos/plugin-discord', '@elizaos/plugin-direct'],
+	settings: {
+		ragKnowledge: true,
+		voice: {
+			model: 'en_US-male-medium',
+		},
+		discord: {
+			shouldRespondOnlyToMentions: false,
+			allowedChannelIds: ['123456789012345678'],
+		},
+	},
+	bio: ['Friendly technical assistant', 'Specializes in explaining complex topics simply'],
+	lore: ['Pioneer in open-source AI development', 'Advocate for AI accessibility'],
+	messageExamples: [
+		[
+			{
+				name: 'user1',
+				content: { text: 'Can you explain how AI models work?' },
+			},
+			{
+				name: 'TechAI',
+				content: {
+					text: 'Think of AI models like pattern recognition systems.',
+				},
+			},
+		],
+	],
+	topics: ['artificial intelligence', 'machine learning', 'technology education'],
+	knowledge: [
+		{
+			directory: 'tech_guides',
+			shared: true,
+		},
+	],
+	style: {
+		all: ['Clear', 'Patient', 'Educational'],
+		chat: ['Interactive', 'Supportive'],
+		post: ['Concise', 'Informative'],
+	},
 };
 
 export const projectAgent: ProjectAgent = {
-  character,
-  init: async (runtime: IAgentRuntime) => {
-    console.log('Initializing Tech Helper agent');
-  },
-  plugins: [], // Project-specific plugins
+	character,
+	init: async (runtime: IAgentRuntime) => {
+		console.log('Initializing Tech Helper agent');
+	},
+	plugins: [], // Project-specific plugins
 };
 
 const project: Project = {
-  agents: [projectAgent],
+	agents: [projectAgent],
 };
 
 export default project;
@@ -7686,22 +7686,22 @@ A project can contain multiple agents, each with its own character and plugins:
 
 ```typescript
 const project: Project = {
-  agents: [
-    {
-      character: technicalSupportCharacter,
-      init: async (runtime) => {
-        /* init code */
-      },
-      plugins: [customSupportPlugin],
-    },
-    {
-      character: communityManagerCharacter,
-      init: async (runtime) => {
-        /* init code */
-      },
-      plugins: [communityPlugin],
-    },
-  ],
+	agents: [
+		{
+			character: technicalSupportCharacter,
+			init: async (runtime) => {
+				/* init code */
+			},
+			plugins: [customSupportPlugin],
+		},
+		{
+			character: communityManagerCharacter,
+			init: async (runtime) => {
+				/* init code */
+			},
+			plugins: [communityPlugin],
+		},
+	],
 };
 ```
 
@@ -8027,17 +8027,17 @@ We now have a [paper](https://arxiv.org/pdf/2501.06781) you can cite for the Eli
 
 ```bibtex
 @article{walters2025eliza,
-  title={Eliza: A Web3 friendly AI Agent Operating System},
-  author={Walters, Shaw and Gao, Sam and Nerd, Shakker and Da, Feng and Williams, Warren and Meng, Ting-Chien and Han, Hunter and He, Frank and Zhang, Allen and Wu, Ming and others},
-  journal={arXiv preprint arXiv:2501.06781},
-  year={2025}
+	title={Eliza: A Web3 friendly AI Agent Operating System},
+	author={Walters, Shaw and Gao, Sam and Nerd, Shakker and Da, Feng and Williams, Warren and Meng, Ting-Chien and Han, Hunter and He, Frank and Zhang, Allen and Wu, Ming and others},
+	journal={arXiv preprint arXiv:2501.06781},
+	year={2025}
 }
 ```
 
 ## Contributors
 
 <a href="https://github.com/elizaos/eliza/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=elizaos/eliza" alt="Eliza project contributors" />
+	<img src="https://contrib.rocks/image?repo=elizaos/eliza" alt="Eliza project contributors" />
 </a>
 
 ## Star History
@@ -8061,46 +8061,46 @@ bun run pre-commit
 Eliza is organized as a monorepo using Bun, Lerna, and Turbo for efficient package management and build orchestration. Here's a detailed overview of the project structure:
 
 -   **`/` (Root)**:
-    -   `.github/`: GitHub Actions workflows for CI/CD pipelines and issue templates
-    -   `.husky/`: Git hooks configuration, including pre-commit formatting
-    -   `.devcontainer/`: Development container configurations for consistent environments
-    -   `packages/`: Core packages and modules (detailed below)
-    -   `scripts/`: Build, development, and utility scripts
-    -   `data/`: Application and user data storage
-    -   `AGENTS.md`: Comprehensive agent documentation and specifications
-    -   `CHANGELOG.md`: Detailed version history and changes
-    -   `Dockerfile`, `docker-compose.yaml`: Container configurations for deployment
-    -   `lerna.json`, `package.json`, `turbo.json`: Monorepo configuration and workspace definitions
+		-   `.github/`: GitHub Actions workflows for CI/CD pipelines and issue templates
+		-   `.husky/`: Git hooks configuration, including pre-commit formatting
+		-   `.devcontainer/`: Development container configurations for consistent environments
+		-   `packages/`: Core packages and modules (detailed below)
+		-   `scripts/`: Build, development, and utility scripts
+		-   `data/`: Application and user data storage
+		-   `AGENTS.md`: Comprehensive agent documentation and specifications
+		-   `CHANGELOG.md`: Detailed version history and changes
+		-   `Dockerfile`, `docker-compose.yaml`: Container configurations for deployment
+		-   `lerna.json`, `package.json`, `turbo.json`: Monorepo configuration and workspace definitions
 
 -   **`/packages/`**: Core components of the Eliza framework:
-    -   `core/`: The foundational package (@elizaos/core) implementing:
-        - OpenTelemetry instrumentation for tracing and monitoring
-        - LangChain integration for AI model interactions
-        - PDF processing capabilities
-        - Logging and error handling infrastructure
-    -   `app/`: Tauri-based cross-platform application (@elizaos/app)
-        - React-based UI implementation
-        - Tauri plugins for system integration
-        - Desktop and mobile builds support
-    -   `autodoc/`: Documentation automation tool (@elizaos/autodoc)
-        - LangChain-powered documentation generation
-        - TypeScript parsing and analysis
-        - GitHub integration via Octokit
-    -   `cli/`: Command-line interface for Eliza management
-    -   `client/`: Client libraries for web interfaces
-    -   `create-eliza/`: Project scaffolding tool
-    -   `docs/`: Official documentation source files
-    -   `plugin-bootstrap/`: Core agent initialization (@elizaos/plugin-bootstrap)
-        - Provides fundamental agent actions (reply, follow/unfollow, mute/unmute)
-        - Implements core evaluators and providers
-        - Handles message processing and world events
-    -   `plugin-sql/`: Database integration (@elizaos/plugin-sql)
-        - PostgreSQL integration with PGLite support
-        - Drizzle ORM for type-safe queries
-        - Migration management tools
-        - Integration testing support
-    -   `plugin-starter/`: Template for creating new plugins
-    -   `project-starter/`, `project-tee-starter/`: Project templates
+		-   `core/`: The foundational package (@elizaos/core) implementing:
+				- OpenTelemetry instrumentation for tracing and monitoring
+				- LangChain integration for AI model interactions
+				- PDF processing capabilities
+				- Logging and error handling infrastructure
+		-   `app/`: Tauri-based cross-platform application (@elizaos/app)
+				- React-based UI implementation
+				- Tauri plugins for system integration
+				- Desktop and mobile builds support
+		-   `autodoc/`: Documentation automation tool (@elizaos/autodoc)
+				- LangChain-powered documentation generation
+				- TypeScript parsing and analysis
+				- GitHub integration via Octokit
+		-   `cli/`: Command-line interface for Eliza management
+		-   `client/`: Client libraries for web interfaces
+		-   `create-eliza/`: Project scaffolding tool
+		-   `docs/`: Official documentation source files
+		-   `plugin-bootstrap/`: Core agent initialization (@elizaos/plugin-bootstrap)
+				- Provides fundamental agent actions (reply, follow/unfollow, mute/unmute)
+				- Implements core evaluators and providers
+				- Handles message processing and world events
+		-   `plugin-sql/`: Database integration (@elizaos/plugin-sql)
+				- PostgreSQL integration with PGLite support
+				- Drizzle ORM for type-safe queries
+				- Migration management tools
+				- Integration testing support
+		-   `plugin-starter/`: Template for creating new plugins
+		-   `project-starter/`, `project-tee-starter/`: Project templates
 
 This architecture enables modular development, clear separation of concerns, and scalable feature implementation across the Eliza ecosystem.
 
@@ -8122,14 +8122,14 @@ Two main GitHub Actions workflows handle the CI/CD process for the Tauri applica
 
 - **`tauri-ci.yml`**:
 
-  - Triggered on pushes to `main` and `develop` branches.
-  - Performs debug builds of the desktop application (Linux, macOS, Windows) to ensure code integrity and catch build issues early.
+	- Triggered on pushes to `main` and `develop` branches.
+	- Performs debug builds of the desktop application (Linux, macOS, Windows) to ensure code integrity and catch build issues early.
 
 - **`tauri-release.yml`**:
-  - Triggered when new tags (e.g., `v*`) are pushed or when a new release is created/published on GitHub.
-  - Builds release-ready versions of the application for all supported desktop platforms (Linux AppImage & .deb, macOS .dmg, Windows .exe NSIS installer).
-  - Builds release versions for mobile platforms (Android .apk, iOS .ipa).
-  - Uploads all generated binaries and installers as artifacts to the corresponding GitHub Release.
+	- Triggered when new tags (e.g., `v*`) are pushed or when a new release is created/published on GitHub.
+	- Builds release-ready versions of the application for all supported desktop platforms (Linux AppImage & .deb, macOS .dmg, Windows .exe NSIS installer).
+	- Builds release versions for mobile platforms (Android .apk, iOS .ipa).
+	- Uploads all generated binaries and installers as artifacts to the corresponding GitHub Release.
 
 ### Mobile Application Backend
 
@@ -8173,19 +8173,19 @@ Upon successful completion of the `tauri-release.yml` workflow (triggered by a n
 ## File: packages/core/src/database.ts
 ````typescript
 import type {
-  Agent,
-  Component,
-  Entity,
-  IDatabaseAdapter,
-  Log,
-  Memory,
-  MemoryMetadata,
-  Participant,
-  Relationship,
-  Room,
-  Task,
-  UUID,
-  World,
+	Agent,
+	Component,
+	Entity,
+	IDatabaseAdapter,
+	Log,
+	Memory,
+	MemoryMetadata,
+	Participant,
+	Relationship,
+	Room,
+	Task,
+	UUID,
+	World,
 } from './types';
 export abstract class DatabaseAdapter<DB = unknown> implements IDatabaseAdapter
 ⋮----
@@ -8200,67 +8200,67 @@ abstract getEntitiesForRoom(roomId: UUID, includeComponents?: boolean): Promise<
 abstract createEntities(entities: Entity[]): Promise<boolean>;
 abstract updateEntity(entity: Entity): Promise<void>;
 abstract getComponent(
-    entityId: UUID,
-    type: string,
-    worldId?: UUID,
-    sourceEntityId?: UUID
-  ): Promise<Component | null>;
+		entityId: UUID,
+		type: string,
+		worldId?: UUID,
+		sourceEntityId?: UUID
+	): Promise<Component | null>;
 abstract getComponents(
-    entityId: UUID,
-    worldId?: UUID,
-    sourceEntityId?: UUID
-  ): Promise<Component[]>;
+		entityId: UUID,
+		worldId?: UUID,
+		sourceEntityId?: UUID
+	): Promise<Component[]>;
 abstract createComponent(component: Component): Promise<boolean>;
 abstract updateComponent(component: Component): Promise<void>;
 abstract deleteComponent(componentId: UUID): Promise<void>;
 abstract getMemories(params: {
-    entityId?: UUID;
-    agentId?: UUID;
-    count?: number;
-    unique?: boolean;
-    tableName: string;
-    start?: number;
-    end?: number;
-    roomId?: UUID;
-    worldId?: UUID;
-  }): Promise<Memory[]>;
+		entityId?: UUID;
+		agentId?: UUID;
+		count?: number;
+		unique?: boolean;
+		tableName: string;
+		start?: number;
+		end?: number;
+		roomId?: UUID;
+		worldId?: UUID;
+	}): Promise<Memory[]>;
 abstract getMemoriesByRoomIds(params: {
-    roomIds: UUID[];
-    tableName: string;
-    limit?: number;
-  }): Promise<Memory[]>;
+		roomIds: UUID[];
+		tableName: string;
+		limit?: number;
+	}): Promise<Memory[]>;
 abstract getMemoryById(id: UUID): Promise<Memory | null>;
 abstract getMemoriesByIds(memoryIds: UUID[], tableName?: string): Promise<Memory[]>;
 abstract getCachedEmbeddings(
 abstract log(params: {
-    body: { [key: string]: unknown };
-    entityId: UUID;
-    roomId: UUID;
-    type: string;
-  }): Promise<void>;
+		body: { [key: string]: unknown };
+		entityId: UUID;
+		roomId: UUID;
+		type: string;
+	}): Promise<void>;
 abstract getLogs(params: {
-    entityId: UUID;
-    roomId?: UUID;
-    type?: string;
-    count?: number;
-    offset?: number;
-  }): Promise<Log[]>;
+		entityId: UUID;
+		roomId?: UUID;
+		type?: string;
+		count?: number;
+		offset?: number;
+	}): Promise<Log[]>;
 abstract deleteLog(logId: UUID): Promise<void>;
 abstract searchMemories(params: {
-    tableName: string;
-    embedding: number[];
-    match_threshold?: number;
-    count?: number;
-    unique?: boolean;
-    query?: string;
-    roomId?: UUID;
-    worldId?: UUID;
-    entityId?: UUID;
-  }): Promise<Memory[]>;
+		tableName: string;
+		embedding: number[];
+		match_threshold?: number;
+		count?: number;
+		unique?: boolean;
+		query?: string;
+		roomId?: UUID;
+		worldId?: UUID;
+		entityId?: UUID;
+	}): Promise<Memory[]>;
 abstract createMemory(memory: Memory, tableName: string, unique?: boolean): Promise<UUID>;
 abstract updateMemory(
-    memory: Partial<Memory> & { id: UUID; metadata?: MemoryMetadata }
-  ): Promise<boolean>;
+		memory: Partial<Memory> & { id: UUID; metadata?: MemoryMetadata }
+	): Promise<boolean>;
 abstract deleteMemory(memoryId: UUID): Promise<void>;
 abstract deleteManyMemories(memoryIds: UUID[]): Promise<void>;
 abstract deleteAllMemories(roomId: UUID, tableName: string): Promise<void>;
@@ -8282,31 +8282,31 @@ abstract removeParticipant(entityId: UUID, roomId: UUID): Promise<boolean>;
 abstract getParticipantsForEntity(entityId: UUID): Promise<Participant[]>;
 abstract getParticipantsForRoom(roomId: UUID): Promise<UUID[]>;
 abstract getParticipantUserState(
-    roomId: UUID,
-    entityId: UUID
-  ): Promise<'FOLLOWED' | 'MUTED' | null>;
+		roomId: UUID,
+		entityId: UUID
+	): Promise<'FOLLOWED' | 'MUTED' | null>;
 abstract setParticipantUserState(
-    roomId: UUID,
-    entityId: UUID,
-    state: 'FOLLOWED' | 'MUTED' | null
-  ): Promise<void>;
+		roomId: UUID,
+		entityId: UUID,
+		state: 'FOLLOWED' | 'MUTED' | null
+	): Promise<void>;
 abstract createRelationship(params: {
-    sourceEntityId: UUID;
-    targetEntityId: UUID;
-    tags?: string[];
-    metadata?: Record<string, unknown>;
-  }): Promise<boolean>;
+		sourceEntityId: UUID;
+		targetEntityId: UUID;
+		tags?: string[];
+		metadata?: Record<string, unknown>;
+	}): Promise<boolean>;
 abstract getRelationship(params: {
-    sourceEntityId: UUID;
-    targetEntityId: UUID;
-  }): Promise<Relationship | null>;
+		sourceEntityId: UUID;
+		targetEntityId: UUID;
+	}): Promise<Relationship | null>;
 abstract getRelationships(params:
 abstract updateRelationship(params: {
-    sourceEntityId: UUID;
-    targetEntityId: UUID;
-    tags?: string[];
-    metadata?: Record<string, unknown>;
-  }): Promise<void>;
+		sourceEntityId: UUID;
+		targetEntityId: UUID;
+		tags?: string[];
+		metadata?: Record<string, unknown>;
+	}): Promise<void>;
 abstract getAgent(agentId: UUID): Promise<Agent | null>;
 abstract getAgents(): Promise<Partial<Agent>[]>;
 abstract createAgent(agent: Partial<Agent>): Promise<boolean>;
@@ -8323,10 +8323,10 @@ abstract getTasksByName(name: string): Promise<Task[]>;
 abstract updateTask(id: UUID, task: Partial<Task>): Promise<void>;
 abstract deleteTask(id: UUID): Promise<void>;
 abstract getMemoriesByWorldId(params: {
-    worldId: UUID;
-    count?: number;
-    tableName?: string;
-  }): Promise<Memory[]>;
+		worldId: UUID;
+		count?: number;
+		tableName?: string;
+	}): Promise<Memory[]>;
 abstract deleteRoomsByWorldId(worldId: UUID): Promise<void>;
 ````
 
@@ -8337,42 +8337,42 @@ import { createUniqueUuid } from './entities';
 import { decryptSecret, getSalt, safeReplacer } from './index';
 import { createLogger } from './logger';
 import {
-  ChannelType,
-  ModelType,
-  type Content,
-  type KnowledgeItem,
-  type MemoryMetadata,
-  type Character,
-  type Action,
-  type Evaluator,
-  type Provider,
-  type HandlerCallback,
-  type IDatabaseAdapter,
-  type Entity,
-  type Room,
-  type World,
-  type SendHandlerFunction,
-  type TargetInfo,
-  type ModelParamsMap,
-  type ModelResultMap,
-  type ModelTypeName,
-  type Plugin,
-  type Route,
-  type UUID,
-  type Service,
-  type ServiceTypeName,
-  type State,
-  type TaskWorker,
-  type Agent,
-  type Log,
-  type Participant,
-  type Relationship,
-  type Task,
-  type Memory,
-  type ModelHandler,
-  type RuntimeSettings,
-  type Component,
-  IAgentRuntime,
+	ChannelType,
+	ModelType,
+	type Content,
+	type KnowledgeItem,
+	type MemoryMetadata,
+	type Character,
+	type Action,
+	type Evaluator,
+	type Provider,
+	type HandlerCallback,
+	type IDatabaseAdapter,
+	type Entity,
+	type Room,
+	type World,
+	type SendHandlerFunction,
+	type TargetInfo,
+	type ModelParamsMap,
+	type ModelResultMap,
+	type ModelTypeName,
+	type Plugin,
+	type Route,
+	type UUID,
+	type Service,
+	type ServiceTypeName,
+	type State,
+	type TaskWorker,
+	type Agent,
+	type Log,
+	type Participant,
+	type Relationship,
+	type Task,
+	type Memory,
+	type ModelHandler,
+	type RuntimeSettings,
+	type Component,
+	IAgentRuntime,
 } from './types';
 import { BM25 } from './search';
 import { EventType, type MessagePayload } from './types';
@@ -8387,13 +8387,13 @@ release(): void
 export class AgentRuntime implements IAgentRuntime
 ⋮----
 constructor(opts: {
-    conversationLength?: number;
-    agentId?: UUID;
-    character?: Character;
-    plugins?: Plugin[];
-    fetch?: typeof fetch;
-    adapter?: IDatabaseAdapter;
-    settings?: RuntimeSettings;
+		conversationLength?: number;
+		agentId?: UUID;
+		character?: Character;
+		plugins?: Plugin[];
+		fetch?: typeof fetch;
+		adapter?: IDatabaseAdapter;
+		settings?: RuntimeSettings;
 events?:
 async registerPlugin(plugin: Plugin): Promise<void>
 private async resolvePluginDependencies(characterPlugins: Plugin[]): Promise<Plugin[]>
@@ -8413,51 +8413,51 @@ registerProvider(provider: Provider)
 registerAction(action: Action)
 registerEvaluator(evaluator: Evaluator)
 async processActions(
-    message: Memory,
-    responses: Memory[],
-    state?: State,
-    callback?: HandlerCallback
+		message: Memory,
+		responses: Memory[],
+		state?: State,
+		callback?: HandlerCallback
 ): Promise<void>
 ⋮----
 function normalizeAction(actionString: string)
 ⋮----
 async evaluate(
-    message: Memory,
-    state: State,
-    didRespond?: boolean,
-    callback?: HandlerCallback,
-    responses?: Memory[]
+		message: Memory,
+		state: State,
+		didRespond?: boolean,
+		callback?: HandlerCallback,
+		responses?: Memory[]
 )
 async ensureConnections(entities, rooms, source, world): Promise<void>
 ⋮----
 const chunkArray = (arr, size)
 ⋮----
 async ensureConnection({
-    entityId,
-    roomId,
-    worldId,
-    worldName,
-    userName,
-    name,
-    source,
-    type,
-    channelId,
-    serverId,
-    userId,
-    metadata,
-  }: {
-    entityId: UUID;
-    roomId: UUID;
-    worldId: UUID;
-    worldName?: string;
-    userName?: string;
-    name?: string;
-    source?: string;
-    type?: ChannelType;
-    channelId?: string;
-    serverId?: string;
-    userId?: UUID;
-    metadata?: Record<string, any>;
+		entityId,
+		roomId,
+		worldId,
+		worldName,
+		userName,
+		name,
+		source,
+		type,
+		channelId,
+		serverId,
+		userId,
+		metadata,
+	}: {
+		entityId: UUID;
+		roomId: UUID;
+		worldId: UUID;
+		worldName?: string;
+		userName?: string;
+		name?: string;
+		source?: string;
+		type?: ChannelType;
+		channelId?: string;
+		serverId?: string;
+		userId?: UUID;
+		metadata?: Record<string, any>;
 })
 async ensureParticipantInRoom(entityId: UUID, roomId: UUID)
 async removeParticipant(entityId: UUID, roomId: UUID): Promise<boolean>
@@ -8468,10 +8468,10 @@ async addParticipantsRoom(entityIds: UUID[], roomId: UUID): Promise<boolean>
 async ensureWorldExists(
 async ensureRoomExists(
 async composeState(
-    message: Memory,
-    includeList: string[] | null = null,
-    onlyInclude = false,
-    skipCache = false
+		message: Memory,
+		includeList: string[] | null = null,
+		onlyInclude = false,
+		skipCache = false
 ): Promise<State>
 getService<T extends Service = Service>(serviceName: ServiceTypeName | string): T | null
 getTypedService<T extends Service = Service>(serviceName: ServiceTypeName | string): T | null
@@ -8479,19 +8479,19 @@ getRegisteredServiceTypes(): ServiceTypeName[]
 hasService(serviceType: ServiceTypeName | string): boolean
 async registerService(serviceDef: typeof Service): Promise<void>
 registerModel(
-    modelType: ModelTypeName,
-    handler: (params: any) => Promise<any>,
-    provider: string,
-    priority?: number
+		modelType: ModelTypeName,
+		handler: (params: any) => Promise<any>,
+		provider: string,
+		priority?: number
 )
 getModel(
-    modelType: ModelTypeName,
-    provider?: string
+		modelType: ModelTypeName,
+		provider?: string
 ): ((runtime: IAgentRuntime, params: any) => Promise<any>) | undefined
 async useModel<T extends ModelTypeName, R = ModelResultMap[T]>(
-    modelType: T,
-    params: Omit<ModelParamsMap[T], 'runtime'> | any,
-    provider?: string
+		modelType: T,
+		params: Omit<ModelParamsMap[T], 'runtime'> | any,
+		provider?: string
 ): Promise<R>
 registerEvent(event: string, handler: (params: any) => Promise<void>)
 getEvent(event: string): ((params: any) => Promise<void>)[] | undefined
@@ -8515,10 +8515,10 @@ async createEntity(entity: Entity): Promise<boolean>
 async createEntities(entities: Entity[]): Promise<boolean>
 async updateEntity(entity: Entity): Promise<void>
 async getComponent(
-    entityId: UUID,
-    type: string,
-    worldId?: UUID,
-    sourceEntityId?: UUID
+		entityId: UUID,
+		type: string,
+		worldId?: UUID,
+		sourceEntityId?: UUID
 ): Promise<Component | null>
 async getComponents(entityId: UUID, worldId?: UUID, sourceEntityId?: UUID): Promise<Component[]>
 async createComponent(component: Component): Promise<boolean>
@@ -8526,62 +8526,62 @@ async updateComponent(component: Component): Promise<void>
 async deleteComponent(componentId: UUID): Promise<void>
 async addEmbeddingToMemory(memory: Memory): Promise<Memory>
 async getMemories(params: {
-    entityId?: UUID;
-    agentId?: UUID;
-    roomId?: UUID;
-    count?: number;
-    unique?: boolean;
-    tableName: string;
-    start?: number;
-    end?: number;
+		entityId?: UUID;
+		agentId?: UUID;
+		roomId?: UUID;
+		count?: number;
+		unique?: boolean;
+		tableName: string;
+		start?: number;
+		end?: number;
 }): Promise<Memory[]>
 async getMemoryById(id: UUID): Promise<Memory | null>
 async getMemoriesByIds(ids: UUID[], tableName?: string): Promise<Memory[]>
 async getMemoriesByRoomIds(params: {
-    tableName: string;
-    roomIds: UUID[];
-    limit?: number;
+		tableName: string;
+		roomIds: UUID[];
+		limit?: number;
 }): Promise<Memory[]>
 async getCachedEmbeddings(params: {
-    query_table_name: string;
-    query_threshold: number;
-    query_input: string;
-    query_field_name: string;
-    query_field_sub_name: string;
-    query_match_count: number;
+		query_table_name: string;
+		query_threshold: number;
+		query_input: string;
+		query_field_name: string;
+		query_field_sub_name: string;
+		query_match_count: number;
 }): Promise<
 async log(params: {
-    body: { [key: string]: unknown };
-    entityId: UUID;
-    roomId: UUID;
-    type: string;
+		body: { [key: string]: unknown };
+		entityId: UUID;
+		roomId: UUID;
+		type: string;
 }): Promise<void>
 async searchMemories(params: {
-    embedding: number[];
-    query?: string;
-    match_threshold?: number;
-    count?: number;
-    roomId?: UUID;
-    unique?: boolean;
-    worldId?: UUID;
-    entityId?: UUID;
-    tableName: string;
+		embedding: number[];
+		query?: string;
+		match_threshold?: number;
+		count?: number;
+		roomId?: UUID;
+		unique?: boolean;
+		worldId?: UUID;
+		entityId?: UUID;
+		tableName: string;
 }): Promise<Memory[]>
 async rerankMemories(query: string, memories: Memory[]): Promise<Memory[]>
 async createMemory(memory: Memory, tableName: string, unique?: boolean): Promise<UUID>
 async updateMemory(
-    memory: Partial<Memory> & { id: UUID; metadata?: MemoryMetadata }
+		memory: Partial<Memory> & { id: UUID; metadata?: MemoryMetadata }
 ): Promise<boolean>
 async deleteMemory(memoryId: UUID): Promise<void>
 async deleteManyMemories(memoryIds: UUID[]): Promise<void>
 async deleteAllMemories(roomId: UUID, tableName: string): Promise<void>
 async countMemories(roomId: UUID, unique?: boolean, tableName?: string): Promise<number>
 async getLogs(params: {
-    entityId: UUID;
-    roomId?: UUID;
-    type?: string;
-    count?: number;
-    offset?: number;
+		entityId: UUID;
+		roomId?: UUID;
+		type?: string;
+		count?: number;
+		offset?: number;
 }): Promise<Log[]>
 async deleteLog(logId: UUID): Promise<void>
 async createWorld(world: World): Promise<UUID>
@@ -8601,24 +8601,24 @@ async getRoomsForParticipants(userIds: UUID[]): Promise<UUID[]>
 async getRooms(worldId: UUID): Promise<Room[]>
 async getRoomsByWorld(worldId: UUID): Promise<Room[]>
 async getParticipantUserState(
-    roomId: UUID,
-    entityId: UUID
+		roomId: UUID,
+		entityId: UUID
 ): Promise<'FOLLOWED' | 'MUTED' | null>
 async setParticipantUserState(
-    roomId: UUID,
-    entityId: UUID,
-    state: 'FOLLOWED' | 'MUTED' | null
+		roomId: UUID,
+		entityId: UUID,
+		state: 'FOLLOWED' | 'MUTED' | null
 ): Promise<void>
 async createRelationship(params: {
-    sourceEntityId: UUID;
-    targetEntityId: UUID;
-    tags?: string[];
-    metadata?: { [key: string]: any };
+		sourceEntityId: UUID;
+		targetEntityId: UUID;
+		tags?: string[];
+		metadata?: { [key: string]: any };
 }): Promise<boolean>
 async updateRelationship(relationship: Relationship): Promise<void>
 async getRelationship(params: {
-    sourceEntityId: UUID;
-    targetEntityId: UUID;
+		sourceEntityId: UUID;
+		targetEntityId: UUID;
 }): Promise<Relationship | null>
 async getRelationships(params:
 async getCache<T>(key: string): Promise<T | undefined>
@@ -8634,16 +8634,16 @@ on(event: string, callback: (data: any) => void): void
 off(event: string, callback: (data: any) => void): void
 emit(event: string, data: any): void
 async sendControlMessage(params: {
-    roomId: UUID;
-    action: 'enable_input' | 'disable_input';
-    target?: string;
+		roomId: UUID;
+		action: 'enable_input' | 'disable_input';
+		target?: string;
 }): Promise<void>
 registerSendHandler(source: string, handler: SendHandlerFunction): void
 async sendMessageToTarget(target: TargetInfo, content: Content): Promise<void>
 async getMemoriesByWorldId(params: {
-    worldId: UUID;
-    count?: number;
-    tableName?: string;
+		worldId: UUID;
+		count?: number;
+		tableName?: string;
 }): Promise<Memory[]>
 async runMigrations(migrationsPaths?: string[]): Promise<void>
 async isReady(): Promise<boolean>
@@ -8652,85 +8652,85 @@ async isReady(): Promise<boolean>
 ## File: package.json
 ````json
 {
-  "name": "eliza",
-  "version": "1.0.6",
-  "module": "index.ts",
-  "type": "module",
-  "engines": {
-    "node": "23.3.0"
-  },
-  "scripts": {
-    "postinstall": "bash ./scripts/init-submodules.sh",
-    "start": "turbo run start --filter=./packages/cli --log-prefix=none",
-    "start:debug": "cross-env NODE_NO_WARNINGS=1 LOG_LEVEL=debug elizaos start",
-    "start:app": "turbo run start --filter=./packages/app",
-    "dev": "bun run scripts/dev-watch.js",
-    "build:docs": "turbo run build --filter=@elizaos/docs",
-    "build": "turbo run build --filter=!@elizaos/docs",
-    "build:client": "turbo run build --filter=@elizaos/client",
-    "format": "turbo run format --filter=./packages/*",
-    "format:check": "turbo run format:check --filter=./packages/*",
-    "clean": "turbo run clean --filter=./packages/* && rm -rf dist .turbo node_modules .turbo-tsconfig.json tsconfig.tsbuildinfo bun.lock* .eliza .elizadb && bun install && bun run build",
-    "build:cli": "turbo run build --filter=@elizaos/cli --no-cache",
-    "build:core": "turbo run build --filter=@elizaos/core --no-cache",
-    "lint": "turbo run lint --filter=./packages/* && prettier --write . && prettier --check .",
-    "pre-commit": "bun run scripts/pre-commit-lint.js",
-    "release": "lerna version --no-private --force-publish --no-push --no-git-tag-version && bun run build && bun lint && lerna publish from-package --no-private --force-publish && bun lint",
-    "release:alpha": "lerna publish prerelease --preid alpha --dist-tag alpha --no-private --force-publish --loglevel verbose",
-    "migrate": "turbo run migrate --filter=./packages/plugin-sql --force",
-    "migrate:generate": "turbo run migrate:generate --filter=./packages/plugin-sql",
-    "docker:build": "bash ./scripts/docker.sh build",
-    "docker:run": "bash ./scripts/docker.sh run",
-    "docker:bash": "bash ./scripts/docker.sh bash",
-    "docker:start": "bash ./scripts/docker.sh start",
-    "docker": "bun docker:build && bun docker:run && bun docker:bash",
-    "test": "turbo run test --concurrency 20 --filter=!./packages/plugin-starter --filter=!./packages/project-starter --filter=!./packages/docs --filter=!@elizaos/plugin-sql",
-    "test:client": "turbo run test --filter=./packages/client",
-    "test:core": "turbo run test --filter=./packages/core",
-    "test:app": "turbo run test --concurrency 20 --filter=./packages/app",
-    "prepare": "husky"
-  },
-  "packageManager": "bun@1.2.15",
-  "workspaces": [
-    "packages/*",
-    "plugin-specification/*"
-  ],
-  "devDependencies": {
-    "@types/bun": "latest",
-    "@types/node": "^22.15.3",
-    "@types/uuid": "^10.0.0",
-    "bun": "^1.2.15",
-    "husky": "^9.1.7",
-    "lerna": "8.1.4",
-    "tsup": "8.5.0",
-    "turbo": "^2.5.4",
-    "typescript": "^5.8.2",
-    "vitest": "3.1.4"
-  },
-  "resolutions": {
-    "@nrwl/devkit": "19.8.4",
-    "@nrwl/tao": "19.8.4",
-    "react": "19.1.0",
-    "react-dom": "19.1.0",
-    "@types/react": "19.1.5",
-    "typedoc-plugin-markdown": "4.2.10",
-    "typedoc": "0.27.9"
-  },
-  "trustedDependencies": [
-    "@swc/core",
-    "bigint-buffer",
-    "bufferutil",
-    "bun",
-    "canvas",
-    "esbuild",
-    "husky",
-    "node-llama-cpp",
-    "protobufjs",
-    "utf-8-validate"
-  ],
-  "dependencies": {
-    "helmet": "^8.1.0"
-  }
+	"name": "eliza",
+	"version": "1.0.6",
+	"module": "index.ts",
+	"type": "module",
+	"engines": {
+		"node": "23.3.0"
+	},
+	"scripts": {
+		"postinstall": "bash ./scripts/init-submodules.sh",
+		"start": "turbo run start --filter=./packages/cli --log-prefix=none",
+		"start:debug": "cross-env NODE_NO_WARNINGS=1 LOG_LEVEL=debug elizaos start",
+		"start:app": "turbo run start --filter=./packages/app",
+		"dev": "bun run scripts/dev-watch.js",
+		"build:docs": "turbo run build --filter=@elizaos/docs",
+		"build": "turbo run build --filter=!@elizaos/docs",
+		"build:client": "turbo run build --filter=@elizaos/client",
+		"format": "turbo run format --filter=./packages/*",
+		"format:check": "turbo run format:check --filter=./packages/*",
+		"clean": "turbo run clean --filter=./packages/* && rm -rf dist .turbo node_modules .turbo-tsconfig.json tsconfig.tsbuildinfo bun.lock* .eliza .elizadb && bun install && bun run build",
+		"build:cli": "turbo run build --filter=@elizaos/cli --no-cache",
+		"build:core": "turbo run build --filter=@elizaos/core --no-cache",
+		"lint": "turbo run lint --filter=./packages/* && prettier --write . && prettier --check .",
+		"pre-commit": "bun run scripts/pre-commit-lint.js",
+		"release": "lerna version --no-private --force-publish --no-push --no-git-tag-version && bun run build && bun lint && lerna publish from-package --no-private --force-publish && bun lint",
+		"release:alpha": "lerna publish prerelease --preid alpha --dist-tag alpha --no-private --force-publish --loglevel verbose",
+		"migrate": "turbo run migrate --filter=./packages/plugin-sql --force",
+		"migrate:generate": "turbo run migrate:generate --filter=./packages/plugin-sql",
+		"docker:build": "bash ./scripts/docker.sh build",
+		"docker:run": "bash ./scripts/docker.sh run",
+		"docker:bash": "bash ./scripts/docker.sh bash",
+		"docker:start": "bash ./scripts/docker.sh start",
+		"docker": "bun docker:build && bun docker:run && bun docker:bash",
+		"test": "turbo run test --concurrency 20 --filter=!./packages/plugin-starter --filter=!./packages/project-starter --filter=!./packages/docs --filter=!@elizaos/plugin-sql",
+		"test:client": "turbo run test --filter=./packages/client",
+		"test:core": "turbo run test --filter=./packages/core",
+		"test:app": "turbo run test --concurrency 20 --filter=./packages/app",
+		"prepare": "husky"
+	},
+	"packageManager": "bun@1.2.15",
+	"workspaces": [
+		"packages/*",
+		"plugin-specification/*"
+	],
+	"devDependencies": {
+		"@types/bun": "latest",
+		"@types/node": "^22.15.3",
+		"@types/uuid": "^10.0.0",
+		"bun": "^1.2.15",
+		"husky": "^9.1.7",
+		"lerna": "8.1.4",
+		"tsup": "8.5.0",
+		"turbo": "^2.5.4",
+		"typescript": "^5.8.2",
+		"vitest": "3.1.4"
+	},
+	"resolutions": {
+		"@nrwl/devkit": "19.8.4",
+		"@nrwl/tao": "19.8.4",
+		"react": "19.1.0",
+		"react-dom": "19.1.0",
+		"@types/react": "19.1.5",
+		"typedoc-plugin-markdown": "4.2.10",
+		"typedoc": "0.27.9"
+	},
+	"trustedDependencies": [
+		"@swc/core",
+		"bigint-buffer",
+		"bufferutil",
+		"bun",
+		"canvas",
+		"esbuild",
+		"husky",
+		"node-llama-cpp",
+		"protobufjs",
+		"utf-8-validate"
+	],
+	"dependencies": {
+		"helmet": "^8.1.0"
+	}
 }
 ````
 

@@ -1,8 +1,8 @@
 import {
-  logger,
-  type IAgentRuntime,
-  type Project,
-  type ProjectAgent,
+	logger,
+	type IAgentRuntime,
+	type Project,
+	type ProjectAgent,
 } from "@elizaos/core/v2";
 import character from "./character";
 import pluginPolymarket from "./plugin";
@@ -15,17 +15,17 @@ import pluginPolymarket from "./plugin";
  */
 
 const initCharacter = ({ runtime }: { runtime: IAgentRuntime }) => {
-  logger.info("Initializing character");
-  logger.info("Name: ", character.name);
+	logger.info("Initializing character");
+	logger.info("Name: ", character.name);
 };
 
 export const projectAgent: ProjectAgent = {
-  character,
-  init: async (runtime: IAgentRuntime) => await initCharacter({ runtime }),
-  plugins: [pluginPolymarket],
+	character,
+	init: async (runtime: IAgentRuntime) => await initCharacter({ runtime }),
+	plugins: [pluginPolymarket],
 };
 const project: Project = {
-  agents: [projectAgent],
+	agents: [projectAgent],
 };
 
 export default project;

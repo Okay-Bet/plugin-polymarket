@@ -5,127 +5,6 @@ The content has been processed where comments have been removed, empty lines hav
 
 
 ```
-Polymarket Documentation home pagedark logo
-
-    Main Site
-
-User Guide
-For Developers
-Changelog
-Polymarket
-Discord Community
-Twitter
-Developer Quickstart
-
-    Developer Quickstart
-    Glossary
-    API Rate Limits
-    Endpoints
-    Your First Order
-    Cancelling Orders
-
-Central Limit Order Book
-
-    CLOB Introduction
-    Deployments
-    Status
-    Clients
-    Authentication
-
-Order Manipulation
-
-    Orders Overview
-    Place Single Order
-    Place Multiple Orders (Batching)
-    Get Order
-    Get Active Orders
-    Check Order Reward Scoring
-    Cancel Orders(s)
-    Onchain Order Info
-
-Trades
-
-    Trades Overview
-    Get Trades
-    GET
-    Get Trades (Data-API)
-
-Markets
-
-    Get Single Market
-    Get Markets
-    Get Sampling Markets
-    Get Simplified Markets
-    Get Sampling Simplified Markets
-
-Pricing and Books
-
-    GET
-    Historical Timeseries Data
-    GET
-    Get Book
-    Get Books
-    GET
-    Get Price
-    Get Price(s)
-    Get Midpoint(s)
-    Get Spread(s)
-
-Websocket
-
-    WSS Overview
-    WSS Quickstart
-    WSS Authentication
-    User Channel
-    Market Channel
-
-Gamma Markets API
-
-    Overview
-    Gamma Structure
-    GET
-    Get Markets
-    GET
-    Get Events
-
-Miscellaneous Endpoints
-
-    GET
-    Get User Positions (Data-API)
-    GET
-    Get User On-Chain Activity (Data-API)
-    GET
-    Get Market Holders (Data-API)
-    GET
-    Get Holdings Value (Data-API)
-
-Subgraph
-
-    Overview
-
-Resolution
-
-    Resolution
-
-Rewards
-
-    Liquidity Rewards
-
-Conditional Token Frameworks
-
-    Overview
-    Splitting USDC
-    Merging Tokens
-    Reedeeming Tokens
-    Deployment and Additional Information
-
-Proxy Wallets
-
-    Proxy wallet
-
-Negative Risk
-
-    Overview
 
 Developer Quickstart
 Endpoints
@@ -151,136 +30,15 @@ github
 Powered by Mintlify
 On this page
 
-    REST
-    Data-API
-    WebSocket
+	REST
+	Data-API
+	WebSocket
 
 Endpoints - Polymarket Documentation
 ```
 
 
 ```
-Polymarket Documentation home pagedark logo
-
-    Main Site
-
-User Guide
-For Developers
-Changelog
-Polymarket
-Discord Community
-Twitter
-Developer Quickstart
-
-    Developer Quickstart
-    Glossary
-    API Rate Limits
-    Endpoints
-    Your First Order
-    Cancelling Orders
-
-Central Limit Order Book
-
-    CLOB Introduction
-    Deployments
-    Status
-    Clients
-    Authentication
-
-Order Manipulation
-
-    Orders Overview
-    Place Single Order
-    Place Multiple Orders (Batching)
-    Get Order
-    Get Active Orders
-    Check Order Reward Scoring
-    Cancel Orders(s)
-    Onchain Order Info
-
-Trades
-
-    Trades Overview
-    Get Trades
-    GET
-    Get Trades (Data-API)
-
-Markets
-
-    Get Single Market
-    Get Markets
-    Get Sampling Markets
-    Get Simplified Markets
-    Get Sampling Simplified Markets
-
-Pricing and Books
-
-    GET
-    Historical Timeseries Data
-    GET
-    Get Book
-    Get Books
-    GET
-    Get Price
-    Get Price(s)
-    Get Midpoint(s)
-    Get Spread(s)
-
-Websocket
-
-    WSS Overview
-    WSS Quickstart
-    WSS Authentication
-    User Channel
-    Market Channel
-
-Gamma Markets API
-
-    Overview
-    Gamma Structure
-    GET
-    Get Markets
-    GET
-    Get Events
-
-Miscellaneous Endpoints
-
-    GET
-    Get User Positions (Data-API)
-    GET
-    Get User On-Chain Activity (Data-API)
-    GET
-    Get Market Holders (Data-API)
-    GET
-    Get Holdings Value (Data-API)
-
-Subgraph
-
-    Overview
-
-Resolution
-
-    Resolution
-
-Rewards
-
-    Liquidity Rewards
-
-Conditional Token Frameworks
-
-    Overview
-    Splitting USDC
-    Merging Tokens
-    Reedeeming Tokens
-    Deployment and Additional Information
-
-Proxy Wallets
-
-    Proxy wallet
-
-Negative Risk
-
-    Overview
 
 Developer Quickstart
 Your First Order
@@ -314,36 +72,36 @@ const creds = new ClobClient(host, 137, signer).createOrDeriveApiKey();
 //1: Magic/Email Login
 const signatureType = 1; 
   (async () => {
-    const clobClient = new ClobClient(host, 137, signer, await creds, signatureType, funder);
-    const resp2 = await clobClient.createAndPostOrder(
-        {
-            tokenID: "", //Use https://docs.polymarket.com/developers/gamma-markets-api/get-markets to grab a sample token
-            price: 0.01,
-            side: Side.BUY,
-            size: 5,
-            feeRateBps: 0,
-        },
-        { tickSize: "0.001",negRisk: false }, //You'll need to adjust these based on the market. Get the tickSize and negRisk T/F from the get-markets above
-        //{ tickSize: "0.001",negRisk: true },
+	const clobClient = new ClobClient(host, 137, signer, await creds, signatureType, funder);
+	const resp2 = await clobClient.createAndPostOrder(
+		{
+			tokenID: "", //Use https://docs.polymarket.com/developers/gamma-markets-api/get-markets to grab a sample token
+			price: 0.01,
+			side: Side.BUY,
+			size: 5,
+			feeRateBps: 0,
+		},
+		{ tickSize: "0.001",negRisk: false }, //You'll need to adjust these based on the market. Get the tickSize and negRisk T/F from the get-markets above
+		//{ tickSize: "0.001",negRisk: true },
 
-        OrderType.GTC, 
-    );
-    console.log(resp2)
+		OrderType.GTC, 
+	);
+	console.log(resp2)
   })();
 
 ​
 In addition to detailed comments in the code snippet, here are some more tips to help you get started.
 
-    See the Python example for details on the proper way to intialize a Py-Clob-Client depending on your wallet type. Three exhaustive examples are given. If using a MetaMask wallet or EOA please see the resources here, for instructions on setting allowances.
-    When buying into a market you purchase a “Token” that token represents either a Yes or No outcome of the event. To easily get required token pairs for a given event we have provided an interactive endpoint here.
-    Common pitfalls:
-        Negrisk Markets require an additional flag in the OrderArgs negrisk=False
-        invalid signature error, likely due to one of the following.
-            Incorrect Funder and or Private Key
-            Incorrect NegRisk flag in your order arguments
-        not enough balance / allowance.
-            Not enough USDC to perform the trade. See the formula at the bottom of this page for details.
-            If using Metamask / WEB3 wallet go here, for instructions on setting allowances.
+	See the Python example for details on the proper way to intialize a Py-Clob-Client depending on your wallet type. Three exhaustive examples are given. If using a MetaMask wallet or EOA please see the resources here, for instructions on setting allowances.
+	When buying into a market you purchase a “Token” that token represents either a Yes or No outcome of the event. To easily get required token pairs for a given event we have provided an interactive endpoint here.
+	Common pitfalls:
+		Negrisk Markets require an additional flag in the OrderArgs negrisk=False
+		invalid signature error, likely due to one of the following.
+			Incorrect Funder and or Private Key
+			Incorrect NegRisk flag in your order arguments
+		not enough balance / allowance.
+			Not enough USDC to perform the trade. See the formula at the bottom of this page for details.
+			If using Metamask / WEB3 wallet go here, for instructions on setting allowances.
 
 Endpoints
 Cancelling Orders
@@ -351,133 +109,12 @@ github
 Powered by Mintlify
 On this page
 
-    In addition to detailed comments in the code snippet, here are some more tips to help you get started.
+	In addition to detailed comments in the code snippet, here are some more tips to help you get started.
 
 Your First Order - Polymarket Documentation
 ```
 
 ```
-Polymarket Documentation home pagedark logo
-
-    Main Site
-
-User Guide
-For Developers
-Changelog
-Polymarket
-Discord Community
-Twitter
-Developer Quickstart
-
-    Developer Quickstart
-    Glossary
-    API Rate Limits
-    Endpoints
-    Your First Order
-    Cancelling Orders
-
-Central Limit Order Book
-
-    CLOB Introduction
-    Deployments
-    Status
-    Clients
-    Authentication
-
-Order Manipulation
-
-    Orders Overview
-    Place Single Order
-    Place Multiple Orders (Batching)
-    Get Order
-    Get Active Orders
-    Check Order Reward Scoring
-    Cancel Orders(s)
-    Onchain Order Info
-
-Trades
-
-    Trades Overview
-    Get Trades
-    GET
-    Get Trades (Data-API)
-
-Markets
-
-    Get Single Market
-    Get Markets
-    Get Sampling Markets
-    Get Simplified Markets
-    Get Sampling Simplified Markets
-
-Pricing and Books
-
-    GET
-    Historical Timeseries Data
-    GET
-    Get Book
-    Get Books
-    GET
-    Get Price
-    Get Price(s)
-    Get Midpoint(s)
-    Get Spread(s)
-
-Websocket
-
-    WSS Overview
-    WSS Quickstart
-    WSS Authentication
-    User Channel
-    Market Channel
-
-Gamma Markets API
-
-    Overview
-    Gamma Structure
-    GET
-    Get Markets
-    GET
-    Get Events
-
-Miscellaneous Endpoints
-
-    GET
-    Get User Positions (Data-API)
-    GET
-    Get User On-Chain Activity (Data-API)
-    GET
-    Get Market Holders (Data-API)
-    GET
-    Get Holdings Value (Data-API)
-
-Subgraph
-
-    Overview
-
-Resolution
-
-    Resolution
-
-Rewards
-
-    Liquidity Rewards
-
-Conditional Token Frameworks
-
-    Overview
-    Splitting USDC
-    Merging Tokens
-    Reedeeming Tokens
-    Deployment and Additional Information
-
-Proxy Wallets
-
-    Proxy wallet
-
-Negative Risk
-
-    Overview
 
 Developer Quickstart
 Cancelling Orders
@@ -505,8 +142,8 @@ Ask AI
 async function main() {
   // Send it to the server
   const resp = await clobClient.cancelOrder({
-    orderID:
-      "0x38a73eed1e6d177545e9ab027abddfb7e08dbe975fa777123b1752d203d6ac88",
+	orderID:
+	  "0x38a73eed1e6d177545e9ab027abddfb7e08dbe975fa777123b1752d203d6ac88",
   });
   console.log(resp);
   console.log(`Done!`);
@@ -535,8 +172,8 @@ Ask AI
 async function main() {
   // Send it to the server
   const resp = await clobClient.cancelOrders([
-    "0x38a73eed1e6d177545e9ab027abddfb7e08dbe975fa777123b1752d203d6ac88",
-    "0xaaaa...",
+	"0x38a73eed1e6d177545e9ab027abddfb7e08dbe975fa777123b1752d203d6ac88",
+	"0xaaaa...",
   ]);
   console.log(resp);
   console.log(`Done!`);
@@ -593,10 +230,10 @@ Ask AI
 async function main() {
   // Send it to the server
   const resp = await clobClient.cancelMarketOrders({
-    market:
-      "0xbd31dc8a20211944f6b70f31557f1001557b59905b7738480ca09bd4532f84af",
-    asset_id:
-      "52114319501245915516055106046884209969926127482827954674443846427813813222426",
+	market:
+	  "0xbd31dc8a20211944f6b70f31557f1001557b59905b7738480ca09bd4532f84af",
+	asset_id:
+	  "52114319501245915516055106046884209969926127482827954674443846427813813222426",
   });
   console.log(resp);
   console.log(`Done!`);
@@ -609,144 +246,23 @@ github
 Powered by Mintlify
 On this page
 
-    Cancel an single Order
-    Request Payload Parameters
-    Response Format
-    Cancel Multiple Orders
-    Request Payload Parameters
-    Response Format
-    Cancel ALL Orders
-    Response Format
-    Cancel orders from market
-    Request Payload Parameters
-    Response Format
+	Cancel an single Order
+	Request Payload Parameters
+	Response Format
+	Cancel Multiple Orders
+	Request Payload Parameters
+	Response Format
+	Cancel ALL Orders
+	Response Format
+	Cancel orders from market
+	Request Payload Parameters
+	Response Format
 
 Cancelling Orders - Polymarket Documentation
 ```
 
 
 ```
-Polymarket Documentation home pagedark logo
-
-    Main Site
-
-User Guide
-For Developers
-Changelog
-Polymarket
-Discord Community
-Twitter
-Developer Quickstart
-
-    Developer Quickstart
-    Glossary
-    API Rate Limits
-    Endpoints
-    Your First Order
-    Cancelling Orders
-
-Central Limit Order Book
-
-    CLOB Introduction
-    Deployments
-    Status
-    Clients
-    Authentication
-
-Order Manipulation
-
-    Orders Overview
-    Place Single Order
-    Place Multiple Orders (Batching)
-    Get Order
-    Get Active Orders
-    Check Order Reward Scoring
-    Cancel Orders(s)
-    Onchain Order Info
-
-Trades
-
-    Trades Overview
-    Get Trades
-    GET
-    Get Trades (Data-API)
-
-Markets
-
-    Get Single Market
-    Get Markets
-    Get Sampling Markets
-    Get Simplified Markets
-    Get Sampling Simplified Markets
-
-Pricing and Books
-
-    GET
-    Historical Timeseries Data
-    GET
-    Get Book
-    Get Books
-    GET
-    Get Price
-    Get Price(s)
-    Get Midpoint(s)
-    Get Spread(s)
-
-Websocket
-
-    WSS Overview
-    WSS Quickstart
-    WSS Authentication
-    User Channel
-    Market Channel
-
-Gamma Markets API
-
-    Overview
-    Gamma Structure
-    GET
-    Get Markets
-    GET
-    Get Events
-
-Miscellaneous Endpoints
-
-    GET
-    Get User Positions (Data-API)
-    GET
-    Get User On-Chain Activity (Data-API)
-    GET
-    Get Market Holders (Data-API)
-    GET
-    Get Holdings Value (Data-API)
-
-Subgraph
-
-    Overview
-
-Resolution
-
-    Resolution
-
-Rewards
-
-    Liquidity Rewards
-
-Conditional Token Frameworks
-
-    Overview
-    Splitting USDC
-    Merging Tokens
-    Reedeeming Tokens
-    Deployment and Additional Information
-
-Proxy Wallets
-
-    Proxy wallet
-
-Negative Risk
-
-    Overview
 
 Central Limit Order Book
 CLOB Introduction
@@ -775,7 +291,7 @@ Fees
 ​
 Schedule
 
-    Subject to change
+	Subject to change
 
 Volume Level	Maker Fee Base Rate (bps)	Taker Fee Base Rate (bps)
 >0 USDC	0	0
@@ -784,20 +300,20 @@ Overview
 
 Fees apply symmetrically in output assets (proceeds). This symmetry ensures fairness and market integrity. Fees are calculated differently depending on whether you are buying or selling:
 
-    Selling outcome tokens (base) for collateral (quote):
+	Selling outcome tokens (base) for collateral (quote):
 
 feeQuote=baseRate×min⁡(price,1−price)×size
 feeQuote=baseRate×min(price,1−price)×size
 
-    Buying outcome tokens (base) with collateral (quote):
+	Buying outcome tokens (base) with collateral (quote):
 
 feeBase=baseRate×min⁡(price,1−price)×sizeprice
 feeBase=baseRate×min(price,1−price)×pricesize​
 ​
 Additional Resources
 
-    Exchange contract source code
-    Exchange contract documentation
+	Exchange contract source code
+	Exchange contract documentation
 
 Cancelling Orders
 Deployments
@@ -805,13 +321,13 @@ github
 Powered by Mintlify
 On this page
 
-    System
-    API
-    Security
-    Fees
-    Schedule
-    Overview
-    Additional Resources
+	System
+	API
+	Security
+	Fees
+	Schedule
+	Overview
+	Additional Resources
 
 CLOB Introduction - Polymarket Documentation
 ```
@@ -819,127 +335,6 @@ CLOB Introduction - Polymarket Documentation
 
 
 ```
-Polymarket Documentation home pagedark logo
-
-    Main Site
-
-User Guide
-For Developers
-Changelog
-Polymarket
-Discord Community
-Twitter
-Developer Quickstart
-
-    Developer Quickstart
-    Glossary
-    API Rate Limits
-    Endpoints
-    Your First Order
-    Cancelling Orders
-
-Central Limit Order Book
-
-    CLOB Introduction
-    Deployments
-    Status
-    Clients
-    Authentication
-
-Order Manipulation
-
-    Orders Overview
-    Place Single Order
-    Place Multiple Orders (Batching)
-    Get Order
-    Get Active Orders
-    Check Order Reward Scoring
-    Cancel Orders(s)
-    Onchain Order Info
-
-Trades
-
-    Trades Overview
-    Get Trades
-    GET
-    Get Trades (Data-API)
-
-Markets
-
-    Get Single Market
-    Get Markets
-    Get Sampling Markets
-    Get Simplified Markets
-    Get Sampling Simplified Markets
-
-Pricing and Books
-
-    GET
-    Historical Timeseries Data
-    GET
-    Get Book
-    Get Books
-    GET
-    Get Price
-    Get Price(s)
-    Get Midpoint(s)
-    Get Spread(s)
-
-Websocket
-
-    WSS Overview
-    WSS Quickstart
-    WSS Authentication
-    User Channel
-    Market Channel
-
-Gamma Markets API
-
-    Overview
-    Gamma Structure
-    GET
-    Get Markets
-    GET
-    Get Events
-
-Miscellaneous Endpoints
-
-    GET
-    Get User Positions (Data-API)
-    GET
-    Get User On-Chain Activity (Data-API)
-    GET
-    Get Market Holders (Data-API)
-    GET
-    Get Holdings Value (Data-API)
-
-Subgraph
-
-    Overview
-
-Resolution
-
-    Resolution
-
-Rewards
-
-    Liquidity Rewards
-
-Conditional Token Frameworks
-
-    Overview
-    Splitting USDC
-    Merging Tokens
-    Reedeeming Tokens
-    Deployment and Additional Information
-
-Proxy Wallets
-
-    Proxy wallet
-
-Negative Risk
-
-    Overview
 
 Central Limit Order Book
 Deployments
@@ -958,127 +353,6 @@ Deployments - Polymarket Documentation
 
 
 ```
-Polymarket Documentation home pagedark logo
-
-    Main Site
-
-User Guide
-For Developers
-Changelog
-Polymarket
-Discord Community
-Twitter
-Developer Quickstart
-
-    Developer Quickstart
-    Glossary
-    API Rate Limits
-    Endpoints
-    Your First Order
-    Cancelling Orders
-
-Central Limit Order Book
-
-    CLOB Introduction
-    Deployments
-    Status
-    Clients
-    Authentication
-
-Order Manipulation
-
-    Orders Overview
-    Place Single Order
-    Place Multiple Orders (Batching)
-    Get Order
-    Get Active Orders
-    Check Order Reward Scoring
-    Cancel Orders(s)
-    Onchain Order Info
-
-Trades
-
-    Trades Overview
-    Get Trades
-    GET
-    Get Trades (Data-API)
-
-Markets
-
-    Get Single Market
-    Get Markets
-    Get Sampling Markets
-    Get Simplified Markets
-    Get Sampling Simplified Markets
-
-Pricing and Books
-
-    GET
-    Historical Timeseries Data
-    GET
-    Get Book
-    Get Books
-    GET
-    Get Price
-    Get Price(s)
-    Get Midpoint(s)
-    Get Spread(s)
-
-Websocket
-
-    WSS Overview
-    WSS Quickstart
-    WSS Authentication
-    User Channel
-    Market Channel
-
-Gamma Markets API
-
-    Overview
-    Gamma Structure
-    GET
-    Get Markets
-    GET
-    Get Events
-
-Miscellaneous Endpoints
-
-    GET
-    Get User Positions (Data-API)
-    GET
-    Get User On-Chain Activity (Data-API)
-    GET
-    Get Market Holders (Data-API)
-    GET
-    Get Holdings Value (Data-API)
-
-Subgraph
-
-    Overview
-
-Resolution
-
-    Resolution
-
-Rewards
-
-    Liquidity Rewards
-
-Conditional Token Frameworks
-
-    Overview
-    Splitting USDC
-    Merging Tokens
-    Reedeeming Tokens
-    Deployment and Additional Information
-
-Proxy Wallets
-
-    Proxy wallet
-
-Negative Risk
-
-    Overview
 
 Central Limit Order Book
 Status
@@ -1101,135 +375,14 @@ Status - Polymarket Documentation
 
 
 ```
-Polymarket Documentation home pagedark logo
-
-    Main Site
-
-User Guide
-For Developers
-Changelog
-Polymarket
-Discord Community
-Twitter
-Developer Quickstart
-
-    Developer Quickstart
-    Glossary
-    API Rate Limits
-    Endpoints
-    Your First Order
-    Cancelling Orders
-
-Central Limit Order Book
-
-    CLOB Introduction
-    Deployments
-    Status
-    Clients
-    Authentication
-
-Order Manipulation
-
-    Orders Overview
-    Place Single Order
-    Place Multiple Orders (Batching)
-    Get Order
-    Get Active Orders
-    Check Order Reward Scoring
-    Cancel Orders(s)
-    Onchain Order Info
-
-Trades
-
-    Trades Overview
-    Get Trades
-    GET
-    Get Trades (Data-API)
-
-Markets
-
-    Get Single Market
-    Get Markets
-    Get Sampling Markets
-    Get Simplified Markets
-    Get Sampling Simplified Markets
-
-Pricing and Books
-
-    GET
-    Historical Timeseries Data
-    GET
-    Get Book
-    Get Books
-    GET
-    Get Price
-    Get Price(s)
-    Get Midpoint(s)
-    Get Spread(s)
-
-Websocket
-
-    WSS Overview
-    WSS Quickstart
-    WSS Authentication
-    User Channel
-    Market Channel
-
-Gamma Markets API
-
-    Overview
-    Gamma Structure
-    GET
-    Get Markets
-    GET
-    Get Events
-
-Miscellaneous Endpoints
-
-    GET
-    Get User Positions (Data-API)
-    GET
-    Get User On-Chain Activity (Data-API)
-    GET
-    Get Market Holders (Data-API)
-    GET
-    Get Holdings Value (Data-API)
-
-Subgraph
-
-    Overview
-
-Resolution
-
-    Resolution
-
-Rewards
-
-    Liquidity Rewards
-
-Conditional Token Frameworks
-
-    Overview
-    Splitting USDC
-    Merging Tokens
-    Reedeeming Tokens
-    Deployment and Additional Information
-
-Proxy Wallets
-
-    Proxy wallet
-
-Negative Risk
-
-    Overview
 
 Central Limit Order Book
 Clients
 
 Polymarket has implemented reference clients that allow programmatic use of the API below:
 
-    clob-client (Typescript)
-    py-clob-client (Python)
+	clob-client (Typescript)
+	py-clob-client (Python)
 
 Copy
 Ask AI
@@ -1253,7 +406,7 @@ const creds = new ClobClient(host, 137, signer).createOrDeriveApiKey();
 const signatureType = 1; 
   
 (async () => {
-    const clobClient = new ClobClient(host, 137, signer, await creds, signatureType, funder);
+	const clobClient = new ClobClient(host, 137, signer, await creds, signatureType, funder);
 })
 
 
@@ -1262,9 +415,9 @@ Order Utils
 
 Polymarket has implemented utility libraries to programmatically sign and generate orders:
 
-    clob-order-utils (Typescript)
-    python-order-utils (Python)
-    go-order-utils (Golang)
+	clob-order-utils (Typescript)
+	python-order-utils (Python)
+	go-order-utils (Golang)
 
 Status
 Authentication
@@ -1272,7 +425,7 @@ github
 Powered by Mintlify
 On this page
 
-    Order Utils
+	Order Utils
 
 Clients - Polymarket Documentation
 ```
@@ -1281,127 +434,6 @@ Clients - Polymarket Documentation
 
 
 ```
-Polymarket Documentation home pagedark logo
-
-    Main Site
-
-User Guide
-For Developers
-Changelog
-Polymarket
-Discord Community
-Twitter
-Developer Quickstart
-
-    Developer Quickstart
-    Glossary
-    API Rate Limits
-    Endpoints
-    Your First Order
-    Cancelling Orders
-
-Central Limit Order Book
-
-    CLOB Introduction
-    Deployments
-    Status
-    Clients
-    Authentication
-
-Order Manipulation
-
-    Orders Overview
-    Place Single Order
-    Place Multiple Orders (Batching)
-    Get Order
-    Get Active Orders
-    Check Order Reward Scoring
-    Cancel Orders(s)
-    Onchain Order Info
-
-Trades
-
-    Trades Overview
-    Get Trades
-    GET
-    Get Trades (Data-API)
-
-Markets
-
-    Get Single Market
-    Get Markets
-    Get Sampling Markets
-    Get Simplified Markets
-    Get Sampling Simplified Markets
-
-Pricing and Books
-
-    GET
-    Historical Timeseries Data
-    GET
-    Get Book
-    Get Books
-    GET
-    Get Price
-    Get Price(s)
-    Get Midpoint(s)
-    Get Spread(s)
-
-Websocket
-
-    WSS Overview
-    WSS Quickstart
-    WSS Authentication
-    User Channel
-    Market Channel
-
-Gamma Markets API
-
-    Overview
-    Gamma Structure
-    GET
-    Get Markets
-    GET
-    Get Events
-
-Miscellaneous Endpoints
-
-    GET
-    Get User Positions (Data-API)
-    GET
-    Get User On-Chain Activity (Data-API)
-    GET
-    Get Market Holders (Data-API)
-    GET
-    Get Holdings Value (Data-API)
-
-Subgraph
-
-    Overview
-
-Resolution
-
-    Resolution
-
-Rewards
-
-    Liquidity Rewards
-
-Conditional Token Frameworks
-
-    Overview
-    Splitting USDC
-    Merging Tokens
-    Reedeeming Tokens
-    Deployment and Additional Information
-
-Proxy Wallets
-
-    Proxy wallet
-
-Negative Risk
-
-    Overview
 
 Central Limit Order Book
 Authentication
@@ -1417,8 +449,8 @@ The operator never has control over users’ funds.
 
 Private key authentication is required for:
 
-    Placing an order (for signing the order)
-    Creating or revoking API keys
+	Placing an order (for signing the order)
+	Creating or revoking API keys
 
 ​
 L1 Header
@@ -1432,8 +464,8 @@ The POLY_SIGNATURE is generated by signing the following EIP-712 struct.
 
 Implementations exist in:
 
-    Typescript
-    Python
+	Typescript
+	Python
 
 ​
 Signing Example
@@ -1441,25 +473,25 @@ Copy
 Ask AI
 
 const domain = {
-    name: "ClobAuthDomain",
-    version: "1",
-    chainId: chainId, // Polygon Chain ID 137
+	name: "ClobAuthDomain",
+	version: "1",
+	chainId: chainId, // Polygon Chain ID 137
 };
 
 const types = {
-    ClobAuth: [
-        { name: "address", type: "address" },
-        { name: "timestamp", type: "string" },
-        { name: "nonce", type: "uint256" },
-        { name: "message", type: "string" },
-    ],
+	ClobAuth: [
+		{ name: "address", type: "address" },
+		{ name: "timestamp", type: "string" },
+		{ name: "nonce", type: "uint256" },
+		{ name: "message", type: "string" },
+	],
 };
 
 const value = {
-    address: signingAddress, // The Signing address
-    timestamp: ts,            // The CLOB API server timestamp
-    nonce: nonce,             // The nonce used
-    message: "This message attests that I control the given wallet", // Static message
+	address: signingAddress, // The Signing address
+	timestamp: ts,            // The CLOB API server timestamp
+	nonce: nonce,             // The nonce used
+	message: "This message attests that I control the given wallet", // Static message
 };
 
 const sig = await signer._signTypedData(domain, types, value);
@@ -1479,9 +511,9 @@ POST /auth/api-key
 the server uses the signature as a seed to deterministically generate credentials.
 An API credential includes:
 
-    key: UUID identifying the credentials
-    secret: Secret string used to generate HMACs (not sent with requests)
-    passphrase: Secret string sent with each request, used to encrypt/decrypt the secret (never stored)
+	key: UUID identifying the credentials
+	secret: Secret string used to generate HMACs (not sent with requests)
+	passphrase: Secret string sent with each request, used to encrypt/decrypt the secret (never stored)
 
 All private endpoints require an API key signature (L2 Header).
 ​
@@ -1571,18 +603,18 @@ github
 Powered by Mintlify
 On this page
 
-    L1: Private Key Authentication
-    L1 Header
-    Signing Example
-    L2: API Key Authentication
-    L2 Header
-    API Key Operations
-    Create API Key
-    Derive API Key
-    Get API Keys
-    Delete API Key
-    Access Status
-    Get Closed Only Mode Status
+	L1: Private Key Authentication
+	L1 Header
+	Signing Example
+	L2: API Key Authentication
+	L2 Header
+	API Key Operations
+	Create API Key
+	Derive API Key
+	Get API Keys
+	Delete API Key
+	Access Status
+	Get Closed Only Mode Status
 
 Authentication - Polymarket Documentation
 ```
@@ -1592,127 +624,6 @@ Authentication - Polymarket Documentation
 
 
 ```
-Polymarket Documentation home pagedark logo
-
-    Main Site
-
-User Guide
-For Developers
-Changelog
-Polymarket
-Discord Community
-Twitter
-Developer Quickstart
-
-    Developer Quickstart
-    Glossary
-    API Rate Limits
-    Endpoints
-    Your First Order
-    Cancelling Orders
-
-Central Limit Order Book
-
-    CLOB Introduction
-    Deployments
-    Status
-    Clients
-    Authentication
-
-Order Manipulation
-
-    Orders Overview
-    Place Single Order
-    Place Multiple Orders (Batching)
-    Get Order
-    Get Active Orders
-    Check Order Reward Scoring
-    Cancel Orders(s)
-    Onchain Order Info
-
-Trades
-
-    Trades Overview
-    Get Trades
-    GET
-    Get Trades (Data-API)
-
-Markets
-
-    Get Single Market
-    Get Markets
-    Get Sampling Markets
-    Get Simplified Markets
-    Get Sampling Simplified Markets
-
-Pricing and Books
-
-    GET
-    Historical Timeseries Data
-    GET
-    Get Book
-    Get Books
-    GET
-    Get Price
-    Get Price(s)
-    Get Midpoint(s)
-    Get Spread(s)
-
-Websocket
-
-    WSS Overview
-    WSS Quickstart
-    WSS Authentication
-    User Channel
-    Market Channel
-
-Gamma Markets API
-
-    Overview
-    Gamma Structure
-    GET
-    Get Markets
-    GET
-    Get Events
-
-Miscellaneous Endpoints
-
-    GET
-    Get User Positions (Data-API)
-    GET
-    Get User On-Chain Activity (Data-API)
-    GET
-    Get Market Holders (Data-API)
-    GET
-    Get Holdings Value (Data-API)
-
-Subgraph
-
-    Overview
-
-Resolution
-
-    Resolution
-
-Rewards
-
-    Liquidity Rewards
-
-Conditional Token Frameworks
-
-    Overview
-    Splitting USDC
-    Merging Tokens
-    Reedeeming Tokens
-    Deployment and Additional Information
-
-Proxy Wallets
-
-    Proxy wallet
-
-Negative Risk
-
-    Overview
 
 Order Manipulation
 Orders Overview
@@ -1746,9 +657,9 @@ github
 Powered by Mintlify
 On this page
 
-    Allowances
-    Signature Types
-    Validity Checks
+	Allowances
+	Signature Types
+	Validity Checks
 
 Orders Overview - Polymarket Documentation
 ```
@@ -1757,127 +668,6 @@ Orders Overview - Polymarket Documentation
 
 
 ```
-Polymarket Documentation home pagedark logo
-
-    Main Site
-
-User Guide
-For Developers
-Changelog
-Polymarket
-Discord Community
-Twitter
-Developer Quickstart
-
-    Developer Quickstart
-    Glossary
-    API Rate Limits
-    Endpoints
-    Your First Order
-    Cancelling Orders
-
-Central Limit Order Book
-
-    CLOB Introduction
-    Deployments
-    Status
-    Clients
-    Authentication
-
-Order Manipulation
-
-    Orders Overview
-    Place Single Order
-    Place Multiple Orders (Batching)
-    Get Order
-    Get Active Orders
-    Check Order Reward Scoring
-    Cancel Orders(s)
-    Onchain Order Info
-
-Trades
-
-    Trades Overview
-    Get Trades
-    GET
-    Get Trades (Data-API)
-
-Markets
-
-    Get Single Market
-    Get Markets
-    Get Sampling Markets
-    Get Simplified Markets
-    Get Sampling Simplified Markets
-
-Pricing and Books
-
-    GET
-    Historical Timeseries Data
-    GET
-    Get Book
-    Get Books
-    GET
-    Get Price
-    Get Price(s)
-    Get Midpoint(s)
-    Get Spread(s)
-
-Websocket
-
-    WSS Overview
-    WSS Quickstart
-    WSS Authentication
-    User Channel
-    Market Channel
-
-Gamma Markets API
-
-    Overview
-    Gamma Structure
-    GET
-    Get Markets
-    GET
-    Get Events
-
-Miscellaneous Endpoints
-
-    GET
-    Get User Positions (Data-API)
-    GET
-    Get User On-Chain Activity (Data-API)
-    GET
-    Get Market Holders (Data-API)
-    GET
-    Get Holdings Value (Data-API)
-
-Subgraph
-
-    Overview
-
-Resolution
-
-    Resolution
-
-Rewards
-
-    Liquidity Rewards
-
-Conditional Token Frameworks
-
-    Overview
-    Splitting USDC
-    Merging Tokens
-    Reedeeming Tokens
-    Deployment and Additional Information
-
-Proxy Wallets
-
-    Proxy wallet
-
-Negative Risk
-
-    Overview
 
 Order Manipulation
 Place Single Order
@@ -1917,10 +707,10 @@ signature	yes	string	hex encoded signature
 ​
 Order types
 
-    FOK: A Fill-Or-Kill order is an market order to buy (in dollars) or sell (in shares) shares that must be executed immediately in its entirety; otherwise, the entire order will be cancelled.
-    FAK: A Fill-And-Kill order is a market order to buy (in dollars) or sell (in shares) that will be executed immediately for as many shares as are available; any portion not filled at once is cancelled.
-    GTC: A Good-Til-Cancelled order is a limit order that is active until it is fulfilled or cancelled.
-    GTD: A Good-Til-Date order is a type of order that is active until its specified date (UTC seconds timestamp), unless it has already been fulfilled or cancelled. There is a security threshold of one minute. If the order needs to expire in 30 seconds the correct expiration value is: now * 1 mute + 30 seconds
+	FOK: A Fill-Or-Kill order is an market order to buy (in dollars) or sell (in shares) shares that must be executed immediately in its entirety; otherwise, the entire order will be cancelled.
+	FAK: A Fill-And-Kill order is a market order to buy (in dollars) or sell (in shares) that will be executed immediately for as many shares as are available; any portion not filled at once is cancelled.
+	GTC: A Good-Til-Cancelled order is a limit order that is active until it is fulfilled or cancelled.
+	GTD: A Good-Til-Date order is a type of order that is active until its specified date (UTC seconds timestamp), unless it has already been fulfilled or cancelled. There is a security threshold of one minute. If the order needs to expire in 30 seconds the correct expiration value is: now * 1 mute + 30 seconds
 
 ​
 Response Format
@@ -1992,10 +782,10 @@ client = ClobClient(host, key=key, chain_id=chain_id)
 client.set_api_creds(client.create_or_derive_api_creds()) 
 
 order_args = OrderArgs(
-    price=0.01,
-    size=5.0,
-    side=BUY,
-    token_id="", #Token ID you want to purchase goes here. 
+	price=0.01,
+	size=5.0,
+	side=BUY,
+	token_id="", #Token ID you want to purchase goes here. 
 )
 signed_order = client.create_order(order_args)
 
@@ -2011,127 +801,6 @@ Place Single Order - Polymarket Documentation
 
 
 ```
-Polymarket Documentation home pagedark logo
-
-    Main Site
-
-User Guide
-For Developers
-Changelog
-Polymarket
-Discord Community
-Twitter
-Developer Quickstart
-
-    Developer Quickstart
-    Glossary
-    API Rate Limits
-    Endpoints
-    Your First Order
-    Cancelling Orders
-
-Central Limit Order Book
-
-    CLOB Introduction
-    Deployments
-    Status
-    Clients
-    Authentication
-
-Order Manipulation
-
-    Orders Overview
-    Place Single Order
-    Place Multiple Orders (Batching)
-    Get Order
-    Get Active Orders
-    Check Order Reward Scoring
-    Cancel Orders(s)
-    Onchain Order Info
-
-Trades
-
-    Trades Overview
-    Get Trades
-    GET
-    Get Trades (Data-API)
-
-Markets
-
-    Get Single Market
-    Get Markets
-    Get Sampling Markets
-    Get Simplified Markets
-    Get Sampling Simplified Markets
-
-Pricing and Books
-
-    GET
-    Historical Timeseries Data
-    GET
-    Get Book
-    Get Books
-    GET
-    Get Price
-    Get Price(s)
-    Get Midpoint(s)
-    Get Spread(s)
-
-Websocket
-
-    WSS Overview
-    WSS Quickstart
-    WSS Authentication
-    User Channel
-    Market Channel
-
-Gamma Markets API
-
-    Overview
-    Gamma Structure
-    GET
-    Get Markets
-    GET
-    Get Events
-
-Miscellaneous Endpoints
-
-    GET
-    Get User Positions (Data-API)
-    GET
-    Get User On-Chain Activity (Data-API)
-    GET
-    Get Market Holders (Data-API)
-    GET
-    Get Holdings Value (Data-API)
-
-Subgraph
-
-    Overview
-
-Resolution
-
-    Resolution
-
-Rewards
-
-    Liquidity Rewards
-
-Conditional Token Frameworks
-
-    Overview
-    Splitting USDC
-    Merging Tokens
-    Reedeeming Tokens
-    Deployment and Additional Information
-
-Proxy Wallets
-
-    Proxy wallet
-
-Negative Risk
-
-    Overview
 
 Order Manipulation
 Place Multiple Orders (Batching)
@@ -2173,10 +842,10 @@ signature	yes	string	hex encoded signature
 ​
 Order types
 
-    FOK: A Fill-Or-Kill order is an market order to buy (in dollars) or sell (in shares) shares that must be executed immediately in its entirety; otherwise, the entire order will be cancelled.
-    FAK: A Fill-And-Kill order is a market order to buy (in dollars) or sell (in shares) that will be executed immediately for as many shares as are available; any portion not filled at once is cancelled.
-    GTC: A Good-Til-Cancelled order is a limit order that is active until it is fulfilled or cancelled.
-    GTD: A Good-Til-Date order is a type of order that is active until its specified date (UTC seconds timestamp), unless it has already been fulfilled or cancelled. There is a security threshold of one minute. If the order needs to expire in 30 seconds the correct expiration value is: now * 1 mute + 30 seconds
+	FOK: A Fill-Or-Kill order is an market order to buy (in dollars) or sell (in shares) shares that must be executed immediately in its entirety; otherwise, the entire order will be cancelled.
+	FAK: A Fill-And-Kill order is a market order to buy (in dollars) or sell (in shares) that will be executed immediately for as many shares as are available; any portion not filled at once is cancelled.
+	GTC: A Good-Til-Cancelled order is a limit order that is active until it is fulfilled or cancelled.
+	GTD: A Good-Til-Date order is a type of order that is active until its specified date (UTC seconds timestamp), unless it has already been fulfilled or cancelled. There is a security threshold of one minute. If the order needs to expire in 30 seconds the correct expiration value is: now * 1 mute + 30 seconds
 
 ​
 Response Format
@@ -2249,26 +918,26 @@ client = ClobClient(host, key=key, chain_id=chain_id)
 client.set_api_creds(client.create_or_derive_api_creds()) 
 
 resp = client.post_orders([
-    PostOrdersArgs(
-        # Create and sign a limit order buying 100 YES tokens for 0.50 each
-        order=client.create_order(OrderArgs(
-            price=0.01,
-            size=5,
-            side=BUY,
-            token_id="88613172803544318200496156596909968959424174365708473463931555296257475886634",
-        )),
-        orderType=OrderType.GTC,  # Good 'Til Cancelled
-    ),
-    PostOrdersArgs(
-        # Create and sign a limit order selling 200 NO tokens for 0.25 each
-        order=client.create_order(OrderArgs(
-            price=0.01,
-            size=5,
-            side=BUY,
-            token_id="93025177978745967226369398316375153283719303181694312089956059680730874301533",
-        )),
-        orderType=OrderType.GTC,  # Good 'Til Cancelled
-    )
+	PostOrdersArgs(
+		# Create and sign a limit order buying 100 YES tokens for 0.50 each
+		order=client.create_order(OrderArgs(
+			price=0.01,
+			size=5,
+			side=BUY,
+			token_id="88613172803544318200496156596909968959424174365708473463931555296257475886634",
+		)),
+		orderType=OrderType.GTC,  # Good 'Til Cancelled
+	),
+	PostOrdersArgs(
+		# Create and sign a limit order selling 200 NO tokens for 0.25 each
+		order=client.create_order(OrderArgs(
+			price=0.01,
+			size=5,
+			side=BUY,
+			token_id="93025177978745967226369398316375153283719303181694312089956059680730874301533",
+		)),
+		orderType=OrderType.GTC,  # Good 'Til Cancelled
+	)
 ])
 print(resp)
 print("Done!")
@@ -2279,127 +948,6 @@ Place Multiple Orders (Batching) - Polymarket Documentation
 
 
 ```
-Polymarket Documentation home pagedark logo
-
-    Main Site
-
-User Guide
-For Developers
-Changelog
-Polymarket
-Discord Community
-Twitter
-Developer Quickstart
-
-    Developer Quickstart
-    Glossary
-    API Rate Limits
-    Endpoints
-    Your First Order
-    Cancelling Orders
-
-Central Limit Order Book
-
-    CLOB Introduction
-    Deployments
-    Status
-    Clients
-    Authentication
-
-Order Manipulation
-
-    Orders Overview
-    Place Single Order
-    Place Multiple Orders (Batching)
-    Get Order
-    Get Active Orders
-    Check Order Reward Scoring
-    Cancel Orders(s)
-    Onchain Order Info
-
-Trades
-
-    Trades Overview
-    Get Trades
-    GET
-    Get Trades (Data-API)
-
-Markets
-
-    Get Single Market
-    Get Markets
-    Get Sampling Markets
-    Get Simplified Markets
-    Get Sampling Simplified Markets
-
-Pricing and Books
-
-    GET
-    Historical Timeseries Data
-    GET
-    Get Book
-    Get Books
-    GET
-    Get Price
-    Get Price(s)
-    Get Midpoint(s)
-    Get Spread(s)
-
-Websocket
-
-    WSS Overview
-    WSS Quickstart
-    WSS Authentication
-    User Channel
-    Market Channel
-
-Gamma Markets API
-
-    Overview
-    Gamma Structure
-    GET
-    Get Markets
-    GET
-    Get Events
-
-Miscellaneous Endpoints
-
-    GET
-    Get User Positions (Data-API)
-    GET
-    Get User On-Chain Activity (Data-API)
-    GET
-    Get Market Holders (Data-API)
-    GET
-    Get Holdings Value (Data-API)
-
-Subgraph
-
-    Overview
-
-Resolution
-
-    Resolution
-
-Rewards
-
-    Liquidity Rewards
-
-Conditional Token Frameworks
-
-    Overview
-    Splitting USDC
-    Merging Tokens
-    Reedeeming Tokens
-    Deployment and Additional Information
-
-Proxy Wallets
-
-    Proxy wallet
-
-Negative Risk
-
-    Overview
 
 Order Manipulation
 Get Order
@@ -2447,7 +995,7 @@ Ask AI
 
 async function main() {
   const order = await clobClient.getOrder(
-    "0xb816482a5187a3d3db49cbaf6fe3ddf24f53e6c712b5a4bf5e01d0ec7b11dabc"
+	"0xb816482a5187a3d3db49cbaf6fe3ddf24f53e6c712b5a4bf5e01d0ec7b11dabc"
   );
   console.log(order);
 }
@@ -2461,127 +1009,6 @@ Get Order - Polymarket Documentation
 
 
 ```
-Polymarket Documentation home pagedark logo
-
-    Main Site
-
-User Guide
-For Developers
-Changelog
-Polymarket
-Discord Community
-Twitter
-Developer Quickstart
-
-    Developer Quickstart
-    Glossary
-    API Rate Limits
-    Endpoints
-    Your First Order
-    Cancelling Orders
-
-Central Limit Order Book
-
-    CLOB Introduction
-    Deployments
-    Status
-    Clients
-    Authentication
-
-Order Manipulation
-
-    Orders Overview
-    Place Single Order
-    Place Multiple Orders (Batching)
-    Get Order
-    Get Active Orders
-    Check Order Reward Scoring
-    Cancel Orders(s)
-    Onchain Order Info
-
-Trades
-
-    Trades Overview
-    Get Trades
-    GET
-    Get Trades (Data-API)
-
-Markets
-
-    Get Single Market
-    Get Markets
-    Get Sampling Markets
-    Get Simplified Markets
-    Get Sampling Simplified Markets
-
-Pricing and Books
-
-    GET
-    Historical Timeseries Data
-    GET
-    Get Book
-    Get Books
-    GET
-    Get Price
-    Get Price(s)
-    Get Midpoint(s)
-    Get Spread(s)
-
-Websocket
-
-    WSS Overview
-    WSS Quickstart
-    WSS Authentication
-    User Channel
-    Market Channel
-
-Gamma Markets API
-
-    Overview
-    Gamma Structure
-    GET
-    Get Markets
-    GET
-    Get Events
-
-Miscellaneous Endpoints
-
-    GET
-    Get User Positions (Data-API)
-    GET
-    Get User On-Chain Activity (Data-API)
-    GET
-    Get Market Holders (Data-API)
-    GET
-    Get Holdings Value (Data-API)
-
-Subgraph
-
-    Overview
-
-Resolution
-
-    Resolution
-
-Rewards
-
-    Liquidity Rewards
-
-Conditional Token Frameworks
-
-    Overview
-    Splitting USDC
-    Merging Tokens
-    Reedeeming Tokens
-    Deployment and Additional Information
-
-Proxy Wallets
-
-    Proxy wallet
-
-Negative Risk
-
-    Overview
 
 Order Manipulation
 Get Active Orders
@@ -2611,8 +1038,8 @@ Ask AI
 
 async function main() {
   const resp = await clobClient.getOpenOrders({
-    market:
-      "0xbd31dc8a20211944f6b70f31557f1001557b59905b7738480ca09bd4532f84af",
+	market:
+	  "0xbd31dc8a20211944f6b70f31557f1001557b59905b7738480ca09bd4532f84af",
   });
   console.log(resp);
   console.log(`Done!`);
@@ -2625,127 +1052,6 @@ Get Active Orders - Polymarket Documentation
 
 
 ```
-Polymarket Documentation home pagedark logo
-
-    Main Site
-
-User Guide
-For Developers
-Changelog
-Polymarket
-Discord Community
-Twitter
-Developer Quickstart
-
-    Developer Quickstart
-    Glossary
-    API Rate Limits
-    Endpoints
-    Your First Order
-    Cancelling Orders
-
-Central Limit Order Book
-
-    CLOB Introduction
-    Deployments
-    Status
-    Clients
-    Authentication
-
-Order Manipulation
-
-    Orders Overview
-    Place Single Order
-    Place Multiple Orders (Batching)
-    Get Order
-    Get Active Orders
-    Check Order Reward Scoring
-    Cancel Orders(s)
-    Onchain Order Info
-
-Trades
-
-    Trades Overview
-    Get Trades
-    GET
-    Get Trades (Data-API)
-
-Markets
-
-    Get Single Market
-    Get Markets
-    Get Sampling Markets
-    Get Simplified Markets
-    Get Sampling Simplified Markets
-
-Pricing and Books
-
-    GET
-    Historical Timeseries Data
-    GET
-    Get Book
-    Get Books
-    GET
-    Get Price
-    Get Price(s)
-    Get Midpoint(s)
-    Get Spread(s)
-
-Websocket
-
-    WSS Overview
-    WSS Quickstart
-    WSS Authentication
-    User Channel
-    Market Channel
-
-Gamma Markets API
-
-    Overview
-    Gamma Structure
-    GET
-    Get Markets
-    GET
-    Get Events
-
-Miscellaneous Endpoints
-
-    GET
-    Get User Positions (Data-API)
-    GET
-    Get User On-Chain Activity (Data-API)
-    GET
-    Get Market Holders (Data-API)
-    GET
-    Get Holdings Value (Data-API)
-
-Subgraph
-
-    Overview
-
-Resolution
-
-    Resolution
-
-Rewards
-
-    Liquidity Rewards
-
-Conditional Token Frameworks
-
-    Overview
-    Splitting USDC
-    Merging Tokens
-    Reedeeming Tokens
-    Deployment and Additional Information
-
-Proxy Wallets
-
-    Proxy wallet
-
-Negative Risk
-
-    Overview
 
 Order Manipulation
 Check Order Reward Scoring
@@ -2773,7 +1079,7 @@ scoring	boolean	indicates if the order is scoring or not
 ​
 Check if some orders are scoring
 
-    This endpoint requires a L2 Header.
+	This endpoint requires a L2 Header.
 
 Returns to a dictionary with boolean value where it is indicated if an order is scoring or not.
 
@@ -2799,7 +1105,7 @@ Ask AI
 
 async function main() {
   const scoring = await clobClient.isOrderScoring({
-    orderId: "0x...",
+	orderId: "0x...",
   });
   console.log(scoring);
 }
@@ -2808,7 +1114,7 @@ main();
 
 async function main() {
   const scoring = await clobClient.areOrdersScoring({
-    orderIds: ["0x..."],
+	orderIds: ["0x..."],
   });
   console.log(scoring);
 }
@@ -2822,127 +1128,6 @@ Check Order Reward Scoring - Polymarket Documentation
 
 
 ```
-Polymarket Documentation home pagedark logo
-
-    Main Site
-
-User Guide
-For Developers
-Changelog
-Polymarket
-Discord Community
-Twitter
-Developer Quickstart
-
-    Developer Quickstart
-    Glossary
-    API Rate Limits
-    Endpoints
-    Your First Order
-    Cancelling Orders
-
-Central Limit Order Book
-
-    CLOB Introduction
-    Deployments
-    Status
-    Clients
-    Authentication
-
-Order Manipulation
-
-    Orders Overview
-    Place Single Order
-    Place Multiple Orders (Batching)
-    Get Order
-    Get Active Orders
-    Check Order Reward Scoring
-    Cancel Orders(s)
-    Onchain Order Info
-
-Trades
-
-    Trades Overview
-    Get Trades
-    GET
-    Get Trades (Data-API)
-
-Markets
-
-    Get Single Market
-    Get Markets
-    Get Sampling Markets
-    Get Simplified Markets
-    Get Sampling Simplified Markets
-
-Pricing and Books
-
-    GET
-    Historical Timeseries Data
-    GET
-    Get Book
-    Get Books
-    GET
-    Get Price
-    Get Price(s)
-    Get Midpoint(s)
-    Get Spread(s)
-
-Websocket
-
-    WSS Overview
-    WSS Quickstart
-    WSS Authentication
-    User Channel
-    Market Channel
-
-Gamma Markets API
-
-    Overview
-    Gamma Structure
-    GET
-    Get Markets
-    GET
-    Get Events
-
-Miscellaneous Endpoints
-
-    GET
-    Get User Positions (Data-API)
-    GET
-    Get User On-Chain Activity (Data-API)
-    GET
-    Get Market Holders (Data-API)
-    GET
-    Get Holdings Value (Data-API)
-
-Subgraph
-
-    Overview
-
-Resolution
-
-    Resolution
-
-Rewards
-
-    Liquidity Rewards
-
-Conditional Token Frameworks
-
-    Overview
-    Splitting USDC
-    Merging Tokens
-    Reedeeming Tokens
-    Deployment and Additional Information
-
-Proxy Wallets
-
-    Proxy wallet
-
-Negative Risk
-
-    Overview
 
 Order Manipulation
 Cancel Orders(s)
@@ -2972,8 +1157,8 @@ Ask AI
 async function main() {
   // Send it to the server
   const resp = await clobClient.cancelOrder({
-    orderID:
-      "0x38a73eed1e6d177545e9ab027abddfb7e08dbe975fa777123b1752d203d6ac88",
+	orderID:
+	  "0x38a73eed1e6d177545e9ab027abddfb7e08dbe975fa777123b1752d203d6ac88",
   });
   console.log(resp);
   console.log(`Done!`);
@@ -3002,8 +1187,8 @@ Ask AI
 async function main() {
   // Send it to the server
   const resp = await clobClient.cancelOrders([
-    "0x38a73eed1e6d177545e9ab027abddfb7e08dbe975fa777123b1752d203d6ac88",
-    "0xaaaa...",
+	"0x38a73eed1e6d177545e9ab027abddfb7e08dbe975fa777123b1752d203d6ac88",
+	"0xaaaa...",
   ]);
   console.log(resp);
   console.log(`Done!`);
@@ -3060,10 +1245,10 @@ Ask AI
 async function main() {
   // Send it to the server
   const resp = await clobClient.cancelMarketOrders({
-    market:
-      "0xbd31dc8a20211944f6b70f31557f1001557b59905b7738480ca09bd4532f84af",
-    asset_id:
-      "52114319501245915516055106046884209969926127482827954674443846427813813222426",
+	market:
+	  "0xbd31dc8a20211944f6b70f31557f1001557b59905b7738480ca09bd4532f84af",
+	asset_id:
+	  "52114319501245915516055106046884209969926127482827954674443846427813813222426",
   });
   console.log(resp);
   console.log(`Done!`);
@@ -3076,17 +1261,17 @@ github
 Powered by Mintlify
 On this page
 
-    Cancel an single Order
-    Request Payload Parameters
-    Response Format
-    Cancel Multiple Orders
-    Request Payload Parameters
-    Response Format
-    Cancel ALL Orders
-    Response Format
-    Cancel orders from market
-    Request Payload Parameters
-    Response Format
+	Cancel an single Order
+	Request Payload Parameters
+	Response Format
+	Cancel Multiple Orders
+	Request Payload Parameters
+	Response Format
+	Cancel ALL Orders
+	Response Format
+	Cancel orders from market
+	Request Payload Parameters
+	Response Format
 
 Cancel Orders(s) - Polymarket Documentation
 ```
@@ -3095,127 +1280,6 @@ Cancel Orders(s) - Polymarket Documentation
 
 
 ```
-Polymarket Documentation home pagedark logo
-
-    Main Site
-
-User Guide
-For Developers
-Changelog
-Polymarket
-Discord Community
-Twitter
-Developer Quickstart
-
-    Developer Quickstart
-    Glossary
-    API Rate Limits
-    Endpoints
-    Your First Order
-    Cancelling Orders
-
-Central Limit Order Book
-
-    CLOB Introduction
-    Deployments
-    Status
-    Clients
-    Authentication
-
-Order Manipulation
-
-    Orders Overview
-    Place Single Order
-    Place Multiple Orders (Batching)
-    Get Order
-    Get Active Orders
-    Check Order Reward Scoring
-    Cancel Orders(s)
-    Onchain Order Info
-
-Trades
-
-    Trades Overview
-    Get Trades
-    GET
-    Get Trades (Data-API)
-
-Markets
-
-    Get Single Market
-    Get Markets
-    Get Sampling Markets
-    Get Simplified Markets
-    Get Sampling Simplified Markets
-
-Pricing and Books
-
-    GET
-    Historical Timeseries Data
-    GET
-    Get Book
-    Get Books
-    GET
-    Get Price
-    Get Price(s)
-    Get Midpoint(s)
-    Get Spread(s)
-
-Websocket
-
-    WSS Overview
-    WSS Quickstart
-    WSS Authentication
-    User Channel
-    Market Channel
-
-Gamma Markets API
-
-    Overview
-    Gamma Structure
-    GET
-    Get Markets
-    GET
-    Get Events
-
-Miscellaneous Endpoints
-
-    GET
-    Get User Positions (Data-API)
-    GET
-    Get User On-Chain Activity (Data-API)
-    GET
-    Get Market Holders (Data-API)
-    GET
-    Get Holdings Value (Data-API)
-
-Subgraph
-
-    Overview
-
-Resolution
-
-    Resolution
-
-Rewards
-
-    Liquidity Rewards
-
-Conditional Token Frameworks
-
-    Overview
-    Splitting USDC
-    Merging Tokens
-    Reedeeming Tokens
-    Deployment and Additional Information
-
-Proxy Wallets
-
-    Proxy wallet
-
-Negative Risk
-
-    Overview
 
 Order Manipulation
 Onchain Order Info
@@ -3224,14 +1288,14 @@ How do I interpret the OrderFilled onchain event?
 
 Given an OrderFilled event:
 
-    orderHash: a unique hash for the Order being filled
-    maker: the user generating the order and the source of funds for the order
-    taker: the user filling the order OR the Exchange contract if the order fills multiple limit orders
-    makerAssetId: id of the asset that is given out. If 0, indicates that the Order is a BUY, giving USDC in exchange for Outcome tokens. Else, indicates that the Order is a SELL, giving Outcome tokens in exchange for USDC.
-    takerAssetId: id of the asset that is received. If 0, indicates that the Order is a SELL, receiving USDC in exchange for Outcome tokens. Else, indicates that the Order is a BUY, receiving Outcome tokens in exchange for USDC.
-    makerAmountFilled: the amount of the asset that is given out.
-    takerAmountFilled: the amount of the asset that is received.
-    fee: the fees paid by the order maker
+	orderHash: a unique hash for the Order being filled
+	maker: the user generating the order and the source of funds for the order
+	taker: the user filling the order OR the Exchange contract if the order fills multiple limit orders
+	makerAssetId: id of the asset that is given out. If 0, indicates that the Order is a BUY, giving USDC in exchange for Outcome tokens. Else, indicates that the Order is a SELL, giving Outcome tokens in exchange for USDC.
+	takerAssetId: id of the asset that is received. If 0, indicates that the Order is a SELL, receiving USDC in exchange for Outcome tokens. Else, indicates that the Order is a BUY, receiving Outcome tokens in exchange for USDC.
+	makerAmountFilled: the amount of the asset that is given out.
+	takerAmountFilled: the amount of the asset that is received.
+	fee: the fees paid by the order maker
 
 Cancel Orders(s)
 Trades Overview
@@ -3239,7 +1303,7 @@ github
 Powered by Mintlify
 On this page
 
-    How do I interpret the OrderFilled onchain event?
+	How do I interpret the OrderFilled onchain event?
 
 Onchain Order Info - Polymarket Documentation
 ```
@@ -3250,127 +1314,6 @@ Onchain Order Info - Polymarket Documentation
 
 
 ```
-Polymarket Documentation home pagedark logo
-
-    Main Site
-
-User Guide
-For Developers
-Changelog
-Polymarket
-Discord Community
-Twitter
-Developer Quickstart
-
-    Developer Quickstart
-    Glossary
-    API Rate Limits
-    Endpoints
-    Your First Order
-    Cancelling Orders
-
-Central Limit Order Book
-
-    CLOB Introduction
-    Deployments
-    Status
-    Clients
-    Authentication
-
-Order Manipulation
-
-    Orders Overview
-    Place Single Order
-    Place Multiple Orders (Batching)
-    Get Order
-    Get Active Orders
-    Check Order Reward Scoring
-    Cancel Orders(s)
-    Onchain Order Info
-
-Trades
-
-    Trades Overview
-    Get Trades
-    GET
-    Get Trades (Data-API)
-
-Markets
-
-    Get Single Market
-    Get Markets
-    Get Sampling Markets
-    Get Simplified Markets
-    Get Sampling Simplified Markets
-
-Pricing and Books
-
-    GET
-    Historical Timeseries Data
-    GET
-    Get Book
-    Get Books
-    GET
-    Get Price
-    Get Price(s)
-    Get Midpoint(s)
-    Get Spread(s)
-
-Websocket
-
-    WSS Overview
-    WSS Quickstart
-    WSS Authentication
-    User Channel
-    Market Channel
-
-Gamma Markets API
-
-    Overview
-    Gamma Structure
-    GET
-    Get Markets
-    GET
-    Get Events
-
-Miscellaneous Endpoints
-
-    GET
-    Get User Positions (Data-API)
-    GET
-    Get User On-Chain Activity (Data-API)
-    GET
-    Get Market Holders (Data-API)
-    GET
-    Get Holdings Value (Data-API)
-
-Subgraph
-
-    Overview
-
-Resolution
-
-    Resolution
-
-Rewards
-
-    Liquidity Rewards
-
-Conditional Token Frameworks
-
-    Overview
-    Splitting USDC
-    Merging Tokens
-    Reedeeming Tokens
-    Deployment and Additional Information
-
-Proxy Wallets
-
-    Proxy wallet
-
-Negative Risk
-
-    Overview
 
 Trades
 Trades Overview
@@ -3392,8 +1335,8 @@ github
 Powered by Mintlify
 On this page
 
-    Overview
-    Statuses
+	Overview
+	Statuses
 
 Trades Overview - Polymarket Documentation
 ```
@@ -3402,127 +1345,6 @@ Trades Overview - Polymarket Documentation
 
 
 ```
-Polymarket Documentation home pagedark logo
-
-    Main Site
-
-User Guide
-For Developers
-Changelog
-Polymarket
-Discord Community
-Twitter
-Developer Quickstart
-
-    Developer Quickstart
-    Glossary
-    API Rate Limits
-    Endpoints
-    Your First Order
-    Cancelling Orders
-
-Central Limit Order Book
-
-    CLOB Introduction
-    Deployments
-    Status
-    Clients
-    Authentication
-
-Order Manipulation
-
-    Orders Overview
-    Place Single Order
-    Place Multiple Orders (Batching)
-    Get Order
-    Get Active Orders
-    Check Order Reward Scoring
-    Cancel Orders(s)
-    Onchain Order Info
-
-Trades
-
-    Trades Overview
-    Get Trades
-    GET
-    Get Trades (Data-API)
-
-Markets
-
-    Get Single Market
-    Get Markets
-    Get Sampling Markets
-    Get Simplified Markets
-    Get Sampling Simplified Markets
-
-Pricing and Books
-
-    GET
-    Historical Timeseries Data
-    GET
-    Get Book
-    Get Books
-    GET
-    Get Price
-    Get Price(s)
-    Get Midpoint(s)
-    Get Spread(s)
-
-Websocket
-
-    WSS Overview
-    WSS Quickstart
-    WSS Authentication
-    User Channel
-    Market Channel
-
-Gamma Markets API
-
-    Overview
-    Gamma Structure
-    GET
-    Get Markets
-    GET
-    Get Events
-
-Miscellaneous Endpoints
-
-    GET
-    Get User Positions (Data-API)
-    GET
-    Get User On-Chain Activity (Data-API)
-    GET
-    Get Market Holders (Data-API)
-    GET
-    Get Holdings Value (Data-API)
-
-Subgraph
-
-    Overview
-
-Resolution
-
-    Resolution
-
-Rewards
-
-    Liquidity Rewards
-
-Conditional Token Frameworks
-
-    Overview
-    Splitting USDC
-    Merging Tokens
-    Reedeeming Tokens
-    Deployment and Additional Information
-
-Proxy Wallets
-
-    Proxy wallet
-
-Negative Risk
-
-    Overview
 
 Trades
 Get Trades
@@ -3588,9 +1410,9 @@ Ask AI
 
 async function main() {
   const trades = await clobClient.getTrades({
-    market:
-      "0xbd31dc8a20211944f6b70f31557f1001557b59905b7738480ca09bd4532f84af",
-    maker_address: await wallet.getAddress(),
+	market:
+	  "0xbd31dc8a20211944f6b70f31557f1001557b59905b7738480ca09bd4532f84af",
+	maker_address: await wallet.getAddress(),
   });
   console.log(`trades: `);
   console.log(trades);
@@ -3603,127 +1425,6 @@ Get Trades - Polymarket Documentation
 
 
 ```
-Polymarket Documentation home pagedark logo
-
-    Main Site
-
-User Guide
-For Developers
-Changelog
-Polymarket
-Discord Community
-Twitter
-Developer Quickstart
-
-    Developer Quickstart
-    Glossary
-    API Rate Limits
-    Endpoints
-    Your First Order
-    Cancelling Orders
-
-Central Limit Order Book
-
-    CLOB Introduction
-    Deployments
-    Status
-    Clients
-    Authentication
-
-Order Manipulation
-
-    Orders Overview
-    Place Single Order
-    Place Multiple Orders (Batching)
-    Get Order
-    Get Active Orders
-    Check Order Reward Scoring
-    Cancel Orders(s)
-    Onchain Order Info
-
-Trades
-
-    Trades Overview
-    Get Trades
-    GET
-    Get Trades (Data-API)
-
-Markets
-
-    Get Single Market
-    Get Markets
-    Get Sampling Markets
-    Get Simplified Markets
-    Get Sampling Simplified Markets
-
-Pricing and Books
-
-    GET
-    Historical Timeseries Data
-    GET
-    Get Book
-    Get Books
-    GET
-    Get Price
-    Get Price(s)
-    Get Midpoint(s)
-    Get Spread(s)
-
-Websocket
-
-    WSS Overview
-    WSS Quickstart
-    WSS Authentication
-    User Channel
-    Market Channel
-
-Gamma Markets API
-
-    Overview
-    Gamma Structure
-    GET
-    Get Markets
-    GET
-    Get Events
-
-Miscellaneous Endpoints
-
-    GET
-    Get User Positions (Data-API)
-    GET
-    Get User On-Chain Activity (Data-API)
-    GET
-    Get Market Holders (Data-API)
-    GET
-    Get Holdings Value (Data-API)
-
-Subgraph
-
-    Overview
-
-Resolution
-
-    Resolution
-
-Rewards
-
-    Liquidity Rewards
-
-Conditional Token Frameworks
-
-    Overview
-    Splitting USDC
-    Merging Tokens
-    Reedeeming Tokens
-    Deployment and Additional Information
-
-Proxy Wallets
-
-    Proxy wallet
-
-Negative Risk
-
-    Overview
 
 Trades
 Get Trades (Data-API)
@@ -3900,25 +1601,25 @@ Ask AI
 
 [
   {
-    "proxyWallet": "0x6af75d4e4aaf700450efbac3708cce1665810ff1",
-    "side": "SELL",
-    "asset": "28774665463932631392072718054733378944250725021214679767633993409910",
-    "conditionId": "0x1731c2d00c722fa4d53d1bddae549f14cf1870e2cf59dc040e779104667",
-    "size": 160.26,
-    "price": 0.89,
-    "timestamp": 1724210494,
-    "title": "2024 August hottest on record?",
-    "slug": "2024-august-hottest-on-record",
-    "icon": "https://polymarket-upload.s3.us-east-2.amazonaws.com/earth+on+fire.png",
-    "eventSlug": "2024-august-hottest-on-record",
-    "outcome": "Yes",
-    "outcomeIndex": 0,
-    "name": "gopfan",
-    "pseudonym": "Mean-Record",
-    "bio": "",
-    "profileImage": "https://polymarket-upload.s3.us-east-2.amazonaws.com/rus_gopfan",
-    "profileImageOptimized": "",
-    "transactionHash": "0x5620f25e2772f0ec2c5b2f2f814f6e20b52b4363286a9043b626324"
+	"proxyWallet": "0x6af75d4e4aaf700450efbac3708cce1665810ff1",
+	"side": "SELL",
+	"asset": "28774665463932631392072718054733378944250725021214679767633993409910",
+	"conditionId": "0x1731c2d00c722fa4d53d1bddae549f14cf1870e2cf59dc040e779104667",
+	"size": 160.26,
+	"price": 0.89,
+	"timestamp": 1724210494,
+	"title": "2024 August hottest on record?",
+	"slug": "2024-august-hottest-on-record",
+	"icon": "https://polymarket-upload.s3.us-east-2.amazonaws.com/earth+on+fire.png",
+	"eventSlug": "2024-august-hottest-on-record",
+	"outcome": "Yes",
+	"outcomeIndex": 0,
+	"name": "gopfan",
+	"pseudonym": "Mean-Record",
+	"bio": "",
+	"profileImage": "https://polymarket-upload.s3.us-east-2.amazonaws.com/rus_gopfan",
+	"profileImageOptimized": "",
+	"transactionHash": "0x5620f25e2772f0ec2c5b2f2f814f6e20b52b4363286a9043b626324"
   }
 ]
 

@@ -1,14 +1,14 @@
 import {
-  Action,
-  IAgentRuntime,
-  Memory,
-  State,
-  HandlerCallback,
-  Content,
-  logger,
-  UUID,
-  composePromptFromState,
-  ModelType,
+	Action,
+	IAgentRuntime,
+	Memory,
+	State,
+	HandlerCallback,
+	Content,
+	logger,
+	UUID,
+	composePromptFromState,
+	ModelType,
 } from "@elizaos/core/v2";
 import * as dotenv from "dotenv";
 dotenv.config();
@@ -18,158 +18,158 @@ import { readMarketsModel } from "../../models";
 import { getMarketsExamples } from "../../examples";
 
 export const readMarketsAction: Action = {
-  name: "READ_POLYMARKET_MARKETS",
-  similes: [
-    "POLYMARKET_READER",
-    "PREDICTION_MARKETS_VIEWER",
-    "MARKET_DATA_FETCHER",
-    "BETTING_ODDS_CHECKER",
-  ],
-  description: "Reads prediction markets data from Polymarket",
-  examples: [...getMarketsExamples],
+	name: "READ_POLYMARKET_MARKETS",
+	similes: [
+		"POLYMARKET_READER",
+		"PREDICTION_MARKETS_VIEWER",
+		"MARKET_DATA_FETCHER",
+		"BETTING_ODDS_CHECKER",
+	],
+	description: "Reads prediction markets data from Polymarket",
+	examples: [...getMarketsExamples],
 
-  validate: async (
-    runtime: IAgentRuntime,
-    message: Memory,
-  ): Promise<boolean> => {
-    const content = message.content as ReadMarketsActionContent;
-    const text = (content.text || "").toLowerCase();
+	validate: async (
+		runtime: IAgentRuntime,
+		message: Memory,
+	): Promise<boolean> => {
+		const content = message.content as ReadMarketsActionContent;
+		const text = (content.text || "").toLowerCase();
 
-    // Check for keywords related to Polymarket and prediction markets
-    const hasPolymarketKeyword = text.includes("polymarket");
-    const hasPredictionMarketKeywords =
-      text.includes("prediction market") ||
-      text.includes("betting odds") ||
-      text.includes("prediction") ||
-      text.includes("markets");
+		// Check for keywords related to Polymarket and prediction markets
+		const hasPolymarketKeyword = text.includes("polymarket");
+		const hasPredictionMarketKeywords =
+			text.includes("prediction market") ||
+			text.includes("betting odds") ||
+			text.includes("prediction") ||
+			text.includes("markets");
 
-    // Check for action keywords
-    const hasActionKeywords =
-      text.includes("show") ||
-      text.includes("get") ||
-      text.includes("what") ||
-      text.includes("find") ||
-      text.includes("list") ||
-      text.includes("tell") ||
-      text.includes("retriev") ||
-      text.includes("market") ||
-      text.includes("markets") ||
-      text.includes("market prices");
+		// Check for action keywords
+		const hasActionKeywords =
+			text.includes("show") ||
+			text.includes("get") ||
+			text.includes("what") ||
+			text.includes("find") ||
+			text.includes("list") ||
+			text.includes("tell") ||
+			text.includes("retriev") ||
+			text.includes("market") ||
+			text.includes("markets") ||
+			text.includes("market prices");
 
-    // Check for action keywords
-    const hasSkipKeywords = !(
-      text.includes("news") ||
-      text.includes("test")
-    )
+		// Check for action keywords
+		const hasSkipKeywords = !(
+			text.includes("news") ||
+			text.includes("test")
+		)
 
-    return (
-      hasActionKeywords && (hasPolymarketKeyword || hasPredictionMarketKeywords) && hasSkipKeywords
-    );
-  },
+		return (
+			hasActionKeywords && (hasPolymarketKeyword || hasPredictionMarketKeywords) && hasSkipKeywords
+		);
+	},
 
-  handler: async (
-    runtime: IAgentRuntime,
-    message: Memory,
-    state: State,
-    _options: any,
-    callback: HandlerCallback,
-    _responses: Memory[],
-  ) => {
-    try {
-      const content = message.content as ReadMarketsActionContent;
-      const text = content.text;
+	handler: async (
+		runtime: IAgentRuntime,
+		message: Memory,
+		state: State,
+		_options: any,
+		callback: HandlerCallback,
+		_responses: Memory[],
+	) => {
+		try {
+			const content = message.content as ReadMarketsActionContent;
+			const text = content.text;
 
-      const prompt = composePromptFromState({
-        state,
-        template: readMarketsModel,
-      });
-      let reflection = "";
-      reflection = await runtime.useModel(ModelType.TEXT_SMALL, {
-        prompt,
-      });
+			const prompt = composePromptFromState({
+				state,
+				template: readMarketsModel,
+			});
+			let reflection = "";
+			reflection = await runtime.useModel(ModelType.TEXT_SMALL, {
+				prompt,
+			});
 
-      logger.info("Reflection from model:", reflection); // Log the reflection output
+			logger.info("Reflection from model:", reflection); // Log the reflection output
 
-      // Extract query if present
-      let query = "";
-      const queryMatch =
-        text.match(/about\s+["']([^"']+)["']/i) ||
-        text.match(/about\s+([\w\s]+)(?=[\.,\?]|$)/i);
-      if (queryMatch) {
-        query = queryMatch[1].trim();
-      }
+			// Extract query if present
+			let query = "";
+			const queryMatch =
+				text.match(/about\s+["']([^"']+)["']/i) ||
+				text.match(/about\s+([\w\s]+)(?=[\.,\?]|$)/i);
+			if (queryMatch) {
+				query = queryMatch[1].trim();
+			}
 
-      // Extract limit if present
-      let userLimit = 20; // Default limit
-      const limitMatch =
-        text.match(/show\s+(\d+)/i) || text.match(/(\d+)\s+markets/i);
-      if (limitMatch) {
-        userLimit = parseInt(limitMatch[1], 10);
-      }
+			// Extract limit if present
+			let userLimit = 20; // Default limit
+			const limitMatch =
+				text.match(/show\s+(\d+)/i) || text.match(/(\d+)\s+markets/i);
+			if (limitMatch) {
+				userLimit = parseInt(limitMatch[1], 10);
+			}
 
-      // If not in cache, fetch from service
-      logger.info(
-        `Fetching markets from PolymarketService with query: "${query}" and limit: ${userLimit}`,
-      );
+			// If not in cache, fetch from service
+			logger.info(
+				`Fetching markets from PolymarketService with query: "${query}" and limit: ${userLimit}`,
+			);
 
-      const result = await PolymarketService.fetchMarkets({ limit: userLimit, activeOnly: true, query: query });
+			const result = await PolymarketService.fetchMarkets({ limit: userLimit, activeOnly: true, query: query });
 
-      if (!result.success || !result.markets || result.markets.length === 0) {
-        const errorMessage = `Sorry, I couldn't find any prediction markets${query ? ` about "${query}"` : ""}.${result.error ? ` ${result.error}` : ""}`;
-        logger.error(errorMessage);
-        logger.debug(result);
-        return errorMessage;
-      }
+			if (!result.success || !result.markets || result.markets.length === 0) {
+				const errorMessage = `Sorry, I couldn't find any prediction markets${query ? ` about "${query}"` : ""}.${result.error ? ` ${result.error}` : ""}`;
+				logger.error(errorMessage);
+				logger.debug(result);
+				return errorMessage;
+			}
 
-      const response = formatMarketsResponse(
-        result.markets,
-        query,
-      );
-      logger.info("Response from formatMarketsResponse:", response);
-      const responseContent = {
-        // Here we are adding the "#" to the text for test
-        text: response,
-      } as Content;
+			const response = formatMarketsResponse(
+				result.markets,
+				query,
+			);
+			logger.info("Response from formatMarketsResponse:", response);
+			const responseContent = {
+				// Here we are adding the "#" to the text for test
+				text: response,
+			} as Content;
 
-      await callback(responseContent);
+			await callback(responseContent);
 
-      return responseContent.text || "";
-    } catch (error: any) {
-      logger.error(error);
-      return `Sorry, there was an error fetching prediction markets: ${error instanceof Error ? error.message : "Unknown error"}`;
-    }
-  },
+			return responseContent.text || "";
+		} catch (error: any) {
+			logger.error(error);
+			return `Sorry, there was an error fetching prediction markets: ${error instanceof Error ? error.message : "Unknown error"}`;
+		}
+	},
 } as Action;
 
 // Helper function to format markets response
 function formatMarketsResponse(
-  markets: ReadMarketsData["markets"],
-  query?: string,
+	markets: ReadMarketsData["markets"],
+	query?: string,
 ): string {
-  if (markets.length === 0) {
-    return `I couldn't find any prediction markets${query ? ` about "${query}"` : ""}.`;
-  }
+	if (markets.length === 0) {
+		return `I couldn't find any prediction markets${query ? ` about "${query}"` : ""}.`;
+	}
 
-  const marketCount = markets.length;
-  const queryText = query ? ` about "${query}"` : "";
+	const marketCount = markets.length;
+	const queryText = query ? ` about "${query}"` : "";
 
-  let response = `#Here ${marketCount === 1 ? "is" : "are"} the top ${marketCount} prediction market${marketCount === 1 ? "" : "s"}${queryText} on Polymarket:\n`;
+	let response = `#Here ${marketCount === 1 ? "is" : "are"} the top ${marketCount} prediction market${marketCount === 1 ? "" : "s"}${queryText} on Polymarket:\n`;
 
-  markets.forEach((market, index) => {
-    response += `${index + 1}. "${market.question}" - `;
+	markets.forEach((market, index) => {
+		response += `${index + 1}. "${market.question}" - `;
 
-    if (market.outcomes && market.outcomes.length > 0) {
-      response += market.outcomes
-        .map((outcome) => `${outcome.name}: $${outcome.price}`)
-        .join(", ");
-    } else {
-      response += "No outcome data available";
-    }
+		if (market.outcomes && market.outcomes.length > 0) {
+			response += market.outcomes
+				.map((outcome) => `${outcome.name}: $${outcome.price}`)
+				.join(", ");
+		} else {
+			response += "No outcome data available";
+		}
 
-    if (index < markets.length - 1) {
-      response += "\n"; // For api test to work we need "#"
-    }
-  });
+		if (index < markets.length - 1) {
+			response += "\n"; // For api test to work we need "#"
+		}
+	});
 
-  return response;
+	return response;
 }
