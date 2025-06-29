@@ -28,7 +28,7 @@ const pluginPolymarket: Plugin = {
     redeemWinningsAction,
     getApiKeyAction
   ],
-  services: [ PolymarketService],
+  services: [PolymarketService],
   events: {
     VOICE_MESSAGE_RECEIVED: [
       async (params: any) =>
@@ -54,15 +54,15 @@ const pluginPolymarket: Plugin = {
           res.status(500).json({ error: error.message });
         }
       },
-    },{
-    path: "/welcome",
-    type: "GET",
-    handler:  async (req: any, res: any, runtime: IAgentRuntime) => {
+    }, {
+      path: "/welcome",
+      type: "GET",
+      handler: async (req: any, res: any, runtime: IAgentRuntime) => {
         res.json({
           message: "Polymarket plugin has started and is operational.",
         });
       }
-  } as Route],
+    } as Route],
   providers: []
 };
 

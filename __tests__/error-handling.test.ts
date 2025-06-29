@@ -95,7 +95,7 @@ describe('Error Handling', () => {
       let caughtError;
       try {
         await PolymarketService.stop(mockRuntime);
- expect(true).toBe(false); // Should not reach here
+        expect(true).toBe(false); // Should not reach here
       } catch (error: any) {
         caughtError = error as Error;
         expect(error.message).toBe('PolymarketService not found');
@@ -139,20 +139,20 @@ describe('Error Handling', () => {
         bio: ''
       },
       actions: [
-          connectWalletAction,
-          getUsernameAction,
-          setUserAction,
-          getWalletInfoAction,
-          readMarketsAction,
-          readMarketAction,
-          buySharesAction,
-          sellSharesAction,
-          redeemSharesAction],
+        connectWalletAction,
+        getUsernameAction,
+        setUserAction,
+        getWalletInfoAction,
+        readMarketsAction,
+        readMarketAction,
+        buySharesAction,
+        sellSharesAction,
+        redeemSharesAction],
       db: {} as any,
     };
 
     return mockRuntime as IAgentRuntime;
-    
+
   };
 
   describe('Plugin Events Error Handling', () => {
@@ -203,7 +203,7 @@ describe('Error Handling', () => {
           expect(true).toBe(true);
         } catch (error: any) {
           // If it does throw, at least make sure it's a handled error
- expect(logger.error).toHaveBeenCalled();
+          expect(logger.error).toHaveBeenCalled();
         }
       }
     });

@@ -75,7 +75,7 @@ describe('ClobTestSuite', () => {
       assert.fail('Plugin initialization test not found');
     }
   });
-  
+
   it('should run clob service test successfully', async () => {
     const mockRuntime = createMockRuntime();
     const serviceTest = testSuite.tests.find((test) => test.name === 'PolymarketService test');

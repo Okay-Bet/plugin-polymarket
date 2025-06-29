@@ -31,7 +31,7 @@ describe('Plugin Routes', () => {
         throw new Error("Route or handler not found");
       }
     }
- });
+  });
 
   it('should validate route structure', () => {
     if (plugin.routes) {

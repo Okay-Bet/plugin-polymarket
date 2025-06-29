@@ -39,11 +39,11 @@ describe('Plugin Configuration Schema', () => {
 
     if (initPlugin) {
       let error = null;
-        try {
-          const mockRuntime = {
-              registerPlugin: vi.fn(), // Add mock registerPlugin
-          };
-          
+      try {
+        const mockRuntime = {
+          registerPlugin: vi.fn(), // Add mock registerPlugin
+        };
+
         await initPlugin(validConfig, mockRuntime as any);
 
       } catch (e) {
@@ -56,10 +56,10 @@ describe('Plugin Configuration Schema', () => {
   it('should accept empty configuration', async () => {
     const emptyConfig = {};
 
-    if (initPlugin) {      
+    if (initPlugin) {
       const mockRuntime = {
         registerPlugin: vi.fn(), // Add mock registerPlugin
-    };
+      };
       let error = null;
       try {
         await initPlugin(emptyConfig, mockRuntime as any);

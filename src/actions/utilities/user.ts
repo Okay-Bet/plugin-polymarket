@@ -20,7 +20,7 @@ export const setUserAction: Action = {
     message: Memory,
   ): Promise<boolean> => {
     const context = (message.content as Content);
-     const text = (context.text) ? context.text.toLowerCase() : "";
+    const text = (context.text) ? context.text.toLowerCase() : "";
     return (
       (text.includes("set") &&
         text.includes("username") &&
@@ -72,7 +72,7 @@ export const getUsernameAction: Action = {
     message: Memory,
   ): Promise<boolean> => {
     const context = (message.content as Content);
-     const text = (context.text) ? context.text.toLowerCase() : "";
+    const text = (context.text) ? context.text.toLowerCase() : "";
     return (
       text.includes("what") &&
       text.includes("is") &&

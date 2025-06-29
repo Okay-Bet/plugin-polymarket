@@ -11,17 +11,17 @@ vi.mock('../../services/polymarketService', () => ({
 }));
 
 vi.mock('@elizaos/core', async (importOriginal) => {
-    const original = await importOriginal<typeof import('@elizaos/core')>();
-    return {
-        ...original,
-        elizaLogger: { 
-            log: vi.fn(),
-            error: vi.fn(),
-            warn: vi.fn(),
-            info: vi.fn(),
-            debug: vi.fn(),
-        },
-    };
+  const original = await importOriginal<typeof import('@elizaos/core')>();
+  return {
+    ...original,
+    elizaLogger: {
+      log: vi.fn(),
+      error: vi.fn(),
+      warn: vi.fn(),
+      info: vi.fn(),
+      debug: vi.fn(),
+    },
+  };
 });
 
 describe('readMarketsAction Action', () => {
@@ -32,22 +32,22 @@ describe('readMarketsAction Action', () => {
   const createMockUUID = (): UUID => '123e4567-e89b-12d3-a456-426614174000' as UUID;
 
   beforeEach(() => {
-    vi.resetAllMocks(); 
+    vi.resetAllMocks();
     mockState = {
-        topics: ['test topic'],
-        recentMessages: "test",
-        recentPostInteractions: [],
-        postDirections: 'Be friendly',
-        agentName: 'TestAgent',
-        bio: '',
-        lore: '',
-        messageDirections: '', // Add missing properties to satisfy 'State' type
-        values: {},
-        data: {},
-        text: '',
-        roomId: 'ads' as UUID,
-        actors: '',
-        recentMessagesData: []
+      topics: ['test topic'],
+      recentMessages: "test",
+      recentPostInteractions: [],
+      postDirections: 'Be friendly',
+      agentName: 'TestAgent',
+      bio: '',
+      lore: '',
+      messageDirections: '', // Add missing properties to satisfy 'State' type
+      values: {},
+      data: {},
+      text: '',
+      roomId: 'ads' as UUID,
+      actors: '',
+      recentMessagesData: []
     };
 
     mockRuntime = {
@@ -57,28 +57,28 @@ describe('readMarketsAction Action', () => {
       runMigrations: vi.fn().mockResolvedValue(undefined),
       isReady: vi.fn().mockResolvedValue(true),
     } as unknown as IAgentRuntime; // Cast to IAgentRuntime
-    
+
     const mockUUID = createMockUUID();
     (mockRuntime as any).agentId = mockUUID;
-    
+
     mockMessage = {
-        id: '123' as UUID,
-        content: { text: 'Please tweet something' } as Content,
-        agentId: '123' as UUID,
-        roomId: '123' as UUID,
-        entityId: '123' as UUID,
+      id: '123' as UUID,
+      content: { text: 'Please tweet something' } as Content,
+      agentId: '123' as UUID,
+      roomId: '123' as UUID,
+      entityId: '123' as UUID,
     };
-    
+
     mockState.messages = [mockMessage];
   });
 
   describe('validate function', () => {
     const runValidation = (text: string) => {
-        const messageWithContent = {
-            ...mockMessage, 
-            content: { text } as ReadMarketsActionContent as Content, 
-        };
-        return readMarketsAction.validate!(mockRuntime, messageWithContent, mockState);
+      const messageWithContent = {
+        ...mockMessage,
+        content: { text } as ReadMarketsActionContent as Content,
+      };
+      return readMarketsAction.validate!(mockRuntime, messageWithContent, mockState);
     };
 
     it('should return true for valid polymarket query', async () => {
@@ -93,7 +93,7 @@ describe('readMarketsAction Action', () => {
       expect(await runValidation('what is the weather?')).toBe(false);
     });
 
-     it('should return false if action keywords are missing', async () => {
+    it('should return false if action keywords are missing', async () => {
       expect(await runValidation('polymarket news')).toBe(false);
     });
 
@@ -102,24 +102,24 @@ describe('readMarketsAction Action', () => {
     });
 
     it('should handle content missing .text property gracefully', async () => {
-        const invalidContent = { someOtherProp: 'test' } as unknown as Content; 
-        const invalidMessage: Memory = {
-             ...mockMessage,
-             content: invalidContent,
-        };
-        expect(await readMarketsAction.validate!(mockRuntime, invalidMessage, mockState)).toBe(false);
+      const invalidContent = { someOtherProp: 'test' } as unknown as Content;
+      const invalidMessage: Memory = {
+        ...mockMessage,
+        content: invalidContent,
+      };
+      expect(await readMarketsAction.validate!(mockRuntime, invalidMessage, mockState)).toBe(false);
     });
   });
 
   describe('handler function', () => {
     it('should fetch and format markets successfully with a query and limit', async () => {
       const currentMessage: Memory = {
-          ...mockMessage,
-          content: { text: 'show 3 markets on Polymarket about "AI safety"' } as Content
+        ...mockMessage,
+        content: { text: 'show 3 markets on Polymarket about "AI safety"' } as Content
       };
       const fakeMarkets: PolymarketMarket[] = [
-        { id: '1', slug: 'ai-safety-market-1', question: 'AI safety market 1?', outcomes: [{clobTokenId: 'o1', name: 'Yes', price: "0.7" }, {clobTokenId: 'o1-no', name: 'No', price: "0.3" }], active: true, url: '', volume: "0", liquidity: "0", endDate: '', description: '' },
-        { id: '2', slug: 'ai-safety-market-2', question: 'AI safety market 2?', outcomes: [{clobTokenId: 'o2', name: 'No', price: "0.3" }], active: true, url: '', volume: "0", liquidity: "0", endDate: '', description: '' },
+        { id: '1', slug: 'ai-safety-market-1', question: 'AI safety market 1?', outcomes: [{ clobTokenId: 'o1', name: 'Yes', price: "0.7" }, { clobTokenId: 'o1-no', name: 'No', price: "0.3" }], active: true, url: '', volume: "0", liquidity: "0", endDate: '', description: '' },
+        { id: '2', slug: 'ai-safety-market-2', question: 'AI safety market 2?', outcomes: [{ clobTokenId: 'o2', name: 'No', price: "0.3" }], active: true, url: '', volume: "0", liquidity: "0", endDate: '', description: '' },
       ];
       (PolymarketService.fetchMarkets as ReturnType<typeof vi.fn>).mockResolvedValue({ success: true, markets: fakeMarkets });
 
@@ -138,21 +138,21 @@ describe('readMarketsAction Action', () => {
 
     it('should use default limit if not specified', async () => {
       const currentMessage: Memory = {
-          ...mockMessage,
-          content: { text: 'what polymarket markets about "elections"?' } as Content
+        ...mockMessage,
+        content: { text: 'what polymarket markets about "elections"?' } as Content
       };
-       (PolymarketService.fetchMarkets as ReturnType<typeof vi.fn>).mockResolvedValue({ success: true, markets: [] });
+      (PolymarketService.fetchMarkets as ReturnType<typeof vi.fn>).mockResolvedValue({ success: true, markets: [] });
       await readMarketsAction.handler!(mockRuntime, currentMessage, mockState);
       expect(PolymarketService.fetchMarkets).toHaveBeenCalledWith(expect.objectContaining({
-        limit: 5, 
+        limit: 5,
         query: 'elections',
       }));
     });
 
     it('should handle "all markets" to set activeOnly to false', async () => {
       const currentMessage: Memory = {
-          ...mockMessage,
-          content: { text: 'list all markets from polymarket' } as Content
+        ...mockMessage,
+        content: { text: 'list all markets from polymarket' } as Content
       };
       (PolymarketService.fetchMarkets as ReturnType<typeof vi.fn>).mockResolvedValue({ success: true, markets: [] });
       await readMarketsAction.handler!(mockRuntime, currentMessage, mockState);
@@ -163,8 +163,8 @@ describe('readMarketsAction Action', () => {
 
     it('should handle no markets found', async () => {
       const currentMessage: Memory = {
-          ...mockMessage,
-          content: { text: 'find polymarket markets about "obscure topic"' } as Content
+        ...mockMessage,
+        content: { text: 'find polymarket markets about "obscure topic"' } as Content
       };
       (PolymarketService.fetchMarkets as ReturnType<typeof vi.fn>).mockResolvedValue({ success: true, markets: [] });
 
@@ -174,8 +174,8 @@ describe('readMarketsAction Action', () => {
 
     it('should handle service failure', async () => {
       const currentMessage: Memory = {
-          ...mockMessage,
-          content: { text: 'show polymarket markets' } as Content
+        ...mockMessage,
+        content: { text: 'show polymarket markets' } as Content
       };
       (PolymarketService.fetchMarkets as ReturnType<typeof vi.fn>).mockResolvedValue({ success: false, error: 'Service unavailable' });
 
@@ -185,8 +185,8 @@ describe('readMarketsAction Action', () => {
 
     it('should handle exceptions during processing', async () => {
       const currentMessage: Memory = {
-          ...mockMessage,
-          content: { text: 'show polymarket markets' } as Content
+        ...mockMessage,
+        content: { text: 'show polymarket markets' } as Content
       };
       (PolymarketService.fetchMarkets as ReturnType<typeof vi.fn>).mockRejectedValue(new Error('Big boom'));
       const result = await readMarketsAction.handler!(mockRuntime, currentMessage, mockState);

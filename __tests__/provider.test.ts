@@ -19,7 +19,7 @@ dotenv.config();
 
 // Set up logging to capture issues
 beforeAll(() => {
- vi.spyOn(logger, 'info');
+  vi.spyOn(logger, 'info');
   vi.spyOn(logger, 'error');
   vi.spyOn(logger, 'warn');
   vi.spyOn(logger, 'debug');
@@ -57,57 +57,57 @@ function documentTestResult(testName: string, result: any, error: Error | null =
 
 describe('Provider Tests', () => {
   // Find the POLY_MARKET_PROVIDER from the providers array
-  beforeAll(() => {});
+  beforeAll(() => { });
 
   describe('Provider Registration', () => {
-   it('should include providers in the plugin definition', () => {
-   expect(plugin).toHaveProperty('providers');
-   expect(Array.isArray(plugin.providers)).toBe(true);
+    it('should include providers in the plugin definition', () => {
+      expect(plugin).toHaveProperty('providers');
+      expect(Array.isArray(plugin.providers)).toBe(true);
 
-   documentTestResult('Plugin providers check', {
-   hasProviders: !!plugin.providers,
-   providersCount: plugin.providers?.length || 0,
-   });
-   });
-
-   /*it('should correctly initialize providers array', () => {
-    // Providers should be an array with at least one provider
-    if (plugin.providers) {
-      expect(plugin.providers.length).toBeGreaterThan(0);
-
-      let allValid = true;
-      const invalidProviders: string[] = [];
-
-      // Each provider should have the required structure
-      plugin.providers.forEach((provider: Provider) => {
-        const isValid =
-          provider.name !== undefined &&
-          provider.description !== undefined &&
-          typeof provider.get === 'function';
-
-        if (!isValid) {
-          allValid = false;
-          invalidProviders.push(provider.name || 'unnamed');
-        }
-
-        expect(provider).toHaveProperty('name');
-        expect(provider).toHaveProperty('description');
-        expect(provider).toHaveProperty('get');
-        expect(typeof provider.get).toBe('function');
+      documentTestResult('Plugin providers check', {
+        hasProviders: !!plugin.providers,
+        providersCount: plugin.providers?.length || 0,
       });
+    });
 
-      documentTestResult('Provider initialization check', {
-        providersCount: plugin.providers.length,
-        allValid,
-        invalidProviders,
-      });
-    }
-  });*/
-
-   /*it('should register all providers', () => {
-   const runtime = createRealRuntime();
-   expect(plugin.providers).toBeTruthy();
+    /*it('should correctly initialize providers array', () => {
+     // Providers should be an array with at least one provider
+     if (plugin.providers) {
+       expect(plugin.providers.length).toBeGreaterThan(0);
+ 
+       let allValid = true;
+       const invalidProviders: string[] = [];
+ 
+       // Each provider should have the required structure
+       plugin.providers.forEach((provider: Provider) => {
+         const isValid =
+           provider.name !== undefined &&
+           provider.description !== undefined &&
+           typeof provider.get === 'function';
+ 
+         if (!isValid) {
+           allValid = false;
+           invalidProviders.push(provider.name || 'unnamed');
+         }
+ 
+         expect(provider).toHaveProperty('name');
+         expect(provider).toHaveProperty('description');
+         expect(provider).toHaveProperty('get');
+         expect(typeof provider.get).toBe('function');
+       });
+ 
+       documentTestResult('Provider initialization check', {
+         providersCount: plugin.providers.length,
+         allValid,
+         invalidProviders,
+       });
+     }
    });*/
+
+    /*it('should register all providers', () => {
+    const runtime = createRealRuntime();
+    expect(plugin.providers).toBeTruthy();
+    });*/
 
     it('should have unique provider names', () => {
       if (plugin.providers) {

@@ -113,7 +113,7 @@ export const createMockRuntime = (): IAgentRuntime => {
     },
     // Add real memory functionality
     memory: {
-      add: async () => {},
+      add: async () => { },
       get: async () => null,
       getByEntityId: async () => [],
       getLatest: async () => null,

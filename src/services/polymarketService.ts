@@ -164,12 +164,12 @@ export class PolymarketService extends Service {
 
     try {
 
-    
+
       // Calculate date 3 days ago for filtering
       const threeDaysAgo = new Date();
       threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
       const endDateMin = threeDaysAgo.toISOString().split('T')[0]; // Format as YYYY-MM-DD
-      
+
       // Build query parameters
       const params = {
         limit: API_FETCH_COUNT, // Use fixed count for API request
@@ -180,15 +180,15 @@ export class PolymarketService extends Service {
         liquidity_num_min: '5000',
         volume_num_min: '20000'
       };
-      
+
       const apiUrl = this._buildApiUrl("markets", params);
       const response = await fetch(apiUrl);
       if (!response.ok) {
         throw new Error(`Failed to fetch markets: ${response.statusText}`);
       }
       const data = (await response.json()) as any[];
-      logger.warn(JSON.stringify(data).substring(0,500));
-      
+      logger.warn(JSON.stringify(data).substring(0, 500));
+
       // Transform API response to our internal format
       const markets: PolymarketMarket[] = data.map((market: any) => {
         let processedOutcomes: { name: string; price: string; clobTokenId: string }[] = [];
@@ -216,7 +216,7 @@ export class PolymarketService extends Service {
           question: market.question,
           description: market.description || "",
           active: market.active,
-            category: market.category,
+          category: market.category,
           closed: market.closed,
           acceptingOrders: market.acceptingOrders,
           new: market.new,
@@ -259,7 +259,7 @@ export class PolymarketService extends Service {
 
       // Apply the user-specified limit to the filtered markets
       const finalMarkets = filteredMarkets.slice(0, parseInt(limit));
-      
+
       return {
         markets: finalMarkets,
         success: true,
@@ -360,7 +360,7 @@ export class PolymarketService extends Service {
         markets: [],
       };
     }
-  }  
+  }
 
   private static async fetchAllMarketsPaginated(baseParams: Omit<any, "limit" | "offset">): Promise<PolymarketApiResponse> {
     const allMarkets: PolymarketMarket[] = [];
@@ -390,7 +390,7 @@ export class PolymarketService extends Service {
       if (totalFetchedInSession >= 10000) {
         // Example limit. Adjust as needed
         logger.warn(
-            "Safety break triggered: Fetched over 10000 markets in a single session. Potential runaway pagination."
+          "Safety break triggered: Fetched over 10000 markets in a single session. Potential runaway pagination."
         );
       }
 
@@ -403,9 +403,9 @@ export class PolymarketService extends Service {
       if (pageResponse.markets.length < limit) {
         hasMore = false;
       }
-    }    
+    }
     return { success: true, markets: allMarkets };
   }
 
-  
+
 }

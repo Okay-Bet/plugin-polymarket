@@ -22,7 +22,7 @@ export const connectWalletAction: Action = {
     _state?: State,
   ): Promise<boolean> => {
     const context = (message.content as Content);
-     const text = (context.text) ? context.text.toLowerCase() : "";
+    const text = (context.text) ? context.text.toLowerCase() : "";
     return (
       text.includes("connect") &&
       text.includes("wallet") &&

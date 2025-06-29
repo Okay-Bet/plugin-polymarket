@@ -56,12 +56,12 @@ export const readMarketsAction: Action = {
       text.includes("markets") ||
       text.includes("market prices");
 
-      // Check for action keywords
-      const hasSkipKeywords = !(
-        text.includes("news") ||
-        text.includes("test")
-      )
-        
+    // Check for action keywords
+    const hasSkipKeywords = !(
+      text.includes("news") ||
+      text.includes("test")
+    )
+
     return (
       hasActionKeywords && (hasPolymarketKeyword || hasPredictionMarketKeywords) && hasSkipKeywords
     );
@@ -112,7 +112,7 @@ export const readMarketsAction: Action = {
         `Fetching markets from PolymarketService with query: "${query}" and limit: ${userLimit}`,
       );
 
-      const result = await PolymarketService.fetchMarkets({limit: userLimit, activeOnly: true, query: query});
+      const result = await PolymarketService.fetchMarkets({ limit: userLimit, activeOnly: true, query: query });
 
       if (!result.success || !result.markets || result.markets.length === 0) {
         const errorMessage = `Sorry, I couldn't find any prediction markets${query ? ` about "${query}"` : ""}.${result.error ? ` ${result.error}` : ""}`;

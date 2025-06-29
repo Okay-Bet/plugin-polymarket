@@ -41,7 +41,7 @@ export const redeemWinningsAction: Action = {
       },
     ],
   ],
-  
+
   validate: async (
     runtime: IAgentRuntime,
     message: Memory,
@@ -51,18 +51,18 @@ export const redeemWinningsAction: Action = {
     if (!content || !content.text) {
       return false;
     }
-    
+
     const text = (content.text || "").toLowerCase();
-    
-    const hasRedeemKeywords = 
-      text.includes("redeem") || 
-      text.includes("claim") || 
+
+    const hasRedeemKeywords =
+      text.includes("redeem") ||
+      text.includes("claim") ||
       text.includes("collect") ||
       text.includes("winnings") ||
       text.includes("rewards") ||
       text.includes("payout") ||
       text.includes("earnings");
-    
+
     return hasRedeemKeywords;
   },
 
@@ -76,12 +76,12 @@ export const redeemWinningsAction: Action = {
   ): Promise<string> => {
     const content = message.content as RedeemWinningsActionContent;
     const text = content.text.trim();
-    
+
     // Check if a specific market ID is provided
     const marketIdPattern = /\b\d{6}\b/;
     const marketIdMatch = text.match(marketIdPattern);
     const marketId = marketIdMatch ? marketIdMatch[0] : content.marketId;
-    
+
     // If market ID is provided, verify it exists
     let marketName = "all resolved markets";
     if (marketId) {
@@ -91,29 +91,29 @@ export const redeemWinningsAction: Action = {
       }
       marketName = `"${marketResult.market.question}"`;
     }
-    
+
     // Log the redemption attempt
     logger.info(`Attempting to redeem winnings${marketId ? ` from market ${marketId}` : ' from all resolved markets'}`);
-    
+
     // Call the CLOB API to redeem winnings
     const result = await PolymarketService.redeemUserPositions({
       // These values are placeholders and need to be replaced with actual values
-      conditionalTokensAddress: "0x0000000000000000000000000000000000000000", 
-      collateralTokenAddress: "0x0000000000000000000000000000000000000000", 
-      conditionId: "0", 
-      outcomeSlotCount: 1 
+      conditionalTokensAddress: "0x0000000000000000000000000000000000000000",
+      collateralTokenAddress: "0x0000000000000000000000000000000000000000",
+      conditionId: "0",
+      outcomeSlotCount: 1
     });
-    
+
     const responseContent: Content = {
       text: result.success
         ? `Successfully redeemed your winnings from ${marketName}. Transaction details: ${JSON.stringify(
-            result.transactionDetails
-          )}` // Update success message
+          result.transactionDetails
+        )}` // Update success message
         : `Sorry, there was an error redeeming your winnings: ${result.error}`
     };
-    
+
     await callback(responseContent);
-    
+
     return responseContent.text || "";
   }
 } as Action;

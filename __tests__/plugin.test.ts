@@ -34,7 +34,7 @@ function documentTestResult(testName: string, result: any, error: Error | unknow
     }
   }
   if (error instanceof Error) {
- logger.error(`ERROR: ${error.message}`);
+    logger.error(`ERROR: ${error.message}`);
     if (error.stack) {
       logger.error(`STACK: ${error.stack}`);
     }
@@ -63,12 +63,12 @@ function createRealRuntime() {
       name: 'Test Character',
       system: 'You are a helpful assistant for testing.',
       plugins: [
-        "@elizaos/plugin-polymarket",    
+        "@elizaos/plugin-polymarket",
         ...(process.env.GOOGLE_GENERATIVE_AI_API_KEY
           ? ["@elizaos/plugin-google-genai"]
           : []),
       ],
-        settings: {},
+      settings: {},
     },
     getSetting: (key: string) => null,
     models: plugin.models,
@@ -101,7 +101,7 @@ function createRealRuntime() {
 describe('Plugin Configuration', () => {
   it('should have correct plugin metadata', () => {
     expect(plugin.name).toBe('@elizaos/plugin-polymarket');
-            expect(plugin.description).toBe('Plugin for Polymarket integration');
+    expect(plugin.description).toBe('Plugin for Polymarket integration');
     expect(plugin.config).toBeDefined();
 
     documentTestResult('Plugin metadata check', {
@@ -122,7 +122,7 @@ describe('Plugin Configuration', () => {
 
       let error: Error | unknown = null;
       try {
- await plugin.init?.({ EXAMPLE_PLUGIN_VARIABLE: 'test-value' }, runtime as any);
+        await plugin.init?.({ EXAMPLE_PLUGIN_VARIABLE: 'test-value' }, runtime as any);
         expect(true).toBe(true); // If we got here, init succeeded
       } catch (e) {
         error = e;
@@ -169,7 +169,7 @@ describe('Plugin Models', () => {
   });
 
   it('should return a response from TEXT_SMALL model', async () => {
-    if(plugin.models){
+    if (plugin.models) {
       // Ensure TEXT_SMALL model is defined before using it
       expect(plugin.models).toHaveProperty(ModelType.TEXT_SMALL);
 
@@ -307,7 +307,7 @@ describe('PolymarketService', () => {
       expect(error).toBeTruthy();
       if (error instanceof Error) {
         expect(error.message).toContain('PolymarketService not found');
-        }
+      }
     }
 
     documentTestResult(

@@ -10,7 +10,7 @@ export const character: Character = {
     ...["@elizaos/plugin-polymarket"],
     ...(process.env.GOOGLE_GENERATIVE_AI_API_KEY
       ? ["@elizaos/plugin-google-genai"]
-      : (process.env.OPENAI_API_KEY ? ["@elizaos/plugin-openai"] 
+      : (process.env.OPENAI_API_KEY ? ["@elizaos/plugin-openai"]
         : [])),
     ...(!process.env.IGNORE_BOOTSTRAP
       ? ["@elizaos/plugin-bootstrap"]

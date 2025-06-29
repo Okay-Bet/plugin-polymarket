@@ -18,7 +18,7 @@ describe('Character Configuration', () => {
     expect(Array.isArray(character.plugins)).toBe(true);
   });
 
-  it('should have conditionally included plugins based on environment variables', () => {    
+  it('should have conditionally included plugins based on environment variables', () => {
     // Verify if plugins array includes the core plugin
     // Expect the plugins array to conditionally include the Google Generative AI plugin
     if (process.env.GOOGLE_GENERATIVE_AI_API_KEY) {

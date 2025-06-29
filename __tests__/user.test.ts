@@ -6,25 +6,25 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 let localStorageData: Record<string, string> = {};
 
 global.localStorage = {
-    getItem: (key: string): string | null => {
-        return localStorageData[key] || null;
-    },
-    setItem: (key: string, value: string): void => {
-        localStorageData[key] = value;
-    },
-    removeItem: (key: string): void => {
-        delete localStorageData[key];
-    },
-    clear: (): void => {
-        localStorageData = {};
-    },
-    // Add missing properties to satisfy the Storage interface
-    length: 0,
-    key: (index: number): string | null => {
-        const keys = Object.keys(localStorageData);
- return keys[index] || null;
+  getItem: (key: string): string | null => {
+    return localStorageData[key] || null;
+  },
+  setItem: (key: string, value: string): void => {
+    localStorageData[key] = value;
+  },
+  removeItem: (key: string): void => {
+    delete localStorageData[key];
+  },
+  clear: (): void => {
+    localStorageData = {};
+  },
+  // Add missing properties to satisfy the Storage interface
+  length: 0,
+  key: (index: number): string | null => {
+    const keys = Object.keys(localStorageData);
+    return keys[index] || null;
 
-    },
+  },
 };
 
 describe('User Utility Functions', () => {

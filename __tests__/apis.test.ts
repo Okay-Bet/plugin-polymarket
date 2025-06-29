@@ -9,8 +9,8 @@ describe('readMarketsAction', () => {
   it('should successfully handle markets fetched from PolymarketService', async () => {
     const runtime = createMockRuntime();
     const message = createMockMessage('Show me Polymarket markets');
-    const state = createMockState();    
-    let callbackResponse: any = null;    
+    const state = createMockState();
+    let callbackResponse: any = null;
 
     afterEach(() => {
       vi.restoreAllMocks();
@@ -25,11 +25,11 @@ describe('readMarketsAction', () => {
     // Create a mock PolymarketService with a mocked fetchMarkets method
     const mockPolymarketService = {
       fetchMarkets: vi.fn().mockResolvedValue({
-          success: true,
-          markets: [{ url: apiUrl, question: "Will this test pass?", outcomes: [{ name: "Yes", price: "0.5", clobTokenId: "123" }] }], // Simulate a market object
-        }),
-      };
-    
+        success: true,
+        markets: [{ url: apiUrl, question: "Will this test pass?", outcomes: [{ name: "Yes", price: "0.5", clobTokenId: "123" }] }], // Simulate a market object
+      }),
+    };
+
     // Mock the runtime's getService method to return the mock PolymarketService    
     runtime.getService = vi.fn().mockImplementation((serviceType) => {
       if (serviceType === 'PolymarketService') {
@@ -45,17 +45,17 @@ describe('readMarketsAction', () => {
     logger.info("Mocked PolymarketService:", mockPolymarketService);
     logger.info("Mocked runtime.getService:", runtime.getService);
 
-         // Execute the action handler and assert the callback
+    // Execute the action handler and assert the callback
     // Wrap in a try-catch for more robust error handling
     try {
-        await readMarketsAction.handler(runtime, message, state, {}, mockCallback, []);
+      await readMarketsAction.handler(runtime, message, state, {}, mockCallback, []);
 
-        logger.info("Callback response after handler:", callbackResponse);
-      } catch (error: any) {
-        // If the handler throws, fail the test and log the error
-        console.error("Test failed due to handler error:", error);
-        throw error; 
-      }
+      logger.info("Callback response after handler:", callbackResponse);
+    } catch (error: any) {
+      // If the handler throws, fail the test and log the error
+      console.error("Test failed due to handler error:", error);
+      throw error;
+    }
   });
 });
 
@@ -69,7 +69,7 @@ describe('direct_API_call', () => {
       const data = await response.json();
       expect(data).not.toBeNull();
       // Add more specific assertions about the data if needed
-      console.log("Direct API call successful. Data:", data.toString().substring(0,50));
+      console.log("Direct API call successful. Data:", data.toString().substring(0, 50));
     } catch (error: any) {
       console.error("Direct API call failed:", error);
       throw error; // Re-throw the error to fail the test

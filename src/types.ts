@@ -286,7 +286,7 @@ export const OrderParamsSchema = z.object({
   price: z.string(),
   orderType: z.enum(['LIMIT', 'MARKET']).optional(),
 });
-export type OrderParams = {marketMakerAddress: string, conditionalTokensAddress: string, returnAmount: BigNumberish, outcomeIndex: BigNumberish, maxOutcomeTokensToSell: BigNumberish};
+export type OrderParams = { marketMakerAddress: string, conditionalTokensAddress: string, returnAmount: BigNumberish, outcomeIndex: BigNumberish, maxOutcomeTokensToSell: BigNumberish };
 
 export type OrderResult = { success: boolean; orderId?: string; message?: string; error?: string };
 

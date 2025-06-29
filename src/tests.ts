@@ -63,7 +63,7 @@ export class ClobTestSuite implements TestSuite {
           await runtime.registerPlugin({
             name: "clob",
             description: "A clob plugin for Eliza",
-            init: async () => {},
+            init: async () => { },
             config: {},
           });
         } catch (error: any) {
