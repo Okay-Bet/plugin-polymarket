@@ -139,7 +139,7 @@ export const readMarketsAction: Action = {
       return `Sorry, there was an error fetching prediction markets: ${error instanceof Error ? error.message : "Unknown error"}`;
     }
   },
-};
+} as Action;
 
 // Helper function to format markets response
 function formatMarketsResponse(

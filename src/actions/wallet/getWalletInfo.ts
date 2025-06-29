@@ -77,4 +77,4 @@ export const getWalletInfoAction: Action = {
       return `Error getting wallet info: ${error instanceof Error ? error.message : "Unknown error"}`;
     }
   },
-};
+} as Action;

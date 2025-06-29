@@ -63,4 +63,4 @@ export const connectWalletAction: Action = {
       return "Requesting wallet connection...";
     }
   },
-};
+} as Action;

@@ -76,4 +76,4 @@ export const redeemSharesAction: Action = {
       return `Error redeeming shares: ${e instanceof Error ? e.message : "Unknown error"}`;
     }
   },
-}
+} as Action;

@@ -41,7 +41,7 @@ export const setUserAction: Action = {
   ): Promise<string> => {
     try {
       const content = message.content as Content;
-      const text = content.text;
+      const text = content.text || "";
       const match = text.match(
         /(change|set|edit)\s+my\s+username\s+(?:to|and make it)\s+(.+)/i,
       );
@@ -59,7 +59,7 @@ export const setUserAction: Action = {
       return `Error setting username: ${error instanceof Error ? error.message : "Unknown error"}`;
     }
   },
-};
+} as Action;
 
 // Action to get the current username (primarily for testing/debugging)
 export const getUsernameAction: Action = {
@@ -98,7 +98,7 @@ export const getUsernameAction: Action = {
       return `Error getting username: ${error instanceof Error ? error.message : "Unknown error"}`;
     }
   },
-};
+} as Action;
 
 const USERNAME_KEY = "polymarket_username";
 

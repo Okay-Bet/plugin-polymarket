@@ -1,5 +1,5 @@
 import { ClobClient } from "@polymarket/clob-client";
-import { Wallet } from "ethers";
+import { Wallet } from "@ethersproject/wallet";
 
 const host = 'https://clob.polymarket.com';
 
@@ -18,7 +18,7 @@ export async function getOrCreateApiKey() {
     }
 
     const signer: Wallet = new Wallet(process.env.CLOB_API_KEY);
-    const client = new ClobClient(host, parseInt(process.env.CHAIN_ID), signer as any);
+    const client = new ClobClient(host, parseInt(process.env.CHAIN_ID), signer);
 
     try {
         const creds = await client.createOrDeriveApiKey();

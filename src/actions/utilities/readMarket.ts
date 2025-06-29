@@ -115,7 +115,7 @@ export const readMarketAction: Action = {
       hasSkipActionKeywords
     );
   },
-};
+} as Action;
 
 function formatMarketResponse(market: PolymarketMarket): string {
   let response = `Market "${market.question}" (ID: ${market.id})\n`;

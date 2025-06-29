@@ -116,4 +116,4 @@ export const redeemWinningsAction: Action = {
     
     return responseContent.text || "";
   }
-};
+} as Action;

@@ -37,3 +37,6 @@ elizaos.db-wal
 .eliza
 .eliza/*
 .eliza
+clob-client/*
+clob-client
+clob-client
