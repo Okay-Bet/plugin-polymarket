@@ -21,7 +21,7 @@
     "build": "tsc",
     "test": "vitest run",
     "test:watch": "vitest",
-    "coverage": "vitest run --coverage",
+    "test:coverage": "vitest run --coverage",
     "prepublishOnly": "npm run build"
   },
   "agentConfig": {

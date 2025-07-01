@@ -12,7 +12,7 @@
     "sourceMap": true, // Good for debugging
   },
   "include": [
-    "plugin-polymarket/src/**/*",
+    "src/**/*",
     "vitest.config.ts" // Include Vitest config if it's TypeScript
   ],
   "exclude": [

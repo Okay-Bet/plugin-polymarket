@@ -1,16 +1,17 @@
-// vitest.config.ts
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
-    globals: true, // Use Vitest globals (describe, test, expect, etc.)
-    environment: 'node', // Environment for running tests
+    globals: true,
+    environment: 'node',
+    include: [
+      'src/**/__tests__/**/*.{test,spec}.ts',
+      'src/**/*.{test,spec}.ts'
+    ],
     coverage: {
-      provider: 'v8', // or 'istanbul'
+      provider: 'v8',
       reporter: ['text', 'json', 'html'],
-      reportsDirectory: './coverage',
     },
-    include: ['plugin-polymarket/src/**/*.{test,spec}.ts'], // Pattern for test files
-    // setupFiles: ['./path/to/setupFile.ts'], // If you need global setup
+    setupFiles: ['./test/setup.ts'],
   },
 });
