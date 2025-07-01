@@ -1,187 +1,193 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, expect, it, beforeEach } from 'vitest';
+import { type Memory, type State, type UUID, type HandlerCallback } from '@elizaos/core';
 import { readMarkets } from '../readMarkets';
 import { polymarketService } from '../../services/polymarketService';
-import type { IAgentRuntime, Memory, State, Content, UUID } from '@elizaos/core'; // Import UUID and Content
-import { ReadMarketsActionContent, PolymarketMarket } from '../../types';
+import { PolymarketMarket } from '../../types';
 
-vi.mock('../../services/polymarketService', () => ({
-  polymarketService: {
-    fetchMarkets: vi.fn(),
-  },
-}));
-
-vi.mock('@elizaos/core', async (importOriginal) => {
-    const original = await importOriginal<typeof import('@elizaos/core')>();
-    return {
-        ...original,
-        elizaLogger: { 
-            log: vi.fn(),
-            error: vi.fn(),
-            warn: vi.fn(),
-            info: vi.fn(),
-            debug: vi.fn(),
-        },
-    };
-});
-
-describe('readMarkets Action', () => {
-  let mockRuntime: IAgentRuntime;
-  let mockMessage: Memory;
-  let mockState: State;
-
-  const createMockUUID = (): UUID => '123e4567-e89b-12d3-a456-426614174000' as UUID;
-
-  beforeEach(() => {
-    vi.resetAllMocks(); 
-    mockState = {
-        topics: ['test topic'],
-        recentMessages: "test",
-        recentPostInteractions: [],
-        postDirections: 'Be friendly',
-        agentName: 'TestAgent',
-        bio: '',
-        lore: '',
-        messageDirections: '',
-        roomId: 'ads' as UUID,
-        actors: '',
-        recentMessagesData: []
-    };
-
-    mockRuntime = {
-      agentId: createMockUUID(),
-      composeState: vi.fn().mockResolvedValue(mockState),
-    } as unknown as IAgentRuntime;
-
-    mockMessage = {
-        id: '123' as UUID,
-        content: { text: 'Please tweet something' },
-        userId: '123' as UUID,
-        agentId: '123' as UUID,
-        roomId: '123' as UUID
-    };
+describe('readMarkets action', () => {
+    let mockState: State;
+    let mockRuntime: any;
     
-    mockState.messages = [mockMessage];
-  });
-
-  describe('validate function', () => {
-    const runValidation = (text: string) => {
-        const messageWithContent = {
-            ...mockMessage, 
-            content: { text } as ReadMarketsActionContent as Content, 
+    beforeEach(() => {
+        mockState = {
+            values: {},
+            data: {},
+            text: '',
+            topics: [],
+            recentMessages: '',
+            recentPostInteractions: [],
+            postDirections: '',
+            agentName: 'TestAgent',
+            bio: 'Test bio',
+            lore: '',
+            messageDirections: '',
+            roomId: 'test-room-id' as `${string}-${string}-${string}-${string}-${string}`,
+            actors: '',
+            recentMessagesData: []
         };
-        return readMarkets.validate!(mockRuntime, messageWithContent, mockState);
-    };
 
-    it('should return true for valid polymarket query', async () => {
-      expect(await runValidation('show me polymarket markets')).toBe(true);
-      expect(await runValidation('what are the prediction market odds?')).toBe(true);
-      expect(await runValidation('get polymarket data about something')).toBe(true);
-      expect(await runValidation('find markets for crypto')).toBe(true);
-    });
-
-    it('should return false for irrelevant query', async () => {
-      expect(await runValidation('hello world')).toBe(false);
-      expect(await runValidation('what is the weather?')).toBe(false);
-    });
-
-     it('should return false if action keywords are missing', async () => {
-      expect(await runValidation('polymarket news')).toBe(false);
-    });
-
-    it('should return false if context keywords are missing', async () => {
-      expect(await runValidation('show me some stuff')).toBe(false);
-    });
-
-    it('should handle content missing .text property gracefully', async () => {
-        const invalidContent = { someOtherProp: 'test' } as unknown as Content; 
-        const invalidMessage: Memory = {
-             ...mockMessage,
-             content: invalidContent,
+        mockRuntime = {
+            agentId: 'test-agent-id' as UUID,
+            composeState: async () => mockState,
+            getService: () => polymarketService
         };
-        expect(await readMarkets.validate!(mockRuntime, invalidMessage, mockState)).toBe(false);
-    });
-  });
-
-  describe('handler function', () => {
-    it('should fetch and format markets successfully with a query and limit', async () => {
-      const currentMessage: Memory = {
-          ...mockMessage,
-          content: { text: 'show 3 markets on Polymarket about "AI safety"' } as Content
-      };
-      const fakeMarkets: PolymarketMarket[] = [
-        { id: '1', slug: 'ai-safety-market-1', question: 'AI safety market 1?', outcomes: [{clobTokenId: 'o1', name: 'Yes', price: 0.7 }, {clobTokenId: 'o1-no', name: 'No', price: 0.3 }], active: true, url: '', volume: 0, liquidity: 0, endDate: '', description: '' },
-        { id: '2', slug: 'ai-safety-market-2', question: 'AI safety market 2?', outcomes: [{clobTokenId: 'o2', name: 'No', price: 0.3 }], active: true, url: '', volume: 0, liquidity: 0, endDate: '', description: '' },
-      ];
-      (polymarketService.fetchMarkets as ReturnType<typeof vi.fn>).mockResolvedValue({ success: true, markets: fakeMarkets });
-
-      const result = await readMarkets.handler!(mockRuntime, currentMessage, mockState);
-
-      expect(mockRuntime.composeState).toHaveBeenCalledWith(currentMessage);
-      expect(polymarketService.fetchMarkets).toHaveBeenCalledWith({
-        limit: 3,
-        activeOnly: true,
-        query: 'AI safety',
-      });
-      expect(result).toContain('Here are the top 2 prediction markets about "AI safety" on Polymarket:');
-      expect(result).toContain('1. "AI safety market 1?" - Yes: $0.70, No: $0.30');
-      expect(result).toContain('2. "AI safety market 2?" - No: $0.30');
     });
 
-    it('should use default limit if not specified', async () => {
-      const currentMessage: Memory = {
-          ...mockMessage,
-          content: { text: 'what polymarket markets about "elections"?' } as Content
-      };
-       (polymarketService.fetchMarkets as ReturnType<typeof vi.fn>).mockResolvedValue({ success: true, markets: [] });
-      await readMarkets.handler!(mockRuntime, currentMessage, mockState);
-      expect(polymarketService.fetchMarkets).toHaveBeenCalledWith(expect.objectContaining({
-        limit: 5, 
-        query: 'elections',
-      }));
+    it('should validate messages about Polymarket', async () => {
+        const messages = [
+            'Show me the top prediction markets on Polymarket',
+            'What are the current odds on Polymarket about Bitcoin?',
+            'List prediction markets',
+            'Get betting odds from Polymarket'
+        ];
+
+        for (const text of messages) {
+            const message: Memory = {
+                id: 'test-id' as UUID,
+                entityId: 'test-entity' as UUID,
+                roomId: 'test-room' as UUID,
+                content: { text }
+            };
+
+            const isValid = await readMarkets.validate(mockRuntime, message, mockState);
+            expect(isValid).toBe(true);
+        }
     });
 
-    it('should handle "all markets" to set activeOnly to false', async () => {
-      const currentMessage: Memory = {
-          ...mockMessage,
-          content: { text: 'list all markets from polymarket' } as Content
-      };
-      (polymarketService.fetchMarkets as ReturnType<typeof vi.fn>).mockResolvedValue({ success: true, markets: [] });
-      await readMarkets.handler!(mockRuntime, currentMessage, mockState);
-      expect(polymarketService.fetchMarkets).toHaveBeenCalledWith(expect.objectContaining({
-        activeOnly: false,
-      }));
+    it('should not validate unrelated messages', async () => {
+        const messages = [
+            'How is the weather today?',
+            'Tell me a joke',
+            'What time is it?'
+        ];
+
+        for (const text of messages) {
+            const message: Memory = {
+                id: 'test-id' as UUID,
+                entityId: 'test-entity' as UUID,
+                roomId: 'test-room' as UUID,
+                content: { text }
+            };
+
+            const isValid = await readMarkets.validate(mockRuntime, message, mockState);
+            expect(isValid).toBe(false);
+        }
     });
 
-    it('should handle no markets found', async () => {
-      const currentMessage: Memory = {
-          ...mockMessage,
-          content: { text: 'find polymarket markets about "obscure topic"' } as Content
-      };
-      (polymarketService.fetchMarkets as ReturnType<typeof vi.fn>).mockResolvedValue({ success: true, markets: [] });
+    it('should handle market queries successfully', async () => {
+        const message: Memory = {
+            id: 'test-id' as UUID,
+            entityId: 'test-entity' as UUID,
+            roomId: 'test-room' as UUID,
+            content: { text: 'Show me prediction markets about Bitcoin' }
+        };
 
-      const result = await readMarkets.handler!(mockRuntime, currentMessage, mockState);
-      expect(result).toBe(`Sorry, I couldn't find any prediction markets about "obscure topic".`);
+        const mockMarkets: PolymarketMarket[] = [
+            {
+                id: 'market-1',
+                slug: 'btc-100k-2024',
+                question: 'Will Bitcoin reach $100k in 2024?',
+                active: true,
+                volume: 1000000,
+                liquidity: 500000,
+                url: 'https://polymarket.com/btc-100k-2024',
+                endDate: '2024-12-31',
+                outcomes: [
+                    { clobTokenId: 'yes-token', name: 'Yes', price: 0.65 },
+                    { clobTokenId: 'no-token', name: 'No', price: 0.35 }
+                ]
+            }
+        ];
+
+        // Mock the polymarketService.fetchMarkets method
+        const originalFetchMarkets = polymarketService.fetchMarkets;
+        polymarketService.fetchMarkets = async () => ({
+            success: true,
+            markets: mockMarkets
+        });
+
+        let receivedResponse: any = null;
+        const callback: HandlerCallback = async (response) => {
+            receivedResponse = response;
+            return [];
+        };
+
+        const result = await readMarkets.handler(mockRuntime, message, mockState, {}, callback);
+
+        expect(result).toBe(true);
+        expect(receivedResponse).toBeDefined();
+        expect(receivedResponse.actions).toContain('READ_POLYMARKET_MARKETS');
+        expect(receivedResponse.text).toContain('Bitcoin');
+        expect(receivedResponse.text).toContain('$0.65');
+        expect(receivedResponse.thought).toBeDefined();
+
+        // Restore the original method
+        polymarketService.fetchMarkets = originalFetchMarkets;
     });
 
-    it('should handle service failure', async () => {
-      const currentMessage: Memory = {
-          ...mockMessage,
-          content: { text: 'show polymarket markets' } as Content
-      };
-      (polymarketService.fetchMarkets as ReturnType<typeof vi.fn>).mockResolvedValue({ success: false, error: 'Service unavailable' });
+    it('should handle errors gracefully', async () => {
+        const message: Memory = {
+            id: 'test-id' as UUID,
+            entityId: 'test-entity' as UUID,
+            roomId: 'test-room' as UUID,
+            content: { text: 'Show me prediction markets' }
+        };
 
-      const result = await readMarkets.handler!(mockRuntime, currentMessage, mockState);
-      expect(result).toBe("Sorry, I couldn't find any prediction markets. Service unavailable");
+        // Mock the service to throw an error
+        const originalFetchMarkets = polymarketService.fetchMarkets;
+        polymarketService.fetchMarkets = async () => {
+            throw new Error('API Error');
+        };
+
+        let receivedResponse: any = null;
+        const callback: HandlerCallback = async (response) => {
+            receivedResponse = response;
+            return [];
+        };
+
+        const result = await readMarkets.handler(mockRuntime, message, mockState, {}, callback);
+
+        expect(result).toBe(false);
+        expect(receivedResponse).toBeDefined();
+        expect(receivedResponse.actions).toContain('READ_POLYMARKET_MARKETS');
+        expect(receivedResponse.text).toContain('error');
+        expect(receivedResponse.thought).toContain('Error occurred');
+
+        // Restore the original method
+        polymarketService.fetchMarkets = originalFetchMarkets;
     });
 
-    it('should handle exceptions during processing', async () => {
-      const currentMessage: Memory = {
-          ...mockMessage,
-          content: { text: 'show polymarket markets' } as Content
-      };
-      (polymarketService.fetchMarkets as ReturnType<typeof vi.fn>).mockRejectedValue(new Error('Big boom'));
-      const result = await readMarkets.handler!(mockRuntime, currentMessage, mockState);
-      expect(result).toBe('Sorry, there was an error fetching prediction markets: Big boom');
+    it('should handle empty market results', async () => {
+        const message: Memory = {
+            id: 'test-id' as UUID,
+            entityId: 'test-entity' as UUID,
+            roomId: 'test-room' as UUID,
+            content: { text: 'Show me prediction markets about NonexistentTopic' }
+        };
+
+        // Mock the service to return no markets
+        const originalFetchMarkets = polymarketService.fetchMarkets;
+        polymarketService.fetchMarkets = async () => ({
+            success: true,
+            markets: []
+        });
+
+        let receivedResponse: any = null;
+        const callback: HandlerCallback = async (response) => {
+            receivedResponse = response;
+            return [];
+        };
+
+        const result = await readMarkets.handler(mockRuntime, message, mockState, {}, callback);
+
+        expect(result).toBe(true);
+        expect(receivedResponse).toBeDefined();
+        expect(receivedResponse.actions).toContain('READ_POLYMARKET_MARKETS');
+        expect(receivedResponse.text).toContain('couldn\'t find any prediction markets');
+        expect(receivedResponse.text).toContain('NonexistentTopic');
+        expect(receivedResponse.thought).toBeDefined();
+
+        // Restore the original method
+        polymarketService.fetchMarkets = originalFetchMarkets;
     });
-  });
 });

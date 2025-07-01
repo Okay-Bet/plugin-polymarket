@@ -5,6 +5,9 @@ build/
 # Dependencies
 node_modules/
 
+# eliza
+.eliza
+
 # IDE and editor files
 .vscode/
 *.suo
