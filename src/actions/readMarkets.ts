@@ -6,7 +6,7 @@ import {
     type HandlerCallback,
     elizaLogger
 } from "@elizaos/core";
-import { polymarketService } from "../services/polymarketService";
+import { PolymarketService } from "../services/polymarketService";
 import { ReadMarketsActionContent, ReadMarketsData } from "../types";
 
 export const readMarkets: Action = {
@@ -114,6 +114,12 @@ export const readMarkets: Action = {
             // Check if we only want active markets
             const activeOnly = !text.toLowerCase().includes("inactive") && 
                             !text.toLowerCase().includes("all markets");
+
+            // Get service instance from runtime
+            const polymarketService = runtime.getService("polymarket") as PolymarketService;
+            if (!polymarketService) {
+                throw new Error("Polymarket service not available");
+            }
 
             // Get response from service
             const result = await polymarketService.fetchMarkets({

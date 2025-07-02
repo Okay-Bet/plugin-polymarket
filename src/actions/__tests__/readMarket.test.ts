@@ -1,12 +1,13 @@
-import { describe, expect, it, beforeEach } from 'vitest';
+import { describe, expect, it, beforeEach, vi } from 'vitest';
 import { type Memory, type State, type UUID, type HandlerCallback } from '@elizaos/core';
 import { readMarkets } from '../readMarkets';
-import { polymarketService } from '../../services/polymarketService';
+import { PolymarketService } from '../../services/polymarketService';
 import { PolymarketMarket } from '../../types';
 
 describe('readMarkets action', () => {
     let mockState: State;
     let mockRuntime: any;
+    let mockPolymarketService: any;
     
     beforeEach(() => {
         mockState = {
@@ -26,10 +27,14 @@ describe('readMarkets action', () => {
             recentMessagesData: []
         };
 
+        mockPolymarketService = {
+            fetchMarkets: vi.fn()
+        };
+
         mockRuntime = {
             agentId: 'test-agent-id' as UUID,
             composeState: async () => mockState,
-            getService: () => polymarketService
+            getService: vi.fn().mockReturnValue(mockPolymarketService)
         };
     });
 
@@ -99,9 +104,8 @@ describe('readMarkets action', () => {
             }
         ];
 
-        // Mock the polymarketService.fetchMarkets method
-        const originalFetchMarkets = polymarketService.fetchMarkets;
-        polymarketService.fetchMarkets = async () => ({
+        // Mock the service response
+        mockPolymarketService.fetchMarkets.mockResolvedValue({
             success: true,
             markets: mockMarkets
         });
@@ -120,9 +124,6 @@ describe('readMarkets action', () => {
         expect(receivedResponse.text).toContain('Bitcoin');
         expect(receivedResponse.text).toContain('$0.65');
         expect(receivedResponse.thought).toBeDefined();
-
-        // Restore the original method
-        polymarketService.fetchMarkets = originalFetchMarkets;
     });
 
     it('should handle errors gracefully', async () => {
@@ -134,10 +135,7 @@ describe('readMarkets action', () => {
         };
 
         // Mock the service to throw an error
-        const originalFetchMarkets = polymarketService.fetchMarkets;
-        polymarketService.fetchMarkets = async () => {
-            throw new Error('API Error');
-        };
+        mockPolymarketService.fetchMarkets.mockRejectedValue(new Error('API Error'));
 
         let receivedResponse: any = null;
         const callback: HandlerCallback = async (response) => {
@@ -152,9 +150,6 @@ describe('readMarkets action', () => {
         expect(receivedResponse.actions).toContain('READ_POLYMARKET_MARKETS');
         expect(receivedResponse.text).toContain('error');
         expect(receivedResponse.thought).toContain('Error occurred');
-
-        // Restore the original method
-        polymarketService.fetchMarkets = originalFetchMarkets;
     });
 
     it('should handle empty market results', async () => {
@@ -166,8 +161,7 @@ describe('readMarkets action', () => {
         };
 
         // Mock the service to return no markets
-        const originalFetchMarkets = polymarketService.fetchMarkets;
-        polymarketService.fetchMarkets = async () => ({
+        mockPolymarketService.fetchMarkets.mockResolvedValue({
             success: true,
             markets: []
         });
@@ -186,8 +180,5 @@ describe('readMarkets action', () => {
         expect(receivedResponse.text).toContain('couldn\'t find any prediction markets');
         expect(receivedResponse.text).toContain('NonexistentTopic');
         expect(receivedResponse.thought).toBeDefined();
-
-        // Restore the original method
-        polymarketService.fetchMarkets = originalFetchMarkets;
     });
 });
