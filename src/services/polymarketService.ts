@@ -100,7 +100,7 @@ export class PolymarketService extends Service {
       const data = await response.json();
       
       // Transform API response to our internal format
-      const markets: PolymarketMarket[] = data.map((market: any) => {
+      const markets: PolymarketMarket[] = (data as any[]).map((market: any) => {
         let processedOutcomes: { name: string; price: number; clobTokenId: string }[] = [];
         try {
           const outcomeNames = typeof market.outcomes === 'string' ? JSON.parse(market.outcomes) : market.outcomes;
