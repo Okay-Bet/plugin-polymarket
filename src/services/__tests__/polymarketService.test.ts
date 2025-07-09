@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { PolymarketService } from '../polymarketService';
-import { OrderType } from '../../types';
+import { PolymarketService } from '../polymarketService.js';
+import { OrderType } from '../../types.js';
 
 const mockFetch = vi.fn();
 vi.stubGlobal('fetch', mockFetch);

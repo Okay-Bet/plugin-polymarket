@@ -15,7 +15,7 @@ import {
   RedeemResponse,
   RedeemablePosition,
   CTFContractInfo
-} from "../types";
+} from "../types.js";
 
 export class PolymarketService extends Service {
   static readonly serviceType = "polymarket";
@@ -74,20 +74,16 @@ export class PolymarketService extends Service {
     const API_FETCH_COUNT = '1000'; // Fixed count for fetching from Polymarket API
     
     try {
-      // Calculate date 3 days ago for filtering
-      const threeDaysAgo = new Date();
-      threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
-      const endDateMin = threeDaysAgo.toISOString().split('T')[0]; // Format as YYYY-MM-DD
-      
-      // Build query parameters
+      // Build query parameters with more flexible filtering
       const params = new URLSearchParams({
         limit: API_FETCH_COUNT, // Use fixed count for API request
         offset: '0',
         active: activeOnly.toString(),
         ascending: 'false',
-        end_date_min: endDateMin,
-        liquidity_num_min: '5000',
-        volume_num_min: '20000'
+        // Remove overly restrictive filters to get more markets
+        liquidity_num_min: '100',  // Reduced from 5000 to 100
+        volume_num_min: '50'       // Reduced from 20000 to 50
+        // Removed end_date_min to include markets with longer timeframes
       });
       
       // Make the API request
@@ -154,11 +150,44 @@ export class PolymarketService extends Service {
       let filteredMarkets = markets;
       if (query && query.trim() !== "") {
         const lowerCaseQuery = query.toLowerCase().trim();
-        filteredMarkets = markets.filter(m =>
-          (m.question && m.question.toLowerCase().includes(lowerCaseQuery)) ||
-          (m.description && m.description.toLowerCase().includes(lowerCaseQuery)) ||
-          (m.slug && m.slug.toLowerCase().replace(/-/g, ' ').includes(lowerCaseQuery))
-        );
+        
+        // Split query into individual terms for more flexible matching
+        const queryTerms = lowerCaseQuery.split(/\s+/).filter(term => term.length > 2); // Ignore very short terms
+        
+        filteredMarkets = markets.filter(m => {
+          const questionText = (m.question || "").toLowerCase();
+          const descriptionText = (m.description || "").toLowerCase();
+          const slugText = (m.slug || "").toLowerCase().replace(/-/g, ' ');
+          const combinedText = `${questionText} ${descriptionText} ${slugText}`;
+          
+          // Check if any query term matches
+          if (queryTerms.some(term => combinedText.includes(term))) {
+            return true;
+          }
+          
+          // Special handling for common synonyms and related terms
+          const synonymMap: { [key: string]: string[] } = {
+            'fed': ['federal', 'reserve', 'rate', 'interest', 'fomc', 'central', 'bank'],
+            'federal': ['fed', 'reserve', 'rate', 'interest', 'fomc'],
+            'election': ['vote', 'voting', 'candidate', 'president', 'governor', 'senate', 'house', 'political', 'politics', 'campaign'],
+            'weather': ['climate', 'temperature', 'rain', 'snow', 'storm', 'hurricane', 'tornado', 'drought', 'flood'],
+            'sports': ['football', 'basketball', 'baseball', 'soccer', 'tennis', 'golf', 'hockey', 'nfl', 'nba', 'mlb', 'nhl'],
+            'crypto': ['bitcoin', 'ethereum', 'cryptocurrency', 'btc', 'eth', 'blockchain'],
+            'bitcoin': ['btc', 'cryptocurrency', 'crypto'],
+            'trump': ['donald', 'president', 'republican', 'gop'],
+            'biden': ['joe', 'president', 'democrat', 'democratic']
+          };
+          
+          // Check synonyms
+          for (const term of queryTerms) {
+            const synonyms = synonymMap[term] || [];
+            if (synonyms.some(synonym => combinedText.includes(synonym))) {
+              return true;
+            }
+          }
+          
+          return false;
+        });
       }
 
       // Apply the user-specified limit to the filtered markets

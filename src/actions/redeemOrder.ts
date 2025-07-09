@@ -6,14 +6,14 @@ import {
     type Memory,
     type State,
 } from '@elizaos/core';
-import { PolymarketService } from '../services/polymarketService';
+import { PolymarketService } from '../services/polymarketService.js';
 import {
     RedeemOrderActionContent,
     RedeemOrderData,
     RedeemParams,
     RedeemablePosition,
     RedeemResponse
-} from '../types';
+} from '../types.js';
 
 export const redeemOrder: Action = {
     name: 'REDEEM_POLYMARKET_POSITIONS',

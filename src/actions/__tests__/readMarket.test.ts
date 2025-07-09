@@ -1,8 +1,8 @@
 import { describe, expect, it, beforeEach, vi } from 'vitest';
 import { type Memory, type State, type UUID, type HandlerCallback } from '@elizaos/core';
-import { readMarkets } from '../readMarkets';
-import { PolymarketService } from '../../services/polymarketService';
-import { PolymarketMarket } from '../../types';
+import { readMarkets } from '../readMarkets.js';
+import { PolymarketService } from '../../services/polymarketService.js';
+import { PolymarketMarket } from '../../types.js';
 
 describe('readMarkets action', () => {
     let mockState: State;

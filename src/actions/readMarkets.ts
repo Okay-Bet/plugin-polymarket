@@ -6,8 +6,8 @@ import {
     type HandlerCallback,
     elizaLogger
 } from "@elizaos/core";
-import { PolymarketService } from "../services/polymarketService";
-import { ReadMarketsActionContent, ReadMarketsData } from "../types";
+import { PolymarketService } from "../services/polymarketService.js";
+import { ReadMarketsActionContent, ReadMarketsData } from "../types.js";
 
 export const readMarkets: Action = {
     name: "READ_POLYMARKET_MARKETS",
@@ -99,9 +99,41 @@ export const readMarkets: Action = {
     
             // Extract query if present
             let query = "";
-            const queryMatch = text.match(/about\s+["']([^"']+)["']/i) || text.match(/about\s+([\w\s]+)(?=[\.,\?]|$)/i);
-            if (queryMatch) {
-                query = queryMatch[1].trim();
+            
+            // Try multiple patterns to extract search terms
+            const patterns = [
+                // "about X" pattern
+                /about\s+["']([^"']+)["']/i,
+                /about\s+([\w\s]+?)(?=[\.,\?]|$)/i,
+                
+                // "X market" or "X prediction" patterns
+                /([\w\s]+?)\s+(?:prediction\s+)?market/i,
+                /([\w\s]+?)\s+prediction/i,
+                
+                // "fed decision", "election", "weather", etc.
+                /(?:tell me about|show me|find|get)\s+([\w\s]+?)(?:[\.,\?]|$)/i,
+                
+                // Direct topics: "weather", "sports", "election", "fed decision"
+                /^(weather|sports?|election|fed\s+decision|bitcoin|crypto|trump|biden|[\w\s]*election[\w\s]*|[\w\s]*fed[\w\s]*|[\w\s]*rate[\w\s]*|[\w\s]*weather[\w\s]*|[\w\s]*sports[\w\s]*)[\s\.,\?]*$/i
+            ];
+            
+            for (const pattern of patterns) {
+                const match = text.match(pattern);
+                if (match && match[1]) {
+                    query = match[1].trim();
+                    // Clean up common words from the beginning/end
+                    query = query.replace(/^(a|an|the|some|any)\s+/i, '');
+                    query = query.replace(/\s+(in|on|at|about)$/i, '');
+                    break;
+                }
+            }
+            
+            // If no specific pattern matched, try to extract meaningful keywords
+            if (!query) {
+                const keywords = text.match(/\b(weather|sports?|election|fed|federal|reserve|rate|bitcoin|crypto|trump|biden|climate|temperature|rain|snow|football|basketball|soccer|tennis|politics|vote|voting|candidate|president|governor|senate|house)\b/gi);
+                if (keywords && keywords.length > 0) {
+                    query = keywords.join(" ");
+                }
             }
             
             // Extract limit if present

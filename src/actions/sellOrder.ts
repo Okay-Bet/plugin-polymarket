@@ -6,7 +6,7 @@ import {
     type Memory,
     type State,
 } from '@elizaos/core';
-import { PolymarketService } from '../services/polymarketService';
+import { PolymarketService } from '../services/polymarketService.js';
 import {
     SellOrderActionContent,
     SellOrderData,
@@ -14,7 +14,7 @@ import {
     OrderType,
     OrderSide,
     OrderResponse
-} from '../types';
+} from '../types.js';
 
 export const sellOrder: Action = {
     name: 'SELL_POLYMARKET_ORDER',

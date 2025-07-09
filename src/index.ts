@@ -1,9 +1,9 @@
 import { type Plugin } from '@elizaos/core';
-import { readMarkets } from "./actions/readMarkets";
-import { buyOrder } from "./actions/buyOrder";
-import { sellOrder } from "./actions/sellOrder";
-import { redeemOrder } from "./actions/redeemOrder";
-import { PolymarketService } from "./services/polymarketService";
+import { readMarkets } from "./actions/readMarkets.js";
+import { buyOrder } from "./actions/buyOrder.js";
+import { sellOrder } from "./actions/sellOrder.js";
+import { redeemOrder } from "./actions/redeemOrder.js";
+import { PolymarketService } from "./services/polymarketService.js";
 
 const polymarketPlugin: Plugin = {
     name: "polymarket",
@@ -19,4 +19,6 @@ const polymarketPlugin: Plugin = {
         }
     },
 };
+
 export default polymarketPlugin;
+export { PolymarketService };
