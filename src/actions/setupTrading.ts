@@ -311,7 +311,7 @@ Generating L2 credentials from wallet signature...`,
 
         try {
           const client = await initializeClobClient(runtime);
-          const derivedCreds = await client.createOrDeriveApiKey();
+          const derivedCreds = await client.deriveApiKey();
 
           await runtime.setSetting("CLOB_API_KEY", derivedCreds.key);
           await runtime.setSetting("CLOB_API_SECRET", derivedCreds.secret);

@@ -1,53 +1,53 @@
-import { describe, it, expect, beforeEach, afterEach, mock } from 'bun:test';
+import { describe, it, expect, beforeEach, afterEach, mock } from 'vitest';
 import type { IAgentRuntime, Memory, State, Content } from '@elizaos/core';
 
 // Mock functions
 const mockLogger = {
-  info: mock(),
-  warn: mock(),
-  error: mock(),
+  info: vi.fn(),
+  warn: vi.fn(),
+  error: vi.fn(),
 };
 
 const mockWallet = {
   address: '0x1234567890123456789012345678901234567890',
-  signTransaction: mock(),
+  signTransaction: vi.fn(),
 };
 
 const mockProvider = {
-  getBalance: mock(),
+  getBalance: vi.fn(),
 };
 
 const mockContract = {
-  redeemPositions: mock(),
-  wait: mock(),
-  payoutNumerators: mock(),
-  payoutDenominator: mock(),
+  redeemPositions: vi.fn(),
+  wait: vi.fn(),
+  payoutNumerators: vi.fn(),
+  payoutDenominator: vi.fn(),
   // Specific function signature used in the action
-  'redeemPositions(address,bytes32,bytes32,uint256[])': mock(),
+  'redeemPositions(address,bytes32,bytes32,uint256[])': vi.fn(),
 };
 
 const mockTransaction = {
   hash: '0xabcdef123456',
-  wait: mock(),
+  wait: vi.fn(),
 };
 
 // Mock modules
-mock.module('@elizaos/core', () => ({
+vi.mock('@elizaos/core', () => ({
   ...require('@elizaos/core'),
   logger: mockLogger,
 }));
 
-mock.module('ethers', () => ({
+vi.mock('ethers', () => ({
   ...require('ethers'),
-  Wallet: mock(() => mockWallet),
-  JsonRpcProvider: mock(() => mockProvider),
-  Contract: mock(() => mockContract),
-  parseUnits: mock((value: string, decimals: number) => value + '0'.repeat(decimals)),
+  Wallet: vi.fn(() => mockWallet),
+  JsonRpcProvider: vi.fn(() => mockProvider),
+  Contract: vi.fn(() => mockContract),
+  parseUnits: vi.fn((value: string, decimals: number) => value + '0'.repeat(decimals)),
   ZeroHash: '0x0000000000000000000000000000000000000000000000000000000000000000',
 }));
 
 // Mock fetch globally
-global.fetch = mock();
+global.fetch = vi.fn();
 
 // Import after mocking
 import { redeemWinningsAction } from '../../../../src/actions/redeemWinnings';
@@ -97,7 +97,7 @@ describe('redeemWinningsAction', () => {
     global.fetch.mockClear();
 
     mockRuntime = {
-      getSetting: mock((key: string) => {
+      getSetting: vi.fn((key: string) => {
         const settings: Record<string, string> = {
           WALLET_PRIVATE_KEY: '0x' + '0'.repeat(64),
           PRIVATE_KEY: '0x' + '0'.repeat(64),
@@ -114,7 +114,7 @@ describe('redeemWinningsAction', () => {
     } as Memory;
 
     mockState = {} as State;
-    mockCallback = mock();
+    mockCallback = vi.fn();
 
     // Default mocks
     mockContract.redeemPositions.mockResolvedValue(mockTransaction);
@@ -194,14 +194,14 @@ describe('redeemWinningsAction', () => {
     });
 
     it('should fail validation without private key', async () => {
-      mockRuntime.getSetting = mock(() => undefined);
+      mockRuntime.getSetting = vi.fn(() => undefined);
       mockMessage.content.text = 'redeem my winnings';
       const result = await redeemWinningsAction.validate(mockRuntime, mockMessage, mockState);
       expect(result).toBe(false);
     });
 
     it('should validate with alternative private key settings', async () => {
-      mockRuntime.getSetting = mock((key: string) => {
+      mockRuntime.getSetting = vi.fn((key: string) => {
         if (key === 'POLYMARKET_PRIVATE_KEY') return '0x' + '1'.repeat(64);
         return undefined;
       });
@@ -398,7 +398,7 @@ describe('redeemWinningsAction', () => {
 
   describe('Error Handling', () => {
     it('should handle missing private key', async () => {
-      mockRuntime.getSetting = mock(() => undefined);
+      mockRuntime.getSetting = vi.fn(() => undefined);
 
       await expect(
         redeemWinningsAction.handler(mockRuntime, mockMessage, mockState, {}, mockCallback)

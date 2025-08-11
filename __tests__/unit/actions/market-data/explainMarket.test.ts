@@ -1,27 +1,27 @@
-import { describe, it, expect, mock, beforeEach, afterEach } from 'bun:test';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { IAgentRuntime, Memory, State, Content } from '@elizaos/core';
 import type { Market } from '../../../../src/types';
 
 // Mock functions
-const mockGetMarket = mock();
-const mockInitializeClobClient = mock();
-const mockCallLLMWithTimeout = mock();
+const mockGetMarket = vi.fn();
+const mockInitializeClobClient = vi.fn();
+const mockCallLLMWithTimeout = vi.fn();
 const mockLogger = {
-  info: mock(),
-  warn: mock(),
-  error: mock(),
+  info: vi.fn(),
+  warn: vi.fn(),
+  error: vi.fn(),
 };
 
 // Mock modules
-mock.module('../../../../src/utils/clobClient', () => ({
+vi.mock('../../../../src/utils/clobClient', () => ({
   initializeClobClient: mockInitializeClobClient,
 }));
 
-mock.module('../../../../src/utils/llmHelpers', () => ({
+vi.mock('../../../../src/utils/llmHelpers', () => ({
   callLLMWithTimeout: mockCallLLMWithTimeout,
 }));
 
-mock.module('@elizaos/core', () => ({
+vi.mock('@elizaos/core', () => ({
   ...require('@elizaos/core'),
   logger: mockLogger,
 }));
@@ -81,7 +81,7 @@ describe('explainMarketAction', () => {
     mockLogger.error.mockClear();
 
     mockRuntime = {
-      getSetting: mock(),
+      getSetting: vi.fn(),
     } as unknown as IAgentRuntime;
 
     mockMessage = {
@@ -351,7 +351,7 @@ describe('explainMarketAction', () => {
     });
 
     it('should handle callback function properly on success', async () => {
-      const mockCallback = mock();
+      const mockCallback = vi.fn();
       const mockLLMResult = {
         marketId: '0x1234567890abcdef1234567890abcdef12345678901234567890abcdef12345678',
       };
@@ -372,7 +372,7 @@ describe('explainMarketAction', () => {
     });
 
     it('should handle callback function properly on error', async () => {
-      const mockCallback = mock();
+      const mockCallback = vi.fn();
       const mockLLMResult = {
         error: 'No market ID found',
       };

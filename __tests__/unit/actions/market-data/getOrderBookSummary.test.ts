@@ -1,4 +1,4 @@
-import { describe, it, expect, mock, beforeEach, afterEach } from 'bun:test';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { IAgentRuntime, Memory, State, Content } from '@elizaos/core';
 import type { OrderBook } from '../../../../src/types';
 
@@ -8,19 +8,19 @@ import { initializeClobClient } from '../../../../src/utils/clobClient';
 import { callLLMWithTimeout } from '../../../../src/utils/llmHelpers';
 
 // Mock dependencies
-mock.module('../../../../src/utils/clobClient', () => ({
-  initializeClobClient: mock(),
+vi.mock('../../../../src/utils/clobClient', () => ({
+  initializeClobClient: vi.fn(),
 }));
-mock.module('../../../../src/utils/llmHelpers', () => ({
-  callLLMWithTimeout: mock(),
+vi.mock('../../../../src/utils/llmHelpers', () => ({
+  callLLMWithTimeout: vi.fn(),
 }));
 
 // Mock logger
-mock.module('@elizaos/core', () => ({
+vi.mock('@elizaos/core', () => ({
   logger: {
-    info: mock(),
-    warn: mock(),
-    error: mock(),
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
   },
 }));
 
@@ -51,7 +51,7 @@ describe('getOrderBookSummaryAction', () => {
 
   beforeEach(() => {
     mockRuntime = {
-      getSetting: mock(),
+      getSetting: vi.fn(),
     } as unknown as IAgentRuntime;
 
     // Clear individual mocks after setup
@@ -78,7 +78,7 @@ describe('getOrderBookSummaryAction', () => {
     } as unknown as State;
 
     mockClobClient = {
-      getOrderBooks: mock().mockImplementation((orders) => {
+      getOrderBooks: vi.fn().mockImplementation((orders) => {
         if (orders[0].side === 'buy') {
           return [{ 
             ...mockOrderBook,
@@ -344,7 +344,7 @@ describe('getOrderBookSummaryAction', () => {
     });
 
     it('should handle callback function properly on success', async () => {
-      const mockCallback = mock();
+      const mockCallback = vi.fn();
       const mockLLMResult = {
         tokenId: '123456',
       };
@@ -365,7 +365,7 @@ describe('getOrderBookSummaryAction', () => {
     });
 
     it('should handle callback function properly on error', async () => {
-      const mockCallback = mock();
+      const mockCallback = vi.fn();
       const mockLLMResult = {
         error: 'No token ID found',
       };

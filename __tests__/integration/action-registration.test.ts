@@ -10,7 +10,7 @@ import {
   createMockRuntime,
   createMockMessage,
   createMockState,
-} from './utils/core-test-utils';
+} from './test-utils';
 
 // Setup environment variables
 dotenv.config();
@@ -28,7 +28,7 @@ afterAll(() => {
 
 describe('Actions', () => {
   // Find the main Polymarket action from the plugin
-  const polymarketAction = plugin.actions?.find((action) => action.name === 'POLYMARKET_GET_ALL_MARKETS');
+  const polymarketAction = plugin.actions?.find((action) => action.name === 'SYNC_POLYMARKET_MARKETS');
 
   // Run core tests on all plugin actions
   it('should pass core action tests', () => {
@@ -44,7 +44,7 @@ describe('Actions', () => {
     }
   });
 
-  describe('POLYMARKET_GET_ALL_MARKETS Action', () => {
+  describe('SYNC_POLYMARKET_MARKETS Action', () => {
     it('should exist in the plugin', () => {
       expect(polymarketAction).toBeDefined();
     });
@@ -92,7 +92,7 @@ describe('Actions', () => {
     it('should return true from validate function', async () => {
       if (polymarketAction) {
         const runtime = createMockRuntime();
-        const mockMessage = createMockMessage('Show me markets');
+        const mockMessage = createMockMessage({ content: { text: 'Show me markets' } });
         const mockState = createMockState();
 
         let result = false;
@@ -106,14 +106,14 @@ describe('Actions', () => {
           logger.error('Validate function error:', e);
         }
 
-        documentTestResult('POLYMARKET_GET_ALL_MARKETS action validate', result, error);
+        documentTestResult('SYNC_POLYMARKET_MARKETS action validate', { result, error });
       }
     });
 
     it('should call back with market data response from handler', async () => {
       if (polymarketAction) {
         const runtime = createMockRuntime();
-        const mockMessage = createMockMessage('Show me markets');
+        const mockMessage = createMockMessage({ content: { text: 'Show me markets' } });
         const mockState = createMockState();
 
         let callbackResponse: any = {};
@@ -141,7 +141,7 @@ describe('Actions', () => {
           logger.error('Handler function error:', e);
         }
 
-        documentTestResult('POLYMARKET_GET_ALL_MARKETS action handler', callbackResponse, error);
+        documentTestResult('SYNC_POLYMARKET_MARKETS action handler', { callbackResponse, error });
       }
     });
   });

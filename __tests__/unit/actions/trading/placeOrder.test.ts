@@ -42,6 +42,7 @@ describe('placeOrderAction', () => {
         };
         return settings[key];
       }),
+      setSetting: vi.fn(),
     } as any;
 
     mockMessage = {
@@ -56,6 +57,13 @@ describe('placeOrderAction', () => {
     mockClient = {
       createOrder: vi.fn(),
       postOrder: vi.fn(),
+      deriveApiKey: vi.fn().mockResolvedValue({
+        key: 'test-api-key',
+        secret: 'test-api-secret',
+        passphrase: 'test-api-passphrase'
+      }),
+      isApiKeySet: vi.fn().mockResolvedValue(false),
+      setApiCreds: vi.fn(),
     };
 
     vi.mocked(clobClient.initializeClobClient).mockResolvedValue(mockClient);

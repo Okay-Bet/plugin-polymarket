@@ -6,9 +6,8 @@ import {
   createMockState as createCoreMockState,
   documentTestResult,
   runCoreActionTests,
-} from './utils/core-test-utils';
-import { character } from '../src/index';
-import plugin from '../src/plugin';
+} from './core-test-utils';
+import plugin from '../../src/plugin';
 
 /**
  * Creates an enhanced mock runtime for testing that includes the project's

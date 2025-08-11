@@ -13,7 +13,7 @@ import type { IAgentRuntime, Memory, State } from '@elizaos/core';
 import { createTestRuntime, createTestMemory } from './test-utils';
 
 // Import approval action
-import { approveUSDCAction } from '../src/actions/approveUSDC';
+import { approveUSDCAction } from '../../../../src/actions/approveUSDC';
 
 describe('🔧 USDC Approval Test Suite', () => {
   let runtime: IAgentRuntime;

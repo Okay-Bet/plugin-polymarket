@@ -6,11 +6,17 @@ export default defineConfig({
     environment: 'node',
     globals: true,
     testTimeout: 60000,
+    include: ['__tests__/**/*.test.ts'],
     exclude: ['**/e2e/**', '**/node_modules/**'],
+    deps: {
+      interopDefault: true,
+    },
   },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      '@elizaos/core': path.resolve(__dirname, './node_modules/@elizaos/core/dist/index.js'),
     },
+    conditions: ['node', 'import', 'default'],
   },
 });

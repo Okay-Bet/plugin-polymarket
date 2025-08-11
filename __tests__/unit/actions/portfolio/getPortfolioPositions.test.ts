@@ -1,4 +1,4 @@
-import { describe, it, expect, mock, beforeEach, afterEach } from 'bun:test';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { IAgentRuntime, Memory, State, HandlerCallback } from '@elizaos/core';
 
 // Import after mocks
@@ -6,8 +6,8 @@ import { getPortfolioPositionsAction } from '../../../../src/actions/getPortfoli
 import * as clobClient from '../../../../src/utils/clobClient';
 
 // Mock the CLOB client
-mock.module('../../../../src/utils/clobClient', () => ({
-    initializeClobClient: mock(),
+vi.mock('../../../../src/utils/clobClient', () => ({
+    initializeClobClient: vi.fn(),
 }));
 
 describe('getPortfolioPositions Action', () => {
@@ -20,7 +20,7 @@ describe('getPortfolioPositions Action', () => {
     beforeEach(() => {
         // Setup mock runtime with settings
         mockRuntime = {
-            getSetting: mock((key: string) => {
+            getSetting: vi.fn((key: string) => {
                 const settings: Record<string, string> = {
                     WALLET_PRIVATE_KEY: '0x' + '0'.repeat(64),
                     CLOB_API_URL: 'https://clob.polymarket.com',
@@ -36,7 +36,7 @@ describe('getPortfolioPositions Action', () => {
             },
         } as any;
 
-        mockCallback = mock();
+        mockCallback = vi.fn();
         
         mockMemory = {
             userId: 'user-123',
@@ -49,8 +49,8 @@ describe('getPortfolioPositions Action', () => {
 
         // Setup mock CLOB client
         mockClient = {
-            getOpenPositions: mock(),
-            getMappedMetadata: mock(),
+            getOpenPositions: vi.fn(),
+            getMappedMetadata: vi.fn(),
             wallet: {
                 address: '0x1234567890123456789012345678901234567890'
             }
@@ -75,7 +75,7 @@ describe('getPortfolioPositions Action', () => {
         });
 
         it('should fail validation when no wallet key is configured', async () => {
-            mockRuntime.getSetting = mock(() => undefined);
+            mockRuntime.getSetting = vi.fn(() => undefined);
             
             const result = await getPortfolioPositionsAction.validate(mockRuntime, mockMemory, mockState);
             expect(result).toBe(false);

@@ -12,7 +12,7 @@ import { describe, it, expect, beforeAll } from 'vitest';
 import { createTestRuntime } from './test-utils';
 
 // Direct API test - use the actual CLOB client and actions
-import { initializeClobClient } from '../src/utils/clobClient';
+import { initializeClobClient } from '../../src/utils/clobClient';
 
 // Test environment configuration
 const testEnvVars = {

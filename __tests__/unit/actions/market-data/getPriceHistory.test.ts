@@ -1,4 +1,4 @@
-import { describe, it, expect, mock, beforeEach } from 'bun:test';
+import { describe, it, expect, mock, beforeEach } from 'vitest';
 import type { IAgentRuntime, Memory, State } from '@elizaos/core';
 import type { PricePoint } from '../../../../src/utils/clobClient';
 
@@ -8,11 +8,11 @@ import { initializeClobClient } from '../../../../src/utils/clobClient';
 import { callLLMWithTimeout } from '../../../../src/utils/llmHelpers';
 
 // Mock the dependencies
-mock.module('../../../../src/utils/clobClient', () => ({
-  initializeClobClient: mock(),
+vi.mock('../../../../src/utils/clobClient', () => ({
+  initializeClobClient: vi.fn(),
 }));
-mock.module('../../../../src/utils/llmHelpers', () => ({
-  callLLMWithTimeout: mock(),
+vi.mock('../../../../src/utils/llmHelpers', () => ({
+  callLLMWithTimeout: vi.fn(),
 }));
 
 describe('getPriceHistory Action', () => {
@@ -25,7 +25,7 @@ describe('getPriceHistory Action', () => {
   beforeEach(() => {
     // Mock runtime
     mockRuntime = {
-      getSetting: mock(),
+      getSetting: vi.fn(),
       agentId: 'test-agent',
       serverUrl: 'http://localhost:3000',
       token: 'test-token',
@@ -45,11 +45,11 @@ describe('getPriceHistory Action', () => {
     mockState = {} as State;
 
     // Mock callback
-    mockCallback = mock();
+    mockCallback = vi.fn();
 
     // Mock CLOB client
     mockClobClient = {
-      getPricesHistory: mock(),
+      getPricesHistory: vi.fn(),
     };
 
     (initializeClobClient as any).mockResolvedValue(mockClobClient);

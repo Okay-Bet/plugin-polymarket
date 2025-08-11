@@ -378,7 +378,7 @@ Deriving credentials...`,
 
         try {
           const client = await initializeClobClient(runtime);
-          const derivedCreds = await client.createOrDeriveApiKey();
+          const derivedCreds = await client.deriveApiKey();
 
           // Store the derived credentials in runtime
           await runtime.setSetting("CLOB_API_KEY", derivedCreds.key);

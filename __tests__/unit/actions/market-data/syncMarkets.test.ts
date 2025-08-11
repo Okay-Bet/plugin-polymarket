@@ -1,16 +1,16 @@
-import { describe, it, expect, mock, beforeEach } from 'bun:test';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { IAgentRuntime, Memory, State } from '@elizaos/core';
 
 // Import after mocks
-import { retrieveAllMarketsAction } from '../../../../src/actions/retrieveAllMarkets';
+import { syncMarketsAction as retrieveAllMarketsAction } from '../../../../src/actions/syncMarkets';
 
 // Mock the dependencies
-mock.module('../../../../src/utils/llmHelpers', () => ({
-  callLLMWithTimeout: mock(),
+vi.mock('../../../../src/utils/llmHelpers', () => ({
+  callLLMWithTimeout: vi.fn(),
 }));
 
-mock.module('../../../../src/utils/clobClient', () => ({
-  initializeClobClient: mock(),
+vi.mock('../../../../src/utils/clobClient', () => ({
+  initializeClobClient: vi.fn(),
 }));
 
 describe('retrieveAllMarketsAction', () => {
@@ -21,8 +21,8 @@ describe('retrieveAllMarketsAction', () => {
 
   beforeEach(() => {
     mockRuntime = {
-      getSetting: mock(),
-      useModel: mock(),
+      getSetting: vi.fn(),
+      useModel: vi.fn(),
     } as any;
 
     mockMessage = {
@@ -46,7 +46,7 @@ describe('retrieveAllMarketsAction', () => {
       responseData: {},
     };
 
-    mockCallback = mock();
+    mockCallback = vi.fn();
   });
 
   describe('validate', () => {
@@ -93,7 +93,7 @@ describe('retrieveAllMarketsAction', () => {
       };
 
       const mockClobClient = {
-        getMarkets: mock().mockResolvedValue(mockResponse),
+        getMarkets: vi.fn().mockResolvedValue(mockResponse),
       };
 
       (mockRuntime.getSetting as any).mockReturnValue('https://clob.polymarket.com');
@@ -130,7 +130,7 @@ describe('retrieveAllMarketsAction', () => {
       };
 
       const mockClobClient = {
-        getMarkets: mock().mockResolvedValue(mockResponse),
+        getMarkets: vi.fn().mockResolvedValue(mockResponse),
       };
 
       (mockRuntime.getSetting as any).mockReturnValue('https://clob.polymarket.com');

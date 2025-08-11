@@ -1,4 +1,4 @@
-import { describe, it, expect, mock, beforeEach } from 'bun:test';
+import { describe, it, expect, mock, beforeEach } from 'vitest';
 import type { IAgentRuntime, Memory, State } from '@elizaos/core';
 
 // Import after mocks
@@ -7,11 +7,11 @@ import { initializeClobClient } from '../../../../src/utils/clobClient';
 import { callLLMWithTimeout } from '../../../../src/utils/llmHelpers';
 
 // Mock the dependencies
-mock.module('../../../../src/utils/clobClient', () => ({
-  initializeClobClient: mock(),
+vi.mock('../../../../src/utils/clobClient', () => ({
+  initializeClobClient: vi.fn(),
 }));
-mock.module('../../../../src/utils/llmHelpers', () => ({
-  callLLMWithTimeout: mock(),
+vi.mock('../../../../src/utils/llmHelpers', () => ({
+  callLLMWithTimeout: vi.fn(),
 }));
 
 describe('getSamplingMarkets Action', () => {
@@ -24,7 +24,7 @@ describe('getSamplingMarkets Action', () => {
   beforeEach(() => {
     // Mock runtime
     mockRuntime = {
-      getSetting: mock().mockReturnValue('https://clob.polymarket.com'),
+      getSetting: vi.fn().mockReturnValue('https://clob.polymarket.com'),
     } as any;
 
     // Mock message
@@ -42,11 +42,11 @@ describe('getSamplingMarkets Action', () => {
     mockState = {} as State;
 
     // Mock callback
-    mockCallback = mock();
+    mockCallback = vi.fn();
 
     // Mock CLOB client
     mockClobClient = {
-      getSamplingMarkets: mock(),
+      getSamplingMarkets: vi.fn(),
     };
 
     (initializeClobClient as any).mockResolvedValue(mockClobClient);

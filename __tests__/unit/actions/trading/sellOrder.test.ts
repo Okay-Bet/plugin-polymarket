@@ -10,18 +10,31 @@ const envPath = path.resolve(__dirname, '../../.env');
 console.log(`Loading env from: ${envPath}`);
 config({ path: envPath });
 
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeAll, vi } from 'vitest';
 import type { IAgentRuntime } from '@elizaos/core';
 
+// Mock the clobClient before importing it
+vi.mock('../../../../src/utils/clobClient', () => ({
+  initializeClobClient: vi.fn().mockResolvedValue({
+    isApiKeySet: vi.fn().mockResolvedValue(true),
+    deriveApiKey: vi.fn().mockResolvedValue({ apiKey: 'test-key', secret: 'test-secret', passphrase: 'test-pass' }),
+    setApiCreds: vi.fn(),
+    getPositions: vi.fn().mockResolvedValue([]),
+    getMarkets: vi.fn().mockResolvedValue([]),
+    createMarketBuyOrder: vi.fn().mockResolvedValue({ success: true, orderId: 'test-order-1' }),
+    createMarketSellOrder: vi.fn().mockResolvedValue({ success: true, orderId: 'test-order-2' }),
+  })
+}));
+
 // Core actions
-import { directPlaceOrderAction } from '../src/actions/directPlaceOrder';
-import { directSellOrderAction } from '../src/actions/directSellOrder';
-import { getPortfolioPositionsAction } from '../src/actions/getPortfolioPositions';
-import { setupTradingAction } from '../src/actions/setupTrading';
+import { placeOrderAction } from '../../../../src/actions/placeOrder';
+import { sellOrderAction } from '../../../../src/actions/sellOrder';
+import { getPortfolioPositionsAction } from '../../../../src/actions/getPortfolioPositions';
+import { setupTradingAction } from '../../../../src/actions/setupTrading';
 
 // Utils
-import { createTestRuntime } from './test-utils';
-import { initializeClobClient } from '../src/utils/clobClient';
+import { createMockRuntime } from './test-utils';
+import { initializeClobClient } from '../../../../src/utils/clobClient';
 
 // Test market for buy-to-sell workflow
 const TRADING_MARKET = {
@@ -52,7 +65,7 @@ describe('💰 Direct Selling System Test', () => {
     console.log(`📈 Strategy: Buy ${TRADING_MARKET.BUY_SIZE} @ $${TRADING_MARKET.BUY_PRICE} → Sell @ $${TRADING_MARKET.SELL_PRICE}`);
     console.log(`💵 Expected Profit: $${TRADING_MARKET.EXPECTED_PROFIT}`);
     
-    runtime = await createTestRuntime({
+    runtime = await createMockRuntime({
       POLYMARKET_PRIVATE_KEY: process.env.POLYMARKET_PRIVATE_KEY || '',
       WALLET_PRIVATE_KEY: process.env.WALLET_PRIVATE_KEY || '',
       CLOB_API_URL: process.env.CLOB_API_URL || 'https://clob.polymarket.com',
