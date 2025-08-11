@@ -210,11 +210,11 @@ ${needsApprovals ? "🔧 Setting missing approvals..." : "✅ All approvals alre
 
       // Step 2: Set approvals efficiently (batch transactions)
       if (needsApprovals) {
-        const transactions = [];
+        const transactions: { step: string; txHash: string }[] = [];
         const gasLimit = 100000;
 
         // Batch all needed approvals
-        const approvalPromises = [];
+        const approvalPromises: Promise<{ step: string; txHash: string }>[] = [];
 
         if (usdcForCTF == 0) {
           approvalPromises.push(

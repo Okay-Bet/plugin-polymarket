@@ -215,7 +215,7 @@ Please check:
         },
       };
 
-      return createErrorResult(error, errorContent);
+      return createErrorResult(error instanceof Error ? error.message : String(error), errorContent);
     }
   },
 

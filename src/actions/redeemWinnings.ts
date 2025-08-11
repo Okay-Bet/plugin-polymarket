@@ -308,7 +308,13 @@ export const redeemWinningsAction: Action = {
       }
 
       // Process redemptions
-      const redemptionResults = [];
+      const redemptionResults: Array<{
+        market: string;
+        txHash: string;
+        status: string;
+        type?: string;
+        error?: string;
+      }> = [];
       let totalRedeemed = 0;
 
       for (const market of resolvedMarkets) {
@@ -428,6 +434,7 @@ export const redeemWinningsAction: Action = {
           
           redemptionResults.push({
             market: market.question,
+            txHash: "", // No tx hash for failed redemption
             error: error instanceof Error ? error.message : "Unknown error",
             status: "failed",
           });

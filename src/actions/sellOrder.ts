@@ -529,8 +529,8 @@ Please ensure your wallet is properly configured and try again.`,
             
             // Calculate total liquidity across multiple price levels
             let totalLiquidity = 0;
-            let depthInfo = [];
-            let liquidityAtPrices = [];
+            let depthInfo: string[] = [];
+            let liquidityAtPrices: Array<{ price: number; size: number; cumulative: number }> = [];
             for (let i = 0; i < Math.min(5, sortedBids.length); i++) {
               const bid = sortedBids[i];
               const bidPrice = parseFloat(bid.price);

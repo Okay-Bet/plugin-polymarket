@@ -40,6 +40,7 @@ import { redeemWinningsAction } from "./actions/redeemWinnings";
 import { polymarketSchema } from "./schema";
 import { MarketSyncService } from "./services/MarketSyncService";
 import { MarketDetailService } from "./services/MarketDetailService";
+import { pluginTests } from "./tests";
 import { marketDataProvider } from "./providers/marketDataProvider";
 
 /**
@@ -267,6 +268,7 @@ const plugin: Plugin = {
     // handleRealtimeUpdatesAction, // REQUIRES L2
   ],
   providers: [polymarketProvider, marketDataProvider],
+  tests: pluginTests,
 };
 
 export default plugin;

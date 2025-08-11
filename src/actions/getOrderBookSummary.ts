@@ -139,7 +139,7 @@ Please provide a token ID in your request. For example:
         error.message ===
           "Token identifier not found. Please specify a token ID for the order book."
       ) {
-        return createErrorResult(error);
+        return createErrorResult(error instanceof Error ? error.message : String(error));
       }
 
       logger.warn(`[getOrderBookSummaryAction] LLM extraction failed, trying regex fallback`);
@@ -317,7 +317,7 @@ Please check:
       if (callback) {
         await callback(errorContent);
       }
-      return createErrorResult(error);
+      return createErrorResult(error instanceof Error ? error.message : String(error));
     }
   },
 

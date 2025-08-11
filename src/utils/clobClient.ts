@@ -20,6 +20,51 @@ export interface BookParams {
 }
 
 /**
+ * Initialize CLOB client for read-only operations (no private key required)
+ * @param runtime - The agent runtime containing configuration
+ * @returns Configured CLOB client instance for read-only operations
+ */
+export async function initializeReadOnlyClobClient(
+  runtime: IAgentRuntime,
+): Promise<ClobClient> {
+  const clobApiUrl =
+    runtime.getSetting("CLOB_API_URL") || "https://clob.polymarket.com";
+  
+  logger.info(`[initializeReadOnlyClobClient] Initializing read-only CLOB client:`, {
+    httpUrl: clobApiUrl,
+    authType: "None (read-only)",
+  });
+
+  try {
+    // Create a dummy wallet for read-only operations
+    const dummyPrivateKey = "0x0000000000000000000000000000000000000000000000000000000000000001";
+    const wallet = new ethers.Wallet(dummyPrivateKey);
+    const enhancedWallet = {
+      ...wallet,
+      _signTypedData: async (domain: any, types: any, value: any) =>
+        wallet.signTypedData(domain, types, value),
+      getAddress: async () => wallet.address,
+    };
+
+    const client = new ClobClient(
+      clobApiUrl,
+      137, // Polygon chain ID
+      enhancedWallet as any,
+      undefined, // No API credentials for read-only
+      SignatureType.EOA,
+    );
+
+    logger.info(`[initializeReadOnlyClobClient] Read-only CLOB client initialized successfully.`);
+    return client;
+  } catch (error) {
+    logger.error(`[initializeReadOnlyClobClient] Failed to initialize read-only CLOB client: ${error}`);
+    throw new Error(
+      `Failed to initialize read-only CLOB client: ${error instanceof Error ? error.message : "Unknown error"}`,
+    );
+  }
+}
+
+/**
  * Initialize CLOB client with wallet-based authentication and optional API credentials
  * @param runtime - The agent runtime containing configuration
  * @returns Configured CLOB client instance
@@ -39,9 +84,9 @@ export async function initializeClobClient(
     runtime.getSetting("POLYMARKET_PRIVATE_KEY");
 
   if (!privateKey) {
-    throw new Error(
-      "No private key found. Please set WALLET_PRIVATE_KEY, PRIVATE_KEY, or POLYMARKET_PRIVATE_KEY in your environment",
-    );
+    // Fall back to read-only client if no private key is provided
+    logger.warn("No private key found. Initializing read-only CLOB client. Trading features will be disabled.");
+    return initializeReadOnlyClobClient(runtime);
   }
 
   // Check for API credentials
@@ -150,7 +195,7 @@ export async function initializeClobClientWithCreds(
   );
 
   if (!apiKey || !apiSecret || !apiPassphrase) {
-    const missing = [];
+    const missing: string[] = [];
     if (!apiKey) missing.push("CLOB_API_KEY");
     if (!apiSecret) missing.push("CLOB_API_SECRET or CLOB_SECRET");
     if (!apiPassphrase) missing.push("CLOB_API_PASSPHRASE or CLOB_PASS_PHRASE");

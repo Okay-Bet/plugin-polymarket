@@ -43,7 +43,7 @@ export { getDepositAddressAction } from "./actions/getDepositAddress";
 
 
 // Export utilities and services for advanced use cases
-export { initializeClobClient } from "./utils/clobClient";
+export { initializeClobClient, initializeReadOnlyClobClient } from "./utils/clobClient";
 export { callLLMWithTimeout } from "./utils/llmHelpers";
 export { PolymarketService } from "./plugin";
 export { MarketDetailService } from "./services/MarketDetailService";
@@ -208,4 +208,8 @@ const project: Project = {
   agents: [projectAgent],
 };
 
-export default project;
+// Export plugin directly for elizaos test compatibility
+export default polymarketPlugin;
+
+// Also export project for normal usage
+export { project };
