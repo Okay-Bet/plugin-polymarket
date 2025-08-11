@@ -177,7 +177,7 @@ export const explainMarketAction: Action = {
             );
           }
         } catch (error) {
-          logger.warn("[explainMarketAction] Gamma API search failed:", error);
+          logger.warn(`[explainMarketAction] Gamma API search failed: ${error}`);
         }
       }
       
@@ -273,10 +273,10 @@ export const explainMarketAction: Action = {
             }
           }
         } catch (error) {
-          logger.warn("[explainMarketAction] Gamma API failed:", error);
+          logger.warn(`[explainMarketAction] Gamma API failed: ${error}`);
         }
       } catch (error) {
-        logger.warn("[explainMarketAction] Failed to fetch real-time prices:", error);
+        logger.warn(`[explainMarketAction] Failed to fetch real-time prices: ${error}`);
       }
       
       const endDate = market.endDateIso || market.end_date_iso || market.endDate 
@@ -343,7 +343,7 @@ Want me to place a bet? Just say YES or NO and how much!`;
       };
       
     } catch (error) {
-      logger.error("[explainMarketAction] Error:", error);
+      logger.error(`[explainMarketAction] Error: ${error}`);
       
       const errorContent: Content = {
         text: "Fuck, something went wrong pulling those market details. Let me try again in a sec.",

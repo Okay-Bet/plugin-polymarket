@@ -50,7 +50,7 @@ export async function callLLMWithTimeout<T = any>(
   const result = (await Promise.race([llmPromise, timeoutPromise])) as T;
 
   logger.info(`[${actionName}] LLM parameter extraction completed`);
-  logger.debug(`[${actionName}] Parsed LLM parameters:`, result);
+  logger.debug(`[${actionName}] Parsed LLM parameters: ${result}`);
 
   return result;
 }

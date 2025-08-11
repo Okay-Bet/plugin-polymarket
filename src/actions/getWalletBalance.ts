@@ -49,9 +49,7 @@ export const getWalletBalanceAction: Action = {
     message: Memory,
     state?: State,
   ): Promise<boolean> => {
-    logger.info(
-      `[getWalletBalanceAction] Validate called for message: "${message.content?.text}"`,
-    );
+    logger.info(`[getWalletBalanceAction] Validate called for message: "${message.content?.text}"`);
 
     // This action doesn't require any specific validation beyond having a wallet configured
     const privateKey =
@@ -99,12 +97,12 @@ export const getWalletBalanceAction: Action = {
       const tradingEnabled = runtime.getSetting("TRADING_ENABLED") !== "false";
 
       // Log the balance calculation for debugging
-      logger.info(`[getWalletBalanceAction] Balance calculation:`, {
+      logger.info(`[getWalletBalanceAction] Balance calculation: ${JSON.stringify({
         walletBalance: balanceInfo.usdcBalance,
         configuredMax: configuredMaxPosition,
         confidenceThreshold: minConfidenceThreshold,
         calculatedMax: maxPositionSize,
-      });
+      })}`);
 
       // Format balance display
       const balanceDisplay = parseFloat(balanceInfo.usdcBalance).toFixed(2);
@@ -163,7 +161,7 @@ ${
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error occurred";
-      logger.error(`[getWalletBalanceAction] Balance check error:`, error);
+      logger.error(`[getWalletBalanceAction] Balance check error: ${error}`);
 
       const errorContent: Content = {
         text: `❌ **Wallet Balance Check Failed**

@@ -57,7 +57,7 @@ export class MarketDetailService extends Service {
       logger.info("Market detail service started successfully");
       return service;
     } catch (error) {
-      logger.error("Failed to start market detail service:", error);
+      logger.error(`Failed to start market detail service: ${error}`);
       throw error;
     }
   }
@@ -107,9 +107,7 @@ export class MarketDetailService extends Service {
         throw new Error("CLOB client not initialized");
       }
 
-      logger.info(
-        `Fetching market detail from API for condition_id: ${conditionId}`,
-      );
+      logger.info(`Fetching market detail from API for condition_id: ${conditionId}`);
       const marketDetail = await this.clobClient.getMarket(conditionId);
 
       if (!marketDetail) {
@@ -125,7 +123,7 @@ export class MarketDetailService extends Service {
       logger.info(`Successfully fetched market detail for: ${conditionId}`);
       return marketDetail;
     } catch (error) {
-      logger.error(`Failed to get market detail for ${conditionId}:`, error);
+      logger.error(`Failed to get market detail for ${conditionId}: ${error}`);
       throw error;
     }
   }
@@ -152,9 +150,7 @@ export class MarketDetailService extends Service {
 
       const cleanSearchTerm = searchTerm.trim().toLowerCase();
       if (cleanSearchTerm.length > 100) {
-        logger.warn(
-          `Search term too long (${cleanSearchTerm.length} chars), truncating`,
-        );
+        logger.warn(`Search term too long (${cleanSearchTerm.length} chars), truncating`);
         const truncatedTerm = cleanSearchTerm.substring(0, 50);
         return this.searchMarkets(truncatedTerm, limit);
       }
@@ -169,11 +165,9 @@ export class MarketDetailService extends Service {
           .where(eq(polymarketMarketsTable.active, true))
           .limit(1);
 
-        logger.info(
-          `Database connection test passed, found ${testQuery.length} active markets in sample`,
-        );
+        logger.info(`Database connection test passed, found ${testQuery.length} active markets in sample`);
       } catch (testError) {
-        logger.error("Database table access failed:", testError);
+        logger.error(`Database table access failed: ${testError}`);
         return [];
       }
 
@@ -207,12 +201,10 @@ export class MarketDetailService extends Service {
         .limit(limit)
         .orderBy(sql`${polymarketMarketsTable.endDateIso} DESC`);
 
-      logger.info(
-        `Found ${markets.length} markets matching search term: "${searchTerm}"`,
-      );
+      logger.info(`Found ${markets.length} markets matching search term: "${searchTerm}"`);
       return markets;
     } catch (error) {
-      logger.error(`Failed to search markets for term "${searchTerm}":`, error);
+      logger.error(`Failed to search markets for term "${searchTerm}": ${error}`);
       // Instead of throwing, return empty array for graceful degradation
       return [];
     }
@@ -263,7 +255,7 @@ export class MarketDetailService extends Service {
       );
       return markets;
     } catch (error) {
-      logger.error(`Failed to get popular markets:`, error);
+      logger.error(`Failed to get popular markets: ${error}`);
       throw error;
     }
   }
@@ -296,7 +288,7 @@ export class MarketDetailService extends Service {
       logger.info(`Found ${categories.length} market categories`);
       return categories;
     } catch (error) {
-      logger.error("Failed to get market categories:", error);
+      logger.error(`Failed to get market categories: ${error}`);
       throw error;
     }
   }
@@ -339,10 +331,7 @@ export class MarketDetailService extends Service {
         tokens,
       };
     } catch (error) {
-      logger.error(
-        `Failed to get enhanced market info for ${conditionId}:`,
-        error,
-      );
+      logger.error(`Failed to get enhanced market info for ${conditionId}: ${error}`);
       throw error;
     }
   }
@@ -406,9 +395,7 @@ export class MarketDetailService extends Service {
       expiresAt,
     });
 
-    logger.debug(
-      `Cached market detail for ${conditionId}, expires at ${expiresAt.toISOString()}`,
-    );
+    logger.debug(`Cached market detail for ${conditionId}, expires at ${expiresAt.toISOString()}`);
   }
 
   /**

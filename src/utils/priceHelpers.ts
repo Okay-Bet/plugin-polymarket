@@ -166,7 +166,7 @@ export function extractOrderBookPrices(orderbook: any): {
       }
     }
   } catch (error) {
-    logger.error(`[priceHelpers] Error extracting orderbook prices:`, error);
+    logger.error(`[priceHelpers] Error extracting orderbook prices: ${error}`);
   }
 
   return { bestBid, bestAsk, bidSize, askSize };

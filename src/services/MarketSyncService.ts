@@ -66,17 +66,14 @@ export class MarketSyncService extends Service {
           await service.testDatabaseConnection();
           await service.performSync("startup");
         } catch (error) {
-          logger.warn(
-            "Initial startup sync failed, will retry on next scheduled sync:",
-            error,
-          );
+          logger.warn(`Initial startup sync failed, will retry on next scheduled sync: ${error}`);
         }
       }, 5000); // Wait 5 seconds before first sync attempt
 
       logger.info("Market sync service started successfully");
       return service;
     } catch (error) {
-      logger.error("Failed to start market sync service:", error);
+      logger.error(`Failed to start market sync service: ${error}`);
       throw error;
     }
   }
@@ -120,9 +117,7 @@ export class MarketSyncService extends Service {
       }
     }, this.SYNC_INTERVAL_MS);
 
-    logger.info(
-      `Recurring market sync scheduled every ${this.SYNC_INTERVAL_MS / 1000 / 60 / 60} hours (daily)`,
-    );
+    logger.info(`Recurring market sync scheduled every ${this.SYNC_INTERVAL_MS / 1000 / 60 / 60} hours (daily)`);
   }
 
   /**
@@ -143,9 +138,7 @@ export class MarketSyncService extends Service {
     // Check database availability first
     const db = (this.runtime as any).db;
     if (!db) {
-      logger.warn(
-        `Database not available for ${syncType} sync, will retry later`,
-      );
+      logger.warn(`Database not available for ${syncType} sync, will retry later`);
       this.isRunning = false;
       return;
     }
@@ -184,7 +177,7 @@ export class MarketSyncService extends Service {
             logger.info(`Sync progress: ${i + 1}/${totalMarkets} markets (${progress}%)`);
           }
         } catch (error) {
-          logger.error(`Failed to sync market ${market.condition_id}:`, error);
+          logger.error(`Failed to sync market ${market.condition_id}: ${error}`);
         }
       }
 
@@ -199,14 +192,12 @@ export class MarketSyncService extends Service {
       try {
         await this.cleanupOldMarkets();
       } catch (cleanupError) {
-        logger.error("Failed to cleanup old markets:", cleanupError);
+        logger.error(`Failed to cleanup old markets: ${cleanupError}`);
       }
 
-      logger.info(
-        `Market sync completed: ${syncedCount}/${markets.length} markets synced in ${duration}ms`,
-      );
+      logger.info(`Market sync completed: ${syncedCount}/${markets.length} markets synced in ${duration}ms`);
     } catch (error) {
-      logger.error("Market sync failed:", error);
+      logger.error(`Market sync failed: ${error}`);
       throw error;
     } finally {
       this.isRunning = false;
@@ -223,15 +214,11 @@ export class MarketSyncService extends Service {
     const gammaMarkets = await this.fetchFromGammaApi();
 
     if (gammaMarkets.length > 0) {
-      logger.info(
-        `Gamma API provided ${gammaMarkets.length} liquid markets`,
-      );
+      logger.info(`Gamma API provided ${gammaMarkets.length} liquid markets`);
       return gammaMarkets;
     }
 
-    logger.warn(
-      "Gamma API returned no markets - this may indicate an API issue or no markets meet $10k liquidity threshold",
-    );
+    logger.warn(`Gamma API returned no markets - this may indicate an API issue or no markets meet $10k liquidity threshold`);
     return [];
   }
 
@@ -373,9 +360,7 @@ export class MarketSyncService extends Service {
           // Keep markets with no end date (often perpetual/ongoing)
           if (!market.end_date_iso) {
             if (index < 3)
-              logger.info(
-                `Debug: Keeping market with no end date: "${market.question?.substring(0, 50)}"`,
-              );
+              logger.info(`Debug: Keeping market with no end date: "${market.question?.substring(0, 50)}"`);
             return true;
           }
 
@@ -390,18 +375,14 @@ export class MarketSyncService extends Service {
               const hoursAgo = Math.floor(
                 (now.getTime() - endDate.getTime()) / (60 * 60 * 1000),
               );
-              logger.info(
-                `Debug: Filtering out old market: "${market.question?.substring(0, 50)}" (ended ${hoursAgo} hours ago)`,
-              );
+              logger.info(`Debug: Filtering out old market: "${market.question?.substring(0, 50)}" (ended ${hoursAgo} hours ago)`);
             }
           } else {
             if (index < 3) {
               const hoursFromNow = Math.floor(
                 (endDate.getTime() - now.getTime()) / (60 * 60 * 1000),
               );
-              logger.info(
-                `Debug: Keeping future market: "${market.question?.substring(0, 50)}" (ends in ${hoursFromNow} hours)`,
-              );
+              logger.info(`Debug: Keeping future market: "${market.question?.substring(0, 50)}" (ends in ${hoursFromNow} hours)`);
             }
           }
 
@@ -409,25 +390,19 @@ export class MarketSyncService extends Service {
         },
       );
 
-      logger.info(
-        `Debug: Filtered out ${filteredOutCount} old markets, kept ${filteredMarkets.length} current markets`,
-      );
+      logger.info(`Debug: Filtered out ${filteredOutCount} old markets, kept ${filteredMarkets.length} current markets`);
 
-      logger.info(
-        `Gamma API: Transformed and filtered to ${filteredMarkets.length} current markets`,
-      );
+      logger.info(`Gamma API: Transformed and filtered to ${filteredMarkets.length} current markets`);
 
       // Log a few examples to verify the transformation
       if (filteredMarkets.length > 0) {
         const example = filteredMarkets[0];
-        logger.info(
-          `Example Gamma market: "${example.question?.substring(0, 50)}..." liquidity=$${example.liquidityNum?.toFixed(0)}`,
-        );
+        logger.info(`Example Gamma market: "${example.question?.substring(0, 50)}..." liquidity=$${example.liquidityNum?.toFixed(0)}`);
       }
 
       return filteredMarkets;
     } catch (error) {
-      logger.error("Failed to fetch from Gamma API:", error);
+      logger.error(`Failed to fetch from Gamma API: ${error}`);
       return []; // Return empty array instead of throwing
     }
   }
@@ -444,9 +419,7 @@ export class MarketSyncService extends Service {
     // Check if tables exist and create them if they don't
     const tablesExist = await checkPolymarketTablesExist(db);
     if (!tablesExist) {
-      logger.info(
-        "Polymarket tables do not exist, attempting to create them...",
-      );
+      logger.info(`Polymarket tables do not exist, attempting to create them...`);
       const initialized = await initializePolymarketTables(db);
       if (!initialized) {
         logger.error("Failed to initialize database tables, skipping sync");
@@ -714,10 +687,7 @@ export class MarketSyncService extends Service {
         }
       });
     } catch (error) {
-      logger.error(
-        `Failed to sync market ${market.condition_id} to database:`,
-        error,
-      );
+      logger.error(`Failed to sync market ${market.condition_id} to database: ${error}`);
 
       // If database sync fails, log the market data for manual inspection
       logger.info(`Market data that failed to sync:`, {
@@ -732,9 +702,7 @@ export class MarketSyncService extends Service {
       });
 
       // Don't throw error to prevent stopping the entire sync process
-      logger.warn(
-        `Continuing sync process despite database error for market ${market.condition_id}`,
-      );
+      logger.warn(`Continuing sync process despite database error for market ${market.condition_id}`);
     }
   }
 
@@ -761,7 +729,7 @@ export class MarketSyncService extends Service {
         
       logger.info("Marked all active markets for review");
     } catch (error) {
-      logger.error("Error marking markets for review:", error);
+      logger.error(`Error marking markets for review: ${error}`);
     }
   }
 
@@ -796,7 +764,7 @@ export class MarketSyncService extends Service {
         logger.info(`Marked ${result.rowCount} markets as inactive (no longer in active API results)`);
       }
     } catch (error) {
-      logger.error("Error handling inactive markets:", error);
+      logger.error(`Error handling inactive markets: ${error}`);
     }
   }
 
@@ -826,12 +794,10 @@ export class MarketSyncService extends Service {
         );
 
       if (deletedCount && deletedCount.rowCount > 0) {
-        logger.info(
-          `Cleaned up ${deletedCount.rowCount} old markets that ended before ${cleanupThreshold.toISOString()}`,
-        );
+        logger.info(`Cleaned up ${deletedCount.rowCount} old markets that ended before ${cleanupThreshold.toISOString()}`);
       }
     } catch (error) {
-      logger.error("Error during market cleanup:", error);
+      logger.error(`Error during market cleanup: ${error}`);
       throw error;
     }
   }
@@ -867,7 +833,7 @@ export class MarketSyncService extends Service {
 
       return result[0] || null;
     } catch (error) {
-      logger.error("Failed to get last sync info:", error);
+      logger.error(`Failed to get last sync info: ${error}`);
       return null;
     }
   }

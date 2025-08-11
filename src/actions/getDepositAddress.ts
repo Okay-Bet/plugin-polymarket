@@ -40,9 +40,7 @@ export const getDepositAddressAction: Action = {
     message: Memory,
     state?: State,
   ): Promise<boolean> => {
-    logger.info(
-      `[getDepositAddressAction] Validate called for message: "${message.content?.text}"`,
-    );
+    logger.info(`[getDepositAddressAction] Validate called for message: "${message.content?.text}"`);
 
     // Check if wallet is configured
     const privateKey =
@@ -73,9 +71,7 @@ export const getDepositAddressAction: Action = {
     );
 
     if (!containsKeyword) {
-      logger.info(
-        "[getDepositAddressAction] No deposit address keywords found",
-      );
+      logger.info(`[getDepositAddressAction] No deposit address keywords found`);
       return false;
     }
 
@@ -150,7 +146,7 @@ export const getDepositAddressAction: Action = {
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error occurred";
-      logger.error(`[getDepositAddressAction] Error:`, error);
+      logger.error(`[getDepositAddressAction] Error: ${error}`);
 
       const errorContent: Content = {
         text: `❌ **Unable to Get Deposit Address**

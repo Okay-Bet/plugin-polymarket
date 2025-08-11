@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeAll, afterAll } from 'vitest';
-import plugin from '../src/plugin';
+import plugin from '../../src/plugin';
 import { logger } from '@elizaos/core';
 import type { Action, IAgentRuntime, Memory, State, HandlerCallback } from '@elizaos/core';
 import { v4 as uuidv4 } from 'uuid';
@@ -51,13 +51,11 @@ describe('Actions', () => {
 
     it('should have the correct structure', () => {
       if (polymarketAction) {
-        expect(polymarketAction).toHaveProperty('name', 'POLYMARKET_GET_ALL_MARKETS');
+        expect(polymarketAction).toHaveProperty('name', 'SYNC_POLYMARKET_MARKETS');
         expect(polymarketAction).toHaveProperty('description');
-        expect(polymarketAction).toHaveProperty('similes');
         expect(polymarketAction).toHaveProperty('validate');
         expect(polymarketAction).toHaveProperty('handler');
         expect(polymarketAction).toHaveProperty('examples');
-        expect(Array.isArray(polymarketAction.similes)).toBe(true);
         expect(Array.isArray(polymarketAction.examples)).toBe(true);
       }
     });

@@ -2,32 +2,26 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { IAgentRuntime, Memory, State, Content } from '@elizaos/core';
 import type { Market } from '../../../../src/types';
 
-// Mock functions
-const mockGetMarket = vi.fn();
-const mockInitializeClobClient = vi.fn();
-const mockCallLLMWithTimeout = vi.fn();
-const mockLogger = {
-  info: vi.fn(),
-  warn: vi.fn(),
-  error: vi.fn(),
-};
-
-// Mock modules
-vi.mock('../../../../src/utils/clobClient', () => ({
-  initializeClobClient: mockInitializeClobClient,
-}));
-
-vi.mock('../../../../src/utils/llmHelpers', () => ({
-  callLLMWithTimeout: mockCallLLMWithTimeout,
-}));
-
-vi.mock('@elizaos/core', () => ({
-  ...require('@elizaos/core'),
-  logger: mockLogger,
-}));
+// Mock modules first (must be before any imports)
+vi.mock('../../../../src/utils/clobClient');
+vi.mock('../../../../src/utils/llmHelpers');
+vi.mock('@elizaos/core', async () => {
+  const actual = await vi.importActual('@elizaos/core');
+  return {
+    ...actual,
+    logger: {
+      info: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn(),
+    },
+  };
+});
 
 // Import after mocking
 import { explainMarketAction } from '../../../../src/actions/explainMarket';
+import { initializeClobClient } from '../../../../src/utils/clobClient';
+import { callLLMWithTimeout } from '../../../../src/utils/llmHelpers';
+import { logger } from '@elizaos/core';
 
 describe('explainMarketAction', () => {
   let mockRuntime: IAgentRuntime;
@@ -73,12 +67,7 @@ describe('explainMarketAction', () => {
   };
 
   beforeEach(() => {
-    mockGetMarket.mockClear();
-    mockInitializeClobClient.mockClear();
-    mockCallLLMWithTimeout.mockClear();
-    mockLogger.info.mockClear();
-    mockLogger.warn.mockClear();
-    mockLogger.error.mockClear();
+    vi.clearAllMocks();
 
     mockRuntime = {
       getSetting: vi.fn(),
@@ -106,14 +95,12 @@ describe('explainMarketAction', () => {
     } as unknown as State;
 
     mockClobClient = {
-      getMarket: mockGetMarket,
+      getMarket: vi.fn(),
     };
   });
 
   afterEach(() => {
-    mockGetMarket.mockReset();
-    mockInitializeClobClient.mockReset();
-    mockCallLLMWithTimeout.mockReset();
+    vi.resetAllMocks();
   });
 
   describe('validate', () => {
@@ -139,7 +126,7 @@ describe('explainMarketAction', () => {
   describe('handler', () => {
     beforeEach(() => {
       (mockRuntime.getSetting as any).mockReturnValue('https://clob.polymarket.com');
-      mockInitializeClobClient.mockResolvedValue(mockClobClient);
+      vi.mocked(initializeClobClient).mockResolvedValue(mockClobClient);
     });
 
     it('should successfully fetch market details with valid condition ID', async () => {
@@ -147,8 +134,8 @@ describe('explainMarketAction', () => {
         marketId: '0x1234567890abcdef1234567890abcdef12345678901234567890abcdef12345678',
       };
 
-      mockCallLLMWithTimeout.mockResolvedValue(mockLLMResult);
-      mockGetMarket.mockResolvedValue(mockMarket);
+      vi.mocked(callLLMWithTimeout).mockResolvedValue(mockLLMResult);
+      mockClobClient.getMarket.mockResolvedValue(mockMarket);
 
       const result = (await explainMarketAction.handler(
         mockRuntime,
@@ -175,7 +162,7 @@ describe('explainMarketAction', () => {
         query: 'invalid-short-id',
       };
 
-      mockCallLLMWithTimeout.mockResolvedValue(mockLLMResult);
+      vi.mocked(callLLMWithTimeout).mockResolvedValue(mockLLMResult);
 
       await expect(
         explainMarketAction.handler(mockRuntime, mockMessage, mockState)
@@ -191,7 +178,7 @@ describe('explainMarketAction', () => {
         tokenId: 'not-a-hex-string',
       };
 
-      mockCallLLMWithTimeout.mockResolvedValue(mockLLMResult);
+      vi.mocked(callLLMWithTimeout).mockResolvedValue(mockLLMResult);
 
       await expect(
         explainMarketAction.handler(mockRuntime, mockMessage, mockState)
@@ -205,8 +192,8 @@ describe('explainMarketAction', () => {
         marketId: '0x1234567890abcdef1234567890abcdef12345678901234567890abcdef12345678',
       };
 
-      mockCallLLMWithTimeout.mockResolvedValue(mockLLMResult);
-      mockGetMarket.mockResolvedValue(mockMarket);
+      vi.mocked(callLLMWithTimeout).mockResolvedValue(mockLLMResult);
+      mockClobClient.getMarket.mockResolvedValue(mockMarket);
 
       const result = (await explainMarketAction.handler(
         mockRuntime,
@@ -260,7 +247,7 @@ describe('explainMarketAction', () => {
         marketId: '0x1234567890abcdef1234567890abcdef12345678901234567890abcdef12345678',
       };
 
-      mockCallLLMWithTimeout.mockResolvedValue(mockLLMResult);
+      vi.mocked(callLLMWithTimeout).mockResolvedValue(mockLLMResult);
       mockGetMarket.mockResolvedValue(minimalMarket);
 
       const result = (await explainMarketAction.handler(
@@ -287,7 +274,7 @@ describe('explainMarketAction', () => {
         error: 'No market ID found',
       };
 
-      mockCallLLMWithTimeout.mockResolvedValue(mockLLMResult);
+      vi.mocked(callLLMWithTimeout).mockResolvedValue(mockLLMResult);
 
       await expect(
         explainMarketAction.handler(mockRuntime, mockMessage, mockState)
@@ -303,7 +290,7 @@ describe('explainMarketAction', () => {
         tokenId: '123',
       };
 
-      mockCallLLMWithTimeout.mockResolvedValue(mockLLMResult);
+      vi.mocked(callLLMWithTimeout).mockResolvedValue(mockLLMResult);
 
       await expect(
         explainMarketAction.handler(mockRuntime, mockMessage, mockState)
@@ -327,7 +314,7 @@ describe('explainMarketAction', () => {
         marketId: '0x1234567890abcdef1234567890abcdef12345678901234567890abcdef12345678',
       };
 
-      mockCallLLMWithTimeout.mockResolvedValue(mockLLMResult);
+      vi.mocked(callLLMWithTimeout).mockResolvedValue(mockLLMResult);
       mockGetMarket.mockResolvedValue(null);
 
       await expect(
@@ -342,7 +329,7 @@ describe('explainMarketAction', () => {
         marketId: '0x1234567890abcdef1234567890abcdef12345678901234567890abcdef12345678',
       };
 
-      mockCallLLMWithTimeout.mockResolvedValue(mockLLMResult);
+      vi.mocked(callLLMWithTimeout).mockResolvedValue(mockLLMResult);
       mockGetMarket.mockRejectedValue(new Error('API Error'));
 
       await expect(
@@ -356,8 +343,8 @@ describe('explainMarketAction', () => {
         marketId: '0x1234567890abcdef1234567890abcdef12345678901234567890abcdef12345678',
       };
 
-      mockCallLLMWithTimeout.mockResolvedValue(mockLLMResult);
-      mockGetMarket.mockResolvedValue(mockMarket);
+      vi.mocked(callLLMWithTimeout).mockResolvedValue(mockLLMResult);
+      mockClobClient.getMarket.mockResolvedValue(mockMarket);
 
       const result = await explainMarketAction.handler(
         mockRuntime,
@@ -377,7 +364,7 @@ describe('explainMarketAction', () => {
         error: 'No market ID found',
       };
 
-      mockCallLLMWithTimeout.mockResolvedValue(mockLLMResult);
+      vi.mocked(callLLMWithTimeout).mockResolvedValue(mockLLMResult);
 
       await expect(
         explainMarketAction.handler(mockRuntime, mockMessage, mockState, {}, mockCallback)
@@ -402,8 +389,8 @@ describe('explainMarketAction', () => {
         marketId: validTestCase.id,
       };
 
-      mockCallLLMWithTimeout.mockResolvedValue(mockLLMResult);
-      mockGetMarket.mockResolvedValue(mockMarket);
+      vi.mocked(callLLMWithTimeout).mockResolvedValue(mockLLMResult);
+      mockClobClient.getMarket.mockResolvedValue(mockMarket);
 
       const result = (await explainMarketAction.handler(
         mockRuntime,

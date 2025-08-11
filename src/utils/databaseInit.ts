@@ -174,7 +174,7 @@ export async function initializePolymarketTables(db: any): Promise<boolean> {
     logger.info("Polymarket database tables initialized successfully");
     return true;
   } catch (error) {
-    logger.error("Failed to initialize Polymarket database tables:", error);
+    logger.error(`Failed to initialize Polymarket database tables: ${error}`);
     return false;
   }
 }

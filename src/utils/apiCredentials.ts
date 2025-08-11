@@ -19,9 +19,7 @@ export interface ApiCredentials {
 export async function createApiCredentials(
   runtime: IAgentRuntime,
 ): Promise<ApiCredentials> {
-  logger.info(
-    "[apiCredentials] Creating new API credentials for L2 authentication",
-  );
+  logger.info(`[apiCredentials] Creating new API credentials for L2 authentication`);
 
   try {
     // Initialize CLOB client (this uses L1 authentication with private key)
@@ -48,7 +46,7 @@ export async function createApiCredentials(
 
     return credentials;
   } catch (error) {
-    logger.error("[apiCredentials] Failed to create API credentials:", error);
+    logger.error(`[apiCredentials] Failed to create API credentials: ${error}`);
     throw new Error(
       `Failed to create API credentials: ${error instanceof Error ? error.message : "Unknown error"}`,
     );
@@ -106,15 +104,11 @@ export async function ensureApiCredentials(
   }
 
   // Create new credentials if none exist
-  logger.info(
-    "[apiCredentials] No existing credentials found, creating new ones",
-  );
+  logger.info(`[apiCredentials] No existing credentials found, creating new ones`);
   const credentials = await createApiCredentials(runtime);
 
   // Note: In a production environment, these should be saved to secure storage
-  logger.warn(
-    "[apiCredentials] New credentials created but not persisted to environment",
-  );
+  logger.warn(`[apiCredentials] New credentials created but not persisted to environment`);
   logger.warn(
     "[apiCredentials] Consider adding these to your .env file for persistence:",
   );

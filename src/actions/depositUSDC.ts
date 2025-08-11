@@ -87,9 +87,7 @@ export const depositUSDCAction: Action = {
     message: Memory,
     state?: State,
   ): Promise<boolean> => {
-    logger.info(
-      `[depositUSDCAction] Validate called for message: "${message.content?.text}"`,
-    );
+    logger.info(`[depositUSDCAction] Validate called for message: "${message.content?.text}"`);
 
     // Check if wallet is configured
     const privateKey =
@@ -145,7 +143,7 @@ export const depositUSDCAction: Action = {
         "depositUSDCAction",
       );
 
-      logger.info("[depositUSDCAction] LLM result:", JSON.stringify(llmResult));
+      logger.info(`[depositUSDCAction] LLM result: ${JSON.stringify(llmResult)}`);
 
       if (llmResult?.error) {
         const errorContent: Content = {
@@ -179,9 +177,7 @@ export const depositUSDCAction: Action = {
       }
 
       // Check wallet USDC balance before attempting deposit
-      logger.info(
-        `[depositUSDCAction] Checking wallet balance for deposit of $${amount}`,
-      );
+      logger.info(`[depositUSDCAction] Checking wallet balance for deposit of $${amount}`);
 
       const balanceInfo = await checkUSDCBalance(runtime, amount.toString());
 
@@ -266,7 +262,7 @@ Your wallet needs USDC before you can deposit to Polymarket.`,
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error occurred";
-      logger.error(`[depositUSDCAction] Deposit error:`, error);
+      logger.error(`[depositUSDCAction] Deposit error: ${error}`);
 
       const errorContent: Content = {
         text: `❌ **Deposit Error**

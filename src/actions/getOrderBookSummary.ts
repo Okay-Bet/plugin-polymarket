@@ -53,9 +53,7 @@ export const getOrderBookSummaryAction: Action = {
     const clobApiUrl = runtime.getSetting("CLOB_API_URL");
 
     if (!clobApiUrl) {
-      logger.warn(
-        "[getOrderBookSummaryAction] CLOB_API_URL is required but not provided",
-      );
+      logger.warn(`[getOrderBookSummaryAction] CLOB_API_URL is required but not provided`);
       return false;
     }
 
@@ -75,9 +73,7 @@ export const getOrderBookSummaryAction: Action = {
 
     if (!clobApiUrl) {
       const errorMessage = "CLOB_API_URL is required in configuration.";
-      logger.error(
-        `[getOrderBookSummaryAction] Configuration error: ${errorMessage}`,
-      );
+      logger.error(`[getOrderBookSummaryAction] Configuration error: ${errorMessage}`);
       const errorContent: Content = {
         text: errorMessage,
         actions: ["POLYMARKET_GET_ORDER_BOOK"],
@@ -101,16 +97,13 @@ export const getOrderBookSummaryAction: Action = {
       }>(runtime, state, getOrderBookTemplate, "getOrderBookSummaryAction");
 
       logger.info(
-        "[getOrderBookSummaryAction] LLM result:",
-        JSON.stringify(llmResult),
+        `[getOrderBookSummaryAction] LLM result: ${JSON.stringify(llmResult)}`
       );
 
       if (llmResult?.error) {
         const errorMessage =
           "Token identifier not found. Please specify a token ID for the order book.";
-        logger.error(
-          `[getOrderBookSummaryAction] Parameter extraction error: ${errorMessage}`,
-        );
+        logger.error(`[getOrderBookSummaryAction] Parameter extraction error: ${errorMessage}`);
         const errorContent: Content = {
           text: `❌ **Error**: ${errorMessage}
 
@@ -149,9 +142,7 @@ Please provide a token ID in your request. For example:
         return createErrorResult(error);
       }
 
-      logger.warn(
-        "[getOrderBookSummaryAction] LLM extraction failed, trying regex fallback",
-      );
+      logger.warn(`[getOrderBookSummaryAction] LLM extraction failed, trying regex fallback`);
 
       // Regex fallback - try to extract token ID directly from the message
       const messageText = message.content.text || "";
@@ -161,16 +152,11 @@ Please provide a token ID in your request. For example:
 
       if (tokenIdMatch) {
         tokenId = tokenIdMatch[1] || tokenIdMatch[2] || tokenIdMatch[3];
-        logger.info(
-          `[getOrderBookSummaryAction] Regex fallback extracted token ID: ${tokenId}`,
-        );
+        logger.info(`[getOrderBookSummaryAction] Regex fallback extracted token ID: ${tokenId}`);
       } else {
         const errorMessage =
           "Unable to extract token ID from your message. Please provide a valid token ID.";
-        logger.error(
-          "[getOrderBookSummaryAction] LLM parameter extraction failed:",
-          error,
-        );
+        logger.error(`[getOrderBookSummaryAction] LLM parameter extraction failed: ${error}`);
 
         const errorContent: Content = {
           text: `❌ **Error**: ${errorMessage}
@@ -304,10 +290,7 @@ Please provide a token ID in your request. For example:
 
       return contentToActionResult(responseContent);
     } catch (error) {
-      logger.error(
-        "[getOrderBookSummaryAction] Error fetching order book:",
-        error,
-      );
+      logger.error(`[getOrderBookSummaryAction] Error fetching order book: ${error}`);
 
       const errorMessage =
         error instanceof Error

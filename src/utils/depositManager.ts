@@ -76,7 +76,7 @@ export async function getDepositAddress(
 
     return proxyAddress;
   } catch (error) {
-    logger.error(`[depositManager] Error calculating deposit address:`, error);
+    logger.error(`[depositManager] Error calculating deposit address: ${error}`);
     throw new Error(
       `Failed to calculate deposit address: ${error instanceof Error ? error.message : "Unknown error"}`,
     );
@@ -176,17 +176,13 @@ export async function depositUSDC(
       depositAmountWei,
     );
 
-    logger.info(
-      `[depositManager] Transfer transaction submitted: ${transferTx.hash}`,
-    );
+    logger.info(`[depositManager] Transfer transaction submitted: ${transferTx.hash}`);
 
     // Wait for transaction confirmation
     const receipt = await transferTx.wait();
 
     if (receipt?.status === 1) {
-      logger.info(
-        `[depositManager] Deposit successful! Block: ${receipt.blockNumber}`,
-      );
+      logger.info(`[depositManager] Deposit successful! Block: ${receipt.blockNumber}`);
 
       return {
         userAddress,
@@ -200,7 +196,7 @@ export async function depositUSDC(
       throw new Error("Transaction failed");
     }
   } catch (error) {
-    logger.error(`[depositManager] Deposit failed:`, error);
+    logger.error(`[depositManager] Deposit failed: ${error}`);
 
     return {
       userAddress: "",

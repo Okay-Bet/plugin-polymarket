@@ -73,16 +73,12 @@ export const placeOrderAction: Action = {
     message: Memory,
     state?: State,
   ): Promise<boolean> => {
-    logger.info(
-      `[placeOrderAction] Validate called for message: "${message.content?.text}"`,
-    );
+    logger.info(`[placeOrderAction] Validate called for message: "${message.content?.text}"`);
 
     const clobApiUrl = runtime.getSetting("CLOB_API_URL");
 
     if (!clobApiUrl) {
-      logger.warn(
-        "[placeOrderAction] CLOB_API_URL is required but not provided",
-      );
+      logger.warn(`[placeOrderAction] CLOB_API_URL is required but not provided`);
       return false;
     }
 
@@ -129,7 +125,7 @@ export const placeOrderAction: Action = {
         PlaceOrderParams & { error?: string }
       >(runtime, state, orderTemplate, "placeOrderAction");
 
-      logger.info("[placeOrderAction] LLM result:", JSON.stringify(llmResult));
+      logger.info(`[placeOrderAction] LLM result: ${JSON.stringify(llmResult)}`);
 
       if (llmResult?.error) {
         return createErrorResult("Required order parameters not found");
@@ -161,9 +157,7 @@ export const placeOrderAction: Action = {
         (tokenId === "MARKET_NAME_LOOKUP" || !tokenId || tokenId.length < 10) &&
         llmResult?.marketName
       ) {
-        logger.info(
-          `[placeOrderAction] Market name lookup requested: ${llmResult.marketName}`,
-        );
+        logger.info(`[placeOrderAction] Market name lookup requested: ${llmResult.marketName}`);
 
         try {
           const marketResult = await findMarketByName(
@@ -240,9 +234,7 @@ Requested outcome: ${outcome}
 
           // Success! Update tokenId with resolved token
           tokenId = targetToken.token_id;
-          logger.info(
-            `[placeOrderAction] Resolved "${llmResult.marketName}" -> ${outcome} -> ${tokenId.slice(0, 12)}...`,
-          );
+          logger.info(`[placeOrderAction] Resolved "${llmResult.marketName}" -> ${outcome} -> ${tokenId.slice(0, 12)}...`);
 
           // Show market resolution to user
           if (callback) {
@@ -266,7 +258,7 @@ Proceeding with order verification...`,
             await callback(resolutionContent);
           }
         } catch (lookupError) {
-          logger.error(`[placeOrderAction] Market lookup failed:`, lookupError);
+          logger.error(`[placeOrderAction] Market lookup failed: ${lookupError}`);
           const errorContent: Content = {
             text: `❌ **Market lookup failed**
 
@@ -348,7 +340,7 @@ Please try:
           try {
             clobTokenIds = JSON.parse(market.clobTokenIds || '[]');
           } catch (e) {
-            logger.error(`[placeOrderAction] Failed to parse clobTokenIds:`, e);
+            logger.error(`[placeOrderAction] Failed to parse clobTokenIds: ${e}`);
           }
           
           if (clobTokenIds.length < 2) {
@@ -441,7 +433,7 @@ Proceeding with order verification...`,
           }
           
         } catch (conditionLookupError) {
-          logger.error(`[placeOrderAction] Condition ID lookup failed:`, conditionLookupError);
+          logger.error(`[placeOrderAction] Condition ID lookup failed: ${conditionLookupError}`);
           const errorContent: Content = {
             text: `❌ **Failed to resolve condition ID**
 
@@ -477,9 +469,7 @@ Please try:
         return createErrorResult("Limit orders require a valid price");
       }
     } catch (error) {
-      logger.warn(
-        "[placeOrderAction] LLM extraction failed, trying regex fallback",
-      );
+      logger.warn(`[placeOrderAction] LLM extraction failed, trying regex fallback`);
 
       // Fallback to regex extraction
       const text = message.content?.text || "";
@@ -585,9 +575,7 @@ Please provide order details in your request. Examples:
     const finalTotalValue = price * size;
 
     // Check Polymarket trading balance before placing order
-    logger.info(
-      `[placeOrderAction] Checking Polymarket trading balance for order value: $${finalTotalValue.toFixed(2)}`,
-    );
+    logger.info(`[placeOrderAction] Checking Polymarket trading balance for order value: $${finalTotalValue.toFixed(2)}`);
 
     try {
       const balanceInfo = await checkPolymarketBalance(
@@ -656,9 +644,7 @@ Please reduce your order size to stay within the configured limit.`,
       }
 
       // Display successful balance check
-      logger.info(
-        `[placeOrderAction] Balance check passed. Proceeding with order.`,
-      );
+      logger.info(`[placeOrderAction] Balance check passed. Proceeding with order.`);
       const balanceDisplay = formatBalanceInfo(balanceInfo);
 
       if (callback) {
@@ -682,7 +668,7 @@ Creating order...`,
         await callback(balanceContent);
       }
     } catch (balanceError) {
-      logger.error(`[placeOrderAction] Balance check failed:`, balanceError);
+      logger.error(`[placeOrderAction] Balance check failed: ${balanceError}`);
       const errorContent: Content = {
         text: `❌ **Balance Check Failed**
 
@@ -731,9 +717,7 @@ Please check your wallet configuration and try again.`,
         runtime.getSetting("CLOB_PASS_PHRASE");
 
       if (!hasApiKey || !hasApiSecret || !hasApiPassphrase) {
-        logger.info(
-          `[placeOrderAction] API credentials missing, attempting to derive them`,
-        );
+        logger.info(`[placeOrderAction] API credentials missing, attempting to derive them`);
 
         if (callback) {
           const derivingContent: Content = {
@@ -762,9 +746,7 @@ Deriving credentials...`,
             derivedCreds.passphrase,
           );
 
-          logger.info(
-            `[placeOrderAction] Successfully derived and stored API credentials`,
-          );
+          logger.info(`[placeOrderAction] Successfully derived and stored API credentials`);
 
           if (callback) {
             const successContent: Content = {
@@ -782,10 +764,7 @@ Reinitializing client with credentials...`,
             await callback(successContent);
           }
         } catch (deriveError) {
-          logger.error(
-            `[placeOrderAction] Failed to derive API credentials:`,
-            deriveError,
-          );
+          logger.error(`[placeOrderAction] Failed to derive API credentials: ${deriveError}`);
           const errorContent: Content = {
             text: `❌ **Failed to Derive API Credentials**
 
@@ -830,7 +809,7 @@ Please ensure your wallet is properly configured and try again.`,
         feeRateBps: parseFloat(feeRateBps), // Convert to number
       };
 
-      logger.info(`[placeOrderAction] Creating order with args:`, orderArgs);
+      logger.info(`[placeOrderAction] Creating order with args: ${orderArgs}`);
 
       // Create the signed order with enhanced error handling
       let signedOrder: any;
@@ -838,7 +817,7 @@ Please ensure your wallet is properly configured and try again.`,
         signedOrder = await client.createOrder(orderArgs);
         logger.info(`[placeOrderAction] Order created successfully`);
       } catch (createError) {
-        logger.error(`[placeOrderAction] Error creating order:`, createError);
+        logger.error(`[placeOrderAction] Error creating order: ${createError}`);
 
         // Check for specific error types
         if (createError instanceof Error) {
@@ -865,7 +844,7 @@ Please ensure your wallet is properly configured and try again.`,
         );
         logger.info(`[placeOrderAction] Order posted successfully`);
       } catch (postError) {
-        logger.error(`[placeOrderAction] Error posting order:`, postError);
+        logger.error(`[placeOrderAction] Error posting order: ${postError}`);
         
         // Check if error is due to missing approvals
         const errorMessage = postError instanceof Error ? postError.message : String(postError);
@@ -933,7 +912,7 @@ Now retrying your order with the proper approvals in place...`,
                 );
                 logger.info(`[placeOrderAction] Order retry successful after approval`);
               } catch (retryError) {
-                logger.error(`[placeOrderAction] Order retry failed after approval:`, retryError);
+                logger.error(`[placeOrderAction] Order retry failed after approval: ${retryError}`);
                 return createErrorResult(
                   `Order failed even after setting approvals: ${retryError instanceof Error ? retryError.message : "Unknown error"}. Please check your USDC balance.`,
                 );
@@ -945,7 +924,7 @@ Now retrying your order with the proper approvals in place...`,
               );
             }
           } catch (approvalError) {
-            logger.error(`[placeOrderAction] Error setting approvals:`, approvalError);
+            logger.error(`[placeOrderAction] Error setting approvals: ${approvalError}`);
             return createErrorResult(
               `Failed to set approvals: ${approvalError instanceof Error ? approvalError.message : "Unknown error"}. Please ensure you have MATIC for gas fees.`,
             );
@@ -1061,7 +1040,7 @@ Please check your parameters and try again. Common issues:
         error instanceof Error
           ? error.message
           : "Unknown error occurred while placing order";
-      logger.error(`[placeOrderAction] Order placement error:`, error);
+      logger.error(`[placeOrderAction] Order placement error: ${error}`);
 
       const errorContent: Content = {
         text: `❌ **Order Placement Error**

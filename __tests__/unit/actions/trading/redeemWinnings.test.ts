@@ -1,50 +1,31 @@
-import { describe, it, expect, beforeEach, afterEach, mock } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import type { IAgentRuntime, Memory, State, Content } from '@elizaos/core';
 
-// Mock functions
-const mockLogger = {
-  info: vi.fn(),
-  warn: vi.fn(),
-  error: vi.fn(),
-};
+// Mock modules first
+vi.mock('@elizaos/core', async () => {
+  const actual = await vi.importActual('@elizaos/core');
+  return {
+    ...actual,
+    logger: {
+      info: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn(),
+    },
+  };
+});
 
-const mockWallet = {
-  address: '0x1234567890123456789012345678901234567890',
-  signTransaction: vi.fn(),
-};
-
-const mockProvider = {
-  getBalance: vi.fn(),
-};
-
-const mockContract = {
-  redeemPositions: vi.fn(),
-  wait: vi.fn(),
-  payoutNumerators: vi.fn(),
-  payoutDenominator: vi.fn(),
-  // Specific function signature used in the action
-  'redeemPositions(address,bytes32,bytes32,uint256[])': vi.fn(),
-};
-
-const mockTransaction = {
-  hash: '0xabcdef123456',
-  wait: vi.fn(),
-};
-
-// Mock modules
-vi.mock('@elizaos/core', () => ({
-  ...require('@elizaos/core'),
-  logger: mockLogger,
-}));
-
-vi.mock('ethers', () => ({
-  ...require('ethers'),
-  Wallet: vi.fn(() => mockWallet),
-  JsonRpcProvider: vi.fn(() => mockProvider),
-  Contract: vi.fn(() => mockContract),
-  parseUnits: vi.fn((value: string, decimals: number) => value + '0'.repeat(decimals)),
-  ZeroHash: '0x0000000000000000000000000000000000000000000000000000000000000000',
-}));
+// Mock ethers
+vi.mock('ethers', async () => {
+  const actual = await vi.importActual('ethers');
+  return {
+    ...actual,
+    Wallet: vi.fn(),
+    JsonRpcProvider: vi.fn(),
+    Contract: vi.fn(),
+    parseUnits: vi.fn((value: string, decimals: number) => value + '0'.repeat(decimals)),
+    ZeroHash: '0x0000000000000000000000000000000000000000000000000000000000000000',
+  };
+});
 
 // Mock fetch globally
 global.fetch = vi.fn();
@@ -86,15 +67,7 @@ describe('redeemWinningsAction', () => {
   ];
 
   beforeEach(() => {
-    mockLogger.info.mockClear();
-    mockLogger.warn.mockClear();
-    mockLogger.error.mockClear();
-    mockWallet.signTransaction.mockClear();
-    mockProvider.getBalance.mockClear();
-    mockContract.redeemPositions.mockClear();
-    mockContract['redeemPositions(address,bytes32,bytes32,uint256[])'].mockClear();
-    mockTransaction.wait.mockClear();
-    global.fetch.mockClear();
+    vi.clearAllMocks();
 
     mockRuntime = {
       getSetting: vi.fn((key: string) => {

@@ -70,7 +70,7 @@ export const marketDataProvider: Provider = {
       };
       
     } catch (error) {
-      logger.error("[marketDataProvider] Error fetching market data:", error);
+      logger.error(`[marketDataProvider] Error fetching market data: ${error}`);
       return {
         text: "Error fetching market data",
         values: {},

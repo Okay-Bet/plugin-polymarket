@@ -1,7 +1,6 @@
 import { describe, expect, it, vi, beforeEach, afterEach, beforeAll, afterAll } from 'vitest';
-import plugin from '../src/plugin';
+import plugin from '../../src/plugin';
 import { ModelType, logger } from '@elizaos/core';
-import { StarterService } from '../src/plugin';
 import dotenv from 'dotenv';
 
 // Setup environment variables
@@ -47,14 +46,7 @@ function createRealRuntime() {
 
   // Create a real service instance if needed
   const createService = (serviceType: string) => {
-    if (serviceType === StarterService.serviceType) {
-      return new StarterService({
-        character: {
-          name: 'Test Character',
-          system: 'You are a helpful assistant for testing.',
-        },
-      } as any);
-    }
+    // Return null for now as we don't have a StarterService
     return null;
   };
 
@@ -94,8 +86,8 @@ function createRealRuntime() {
 
 describe('Plugin Configuration', () => {
   it('should have correct plugin metadata', () => {
-    expect(plugin.name).toBe('starter');
-    expect(plugin.description).toBe('A starter plugin for Eliza');
+    expect(plugin.name).toBe('polymarket');
+    expect(plugin.description).toBe('A plugin for interacting with Polymarket prediction markets');
     expect(plugin.config).toBeDefined();
 
     documentTestResult('Plugin metadata check', {

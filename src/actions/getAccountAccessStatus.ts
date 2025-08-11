@@ -38,9 +38,7 @@ export const getAccountAccessStatusAction: Action = {
     message: Memory,
     state?: State,
   ): Promise<boolean> => {
-    logger.info(
-      `[getAccountAccessStatusAction] Validate called for message: "${message.content?.text}"`,
-    );
+    logger.info(`[getAccountAccessStatusAction] Validate called for message: "${message.content?.text}"`);
     const clobApiUrl = runtime.getSetting("CLOB_API_URL");
     const privateKey =
       runtime.getSetting("WALLET_PRIVATE_KEY") ||
@@ -52,13 +50,9 @@ export const getAccountAccessStatusAction: Action = {
       return false;
     }
     if (!privateKey) {
-      logger.warn(
-        "[getAccountAccessStatusAction] A private key (WALLET_PRIVATE_KEY, PRIVATE_KEY, or POLYMARKET_PRIVATE_KEY) is required to attempt U.S. certification status check.",
-      );
+      logger.warn(`[getAccountAccessStatusAction] A private key (WALLET_PRIVATE_KEY, PRIVATE_KEY, or POLYMARKET_PRIVATE_KEY) is required to attempt U.S. certification status check.`);
     }
-    logger.info(
-      "[getAccountAccessStatusAction] Validation passed (basic checks)",
-    );
+    logger.info(`[getAccountAccessStatusAction] Validation passed (basic checks)`);
     return true;
   },
 
@@ -79,14 +73,11 @@ export const getAccountAccessStatusAction: Action = {
         "getAccountAccessStatusAction",
       );
       if (llmResult?.error) {
-        logger.warn(
-          `[getAccountAccessStatusAction] LLM indicated potential misinterpretation: ${llmResult.error}`,
-        );
+        logger.warn(`[getAccountAccessStatusAction] LLM indicated potential misinterpretation: ${llmResult.error}`);
       }
     } catch (error) {
       logger.warn(
-        "[getAccountAccessStatusAction] LLM call failed or timed out, proceeding with action anyway:",
-        error,
+        `[getAccountAccessStatusAction] LLM call failed or timed out, proceeding with action anyway: ${error}`
       );
     }
 
@@ -119,9 +110,7 @@ export const getAccountAccessStatusAction: Action = {
 
       if (hasConfiguredManagedApiCredentials) {
         try {
-          logger.info(
-            "[getAccountAccessStatusAction] Configured API credentials found. Attempting to fetch managed API keys and cert status.",
-          );
+          logger.info(`[getAccountAccessStatusAction] Configured API credentials found. Attempting to fetch managed API keys and cert status.`);
           const client = (await initializeClobClientWithCreds(
             runtime,
           )) as ClobClient;
@@ -132,16 +121,13 @@ export const getAccountAccessStatusAction: Action = {
           apiKeysList = accessStatus.api_keys || [];
         } catch (err) {
           logger.error(
-            "[getAccountAccessStatusAction] Error fetching API keys with credentials:",
-            err,
+            `[getAccountAccessStatusAction] Error fetching API keys with credentials: ${err}`
           );
           apiKeysError =
             err instanceof Error ? err.message : "Failed to retrieve API keys.";
         }
       } else {
-        logger.info(
-          "[getAccountAccessStatusAction] Configured API credentials for managed key listing not found. Managed API key listing will be skipped. U.S. cert status might be unavailable.",
-        );
+        logger.info(`[getAccountAccessStatusAction] Configured API credentials for managed key listing not found. Managed API key listing will be skipped. U.S. cert status might be unavailable.`);
         apiKeysError =
           "API credentials (CLOB_API_KEY, etc.) for listing managed keys are not configured in .env settings.";
       }
@@ -222,8 +208,7 @@ export const getAccountAccessStatusAction: Action = {
       return contentToActionResult(responseContent);
     } catch (error) {
       logger.error(
-        "[getAccountAccessStatusAction] Error fetching account access status:",
-        error,
+        `[getAccountAccessStatusAction] Error fetching account access status: ${error}`
       );
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error occurred.";
@@ -235,7 +220,7 @@ export const getAccountAccessStatusAction: Action = {
       };
 
       if (callback) await callback(errorContent);
-      return createErrorResult(error);
+      return createErrorResult(errorMessage);
     }
   },
 

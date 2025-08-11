@@ -37,9 +37,7 @@ export async function checkPolymarketBalance(
   runtime: IAgentRuntime,
   requiredAmount: string,
 ): Promise<BalanceInfo> {
-  logger.info(
-    `[balanceChecker] Checking Polymarket trading balance for required amount: ${requiredAmount}`,
-  );
+  logger.info(`[balanceChecker] Checking Polymarket trading balance for required amount: ${requiredAmount}`);
 
   try {
     // Initialize CLOB client
@@ -54,9 +52,7 @@ export async function checkPolymarketBalance(
     const usdcBalanceRaw = balanceResponse.balance || "0";
     // Convert from microunits (6 decimals) to USDC decimal format
     const usdcBalance = ethers.formatUnits(usdcBalanceRaw, 6);
-    logger.info(
-      `[balanceChecker] Found Polymarket L2 USDC balance: ${usdcBalance} USDC (raw: ${usdcBalanceRaw})`,
-    );
+    logger.info(`[balanceChecker] Found Polymarket L2 USDC balance: ${usdcBalance} USDC (raw: ${usdcBalanceRaw})`);
 
     // Check if balance is sufficient
     const requiredAmountNum = parseFloat(requiredAmount);
@@ -95,7 +91,7 @@ export async function checkPolymarketBalance(
 
     return balanceInfo;
   } catch (error) {
-    logger.error(`[balanceChecker] Error checking Polymarket balance:`, error);
+    logger.error(`[balanceChecker] Error checking Polymarket balance: ${error}`);
 
     // Fallback to wallet balance checking if CLOB balance fails
     logger.warn(`[balanceChecker] Falling back to wallet balance check`);
@@ -113,9 +109,7 @@ export async function checkUSDCBalance(
   runtime: IAgentRuntime,
   requiredAmount: string,
 ): Promise<BalanceInfo> {
-  logger.info(
-    `[balanceChecker] Checking USDC balance for required amount: ${requiredAmount}`,
-  );
+  logger.info(`[balanceChecker] Checking USDC balance for required amount: ${requiredAmount}`);
 
   try {
     // Get wallet private key and create wallet instance
@@ -152,12 +146,10 @@ export async function checkUSDCBalance(
         // Test the connection
         await testProvider.getBlockNumber();
         provider = testProvider;
-        logger.info(
-          `[balanceChecker] Successfully connected to RPC: ${rpcUrl}`,
-        );
+        logger.info(`[balanceChecker] Successfully connected to RPC: ${rpcUrl}`);
         break;
       } catch (error) {
-        logger.warn(`[balanceChecker] RPC provider ${rpcUrl} failed:`, error);
+        logger.warn(`[balanceChecker] RPC provider ${rpcUrl} failed: ${error}`);
         lastError =
           error instanceof Error ? error : new Error("Unknown RPC error");
         continue;
@@ -172,9 +164,7 @@ export async function checkUSDCBalance(
     const wallet = new ethers.Wallet(formattedPrivateKey, provider);
     const walletAddress = wallet.address;
 
-    logger.info(
-      `[balanceChecker] Checking balance for wallet: ${walletAddress}`,
-    );
+    logger.info(`[balanceChecker] Checking balance for wallet: ${walletAddress}`);
 
     // Check both USDC contracts (native + bridged) and sum balances
     const usdcNativeContract = new ethers.Contract(
@@ -195,29 +185,23 @@ export async function checkUSDCBalance(
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        logger.info(
-          `[balanceChecker] Balance check attempt ${attempt}/${maxRetries}`,
-        );
+        logger.info(`[balanceChecker] Balance check attempt ${attempt}/${maxRetries}`);
 
         // Check native USDC balance
         const nativeBalance = await usdcNativeContract.balanceOf(walletAddress);
-        logger.info(
-          `[balanceChecker] Native USDC balance: ${ethers.formatUnits(nativeBalance, 6)}`,
-        );
+        logger.info(`[balanceChecker] Native USDC balance: ${ethers.formatUnits(nativeBalance, 6)}`);
 
         // Check bridged USDC.e balance
         const bridgedBalance =
           await usdcBridgedContract.balanceOf(walletAddress);
-        logger.info(
-          `[balanceChecker] Bridged USDC.e balance: ${ethers.formatUnits(bridgedBalance, 6)}`,
-        );
+        logger.info(`[balanceChecker] Bridged USDC.e balance: ${ethers.formatUnits(bridgedBalance, 6)}`);
 
         // Sum both balances
         totalBalanceRaw = nativeBalance + bridgedBalance;
 
         break;
       } catch (error) {
-        logger.warn(`[balanceChecker] Attempt ${attempt} failed:`, error);
+        logger.warn(`[balanceChecker] Attempt ${attempt} failed: ${error}`);
         if (attempt === maxRetries) {
           throw new Error(
             `Balance check failed after ${maxRetries} attempts: ${error instanceof Error ? error.message : "Unknown error"}`,
@@ -256,7 +240,7 @@ export async function checkUSDCBalance(
 
     return balanceInfo;
   } catch (error) {
-    logger.error(`[balanceChecker] Error checking USDC balance:`, error);
+    logger.error(`[balanceChecker] Error checking USDC balance: ${error}`);
     throw new Error(
       `Failed to check USDC balance: ${error instanceof Error ? error.message : "Unknown error"}`,
     );
@@ -326,10 +310,7 @@ export async function getMaxPositionSize(
 
     return effectiveLimit;
   } catch (error) {
-    logger.error(
-      `[balanceChecker] Error calculating max position size:`,
-      error,
-    );
+    logger.error(`[balanceChecker] Error calculating max position size: ${error}`);
     // Return conservative default if balance check fails
     return 10;
   }

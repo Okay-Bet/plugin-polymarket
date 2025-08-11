@@ -145,7 +145,7 @@ export const showFavoriteMarketsAction: Action = {
       };
       
     } catch (error) {
-      logger.error("[showFavoriteMarketsAction] Error:", error);
+      logger.error(`[showFavoriteMarketsAction] Error: ${error}`);
       
       const errorContent: Content = {
         text: "Shit, something went wrong pulling up the markets. Let me try again in a sec.",

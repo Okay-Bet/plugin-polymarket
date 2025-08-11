@@ -60,7 +60,7 @@ export const searchMarketsAction: Action = {
   ],
   
   validate: async (runtime: IAgentRuntime, message: Memory, state?: State): Promise<boolean> => {
-    logger.info("[searchMarketsAction] Validate called for message:", message.content.text);
+    logger.info(`[searchMarketsAction] Validate called for message: ${message.content.text}`);
     
     // This action can be triggered by various market-related queries
     const marketKeywords = [
@@ -120,14 +120,14 @@ export const searchMarketsAction: Action = {
           10000 // 10 second timeout
         );
         
-        logger.info(`[searchMarketsAction] LLM extraction result:`, llmExtraction);
+        logger.info(`[searchMarketsAction] LLM extraction result: ${llmExtraction}`);
         
         if (llmExtraction && llmExtraction.confidence > 0.7) {
           searchType = llmExtraction.searchType || "general";
           searchTerm = llmExtraction.searchTerm || "";
         }
       } catch (error) {
-        logger.warn(`[searchMarketsAction] LLM extraction failed, falling back to regex:`, error);
+        logger.warn(`[searchMarketsAction] LLM extraction failed, falling back to regex: ${error}`);
         // Fallback to simple regex extraction
         const match = text.toLowerCase().match(/(?:about|for|on)\s+(.+?)\s+markets?/i);
         if (match) {
@@ -298,7 +298,7 @@ export const searchMarketsAction: Action = {
       };
       
     } catch (error) {
-      logger.error("[searchMarketsAction] Error searching markets:", error);
+      logger.error(`[searchMarketsAction] Error searching markets: ${error}`);
       return {
         success: false,
         error: error instanceof Error ? error.message : "Failed to search markets",

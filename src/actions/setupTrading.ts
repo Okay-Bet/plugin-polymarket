@@ -68,9 +68,7 @@ export const setupTradingAction: Action = {
     message: Memory,
     state?: State,
   ): Promise<boolean> => {
-    logger.info(
-      `[setupTradingAction] Validate called for message: "${message.content?.text}"`,
-    );
+    logger.info(`[setupTradingAction] Validate called for message: "${message.content?.text}"`);
 
     const privateKey =
       runtime.getSetting("WALLET_PRIVATE_KEY") ||
@@ -281,9 +279,7 @@ ${needsApprovals ? "🔧 Setting missing approvals..." : "✅ All approvals alre
         const results = await Promise.all(approvalPromises);
         transactions.push(...results);
 
-        logger.info(
-          `[setupTradingAction] Completed ${transactions.length} approval transactions`,
-        );
+        logger.info(`[setupTradingAction] Completed ${transactions.length} approval transactions`);
       }
 
       setupStatus.approvalsSet = true;
@@ -322,9 +318,7 @@ Generating L2 credentials from wallet signature...`,
 
           setupStatus.credentialsReady = true;
         } catch (credError) {
-          logger.warn(
-            "[setupTradingAction] API credential derivation failed, will continue with wallet-only mode",
-          );
+          logger.warn(`[setupTradingAction] API credential derivation failed, will continue with wallet-only mode`);
           setupStatus.credentialsReady = false; // Can still trade with wallet-only
         }
       } else {
@@ -373,7 +367,7 @@ ${
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error occurred";
-      logger.error(`[setupTradingAction] Setup error:`, error);
+      logger.error(`[setupTradingAction] Setup error: ${error}`);
 
       const errorContent: Content = {
         text: `❌ **Trading Setup Failed**

@@ -125,7 +125,7 @@ export const getPriceHistory: Action = {
           return createErrorResult(extractedParams.error);
         }
       } catch (error) {
-        logger.error("[getPriceHistory] LLM extraction failed:", error);
+        logger.error(`[getPriceHistory] LLM extraction failed: ${error}`);
         return createErrorResult(
           "Failed to extract token ID from message. Please specify a token ID.",
         );
@@ -142,17 +142,13 @@ export const getPriceHistory: Action = {
       const interval = params.interval || "1d";
 
       // Call CLOB API to get price history
-      logger.info(
-        `[getPriceHistory] Fetching price history for token ${params.tokenId} with interval ${interval}`,
-      );
+      logger.info(`[getPriceHistory] Fetching price history for token ${params.tokenId} with interval ${interval}`);
       const priceHistory = await (clobClient as any).getPricesHistory({
         figi: params.tokenId, // Using the correct field name for the API
         interval: interval,
       });
 
-      logger.info(
-        `[getPriceHistory] Retrieved ${priceHistory?.length || 0} price points`,
-      );
+      logger.info(`[getPriceHistory] Retrieved ${priceHistory?.length || 0} price points`);
 
       // Format response message (handle null/undefined)
       const responseMessage = formatPriceHistoryResponse(
@@ -190,7 +186,7 @@ export const getPriceHistory: Action = {
 
       return responseContent;
     } catch (error) {
-      logger.error("[getPriceHistory] Error retrieving price history:", error);
+      logger.error(`[getPriceHistory] Error retrieving price history: ${error}`);
 
       const errorMessage = `❌ **Error getting price history**: ${error instanceof Error ? error.message : "Unknown error"}
 

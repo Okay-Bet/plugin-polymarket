@@ -95,15 +95,10 @@ export async function initializeClobClient(
       SignatureType.EOA, // Use EOA signature type for regular private key wallets
     );
 
-    logger.info(
-      `[initializeClobClient] CLOB client initialized successfully with ${hasApiCreds ? "API credentials and wallet" : "wallet only"}.`,
-    );
+    logger.info(`[initializeClobClient] CLOB client initialized successfully with ${hasApiCreds ? "API credentials and wallet" : "wallet only"}.`);
     return client;
   } catch (error) {
-    logger.error(
-      `[initializeClobClient] Failed to initialize CLOB client:`,
-      error,
-    );
+    logger.error(`[initializeClobClient] Failed to initialize CLOB client: ${error}`);
     throw new Error(
       `Failed to initialize CLOB client: ${error instanceof Error ? error.message : "Unknown error"}`,
     );
@@ -164,9 +159,7 @@ export async function initializeClobClientWithCreds(
     );
   }
 
-  logger.info(
-    `[initializeClobClientWithCreds] Initializing CLOB client with API credentials.`,
-  );
+  logger.info(`[initializeClobClientWithCreds] Initializing CLOB client with API credentials.`);
 
   try {
     // Ensure private key has 0x prefix for ethers.js
@@ -188,9 +181,7 @@ export async function initializeClobClientWithCreds(
       passphrase: apiPassphrase,
     };
 
-    logger.info(
-      `[initializeClobClientWithCreds] Wallet address: ${wallet.address}`,
-    );
+    logger.info(`[initializeClobClientWithCreds] Wallet address: ${wallet.address}`);
     logger.info(`[initializeClobClientWithCreds] Chain ID: 137`);
 
     const client = new ClobClient(
@@ -201,15 +192,10 @@ export async function initializeClobClientWithCreds(
       SignatureType.EOA, // Use EOA signature type for regular private key wallets
     );
 
-    logger.info(
-      `[initializeClobClientWithCreds] CLOB client initialized successfully with API credentials.`,
-    );
+    logger.info(`[initializeClobClientWithCreds] CLOB client initialized successfully with API credentials.`);
     return client;
   } catch (error) {
-    logger.error(
-      `[initializeClobClientWithCreds] Failed to initialize CLOB client:`,
-      error,
-    );
+    logger.error(`[initializeClobClientWithCreds] Failed to initialize CLOB client: ${error}`);
     throw new Error(
       `Failed to initialize CLOB client with credentials: ${error instanceof Error ? error.message : "Unknown error"}`,
     );

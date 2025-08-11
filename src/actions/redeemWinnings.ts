@@ -242,7 +242,7 @@ export const redeemWinningsAction: Action = {
             }
           }
         } catch (error) {
-          logger.warn(`[redeemWinnings] Failed to check market ${conditionId}:`, error);
+          logger.warn(`[redeemWinnings] Failed to check market ${conditionId}: ${error}`);
           
           // If API fails but price indicates resolution, still try to redeem
           if (isLikelyResolved) {
@@ -424,7 +424,7 @@ export const redeemWinningsAction: Action = {
           }
 
         } catch (error) {
-          logger.error(`[redeemWinnings] Failed to redeem ${market.conditionId}:`, error);
+          logger.error(`[redeemWinnings] Failed to redeem ${market.conditionId}: ${error}`);
           
           redemptionResults.push({
             market: market.question,
@@ -477,7 +477,7 @@ export const redeemWinningsAction: Action = {
       return contentToActionResult(responseContent);
 
     } catch (error) {
-      logger.error("[redeemWinningsAction] Error:", error);
+      logger.error(`[redeemWinningsAction] Error: ${error}`);
       
       const errorContent: Content = {
         text: `❌ **Redemption Failed**\n\n${error instanceof Error ? error.message : "Unknown error occurred"}`,

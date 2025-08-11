@@ -101,14 +101,9 @@ export const getPortfolioPositionsAction: Action = {
         
         const positionsData = await positionsResponse.json() as any;
         positions = Array.isArray(positionsData) ? positionsData : positionsData.positions || [];
-        logger.info(
-          `[getPortfolioPositions] Retrieved ${positions.length} positions from public API`,
-        );
+        logger.info(`[getPortfolioPositions] Retrieved ${positions.length} positions from public API`);
       } catch (positionsError) {
-        logger.warn(
-          "[getPortfolioPositions] Failed to get positions from public API:",
-          positionsError,
-        );
+        logger.warn(`[getPortfolioPositions] Failed to get positions from public API: ${positionsError}`);
         
         // Fallback to trades endpoint to calculate positions
         try {
@@ -119,15 +114,10 @@ export const getPortfolioPositionsAction: Action = {
           if (tradesResponse.ok) {
             const tradesData = await tradesResponse.json() as any;
             trades = Array.isArray(tradesData) ? tradesData : tradesData.trades || [];
-            logger.info(
-              `[getPortfolioPositions] Retrieved ${trades.length} trades from public API`,
-            );
+            logger.info(`[getPortfolioPositions] Retrieved ${trades.length} trades from public API`);
           }
         } catch (tradesError) {
-          logger.warn(
-            "[getPortfolioPositions] Failed to get trades from public API:",
-            tradesError,
-          );
+          logger.warn(`[getPortfolioPositions] Failed to get trades from public API: ${tradesError}`);
         }
       }
 
@@ -153,7 +143,7 @@ export const getPortfolioPositionsAction: Action = {
           const marketId = trade.market || trade.market_id || trade.conditionId || "Unknown";
           
           if (!tokenId) {
-            logger.warn("[getPortfolioPositions] Trade missing token ID:", trade);
+            logger.warn(`[getPortfolioPositions] Trade missing token ID: ${trade}`);
             continue;
           }
 
@@ -194,7 +184,7 @@ export const getPortfolioPositionsAction: Action = {
         try {
           // Log the raw position data to understand the API format
           if (processedPositionsData.indexOf(position) === 0) {
-            logger.info("[getPortfolioPositions] Sample position data:", JSON.stringify(position, null, 2));
+            logger.info(`[getPortfolioPositions] Sample position data: ${JSON.stringify(position, null, 2)}`);
           }
           
           // Handle direct API positions format
@@ -238,20 +228,14 @@ export const getPortfolioPositionsAction: Action = {
                 }
               }
             } catch (marketError) {
-              logger.warn(
-                "[getPortfolioPositions] Failed to get market info:",
-                marketError,
-              );
+              logger.warn(`[getPortfolioPositions] Failed to get market info: ${marketError}`);
             }
           }
 
           processedPositions.push(processed);
           totalValue += value;
         } catch (processError) {
-          logger.warn(
-            "[getPortfolioPositions] Error processing position:",
-            processError,
-          );
+          logger.warn(`[getPortfolioPositions] Error processing position: ${processError}`);
         }
       }
 
@@ -349,10 +333,7 @@ ${positionsDisplay}
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error";
-      logger.error(
-        "[getPortfolioPositionsAction] Error getting positions:",
-        error,
-      );
+      logger.error(`[getPortfolioPositionsAction] Error getting positions: ${error}`);
 
       const errorContent: Content = {
         text: `❌ **Portfolio Positions Error**

@@ -111,7 +111,7 @@ export async function findMarketByName(
 
     return result;
   } catch (error) {
-    logger.error(`[marketLookup] Error finding market:`, error);
+    logger.error(`[marketLookup] Error finding market: ${error}`);
     return null;
   }
 }
@@ -187,7 +187,7 @@ export async function getMarketSuggestions(
     logger.info(`[marketLookup] Found ${results.length} market suggestions`);
     return results;
   } catch (error) {
-    logger.error(`[marketLookup] Error getting suggestions:`, error);
+    logger.error(`[marketLookup] Error getting suggestions: ${error}`);
     return [];
   }
 }

@@ -168,7 +168,7 @@ const polymarketProvider: Provider = {
         },
       };
     } catch (error) {
-      logger.error("Error in Polymarket provider:", error);
+      logger.error(`Error in Polymarket provider: ${error}`);
       return {
         text: "Polymarket service is currently unavailable.",
         values: {

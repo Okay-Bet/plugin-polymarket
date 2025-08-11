@@ -65,16 +65,12 @@ export const getMarketPriceAction: Action = {
     message: Memory,
     state?: State,
   ): Promise<boolean> => {
-    logger.info(
-      `[getMarketPriceAction] Validate called for message: "${message.content?.text}"`,
-    );
+    logger.info(`[getMarketPriceAction] Validate called for message: "${message.content?.text}"`);
 
     const clobApiUrl = runtime.getSetting("CLOB_API_URL");
 
     if (!clobApiUrl) {
-      logger.warn(
-        "[getMarketPriceAction] CLOB_API_URL is required but not provided",
-      );
+      logger.warn(`[getMarketPriceAction] CLOB_API_URL is required but not provided`);
       return false;
     }
 
@@ -95,9 +91,7 @@ export const getMarketPriceAction: Action = {
 
     if (!clobApiUrl) {
       const errorMessage = "CLOB_API_URL is required in configuration.";
-      logger.error(
-        `[getMarketPriceAction] Configuration error: ${errorMessage}`,
-      );
+      logger.error(`[getMarketPriceAction] Configuration error: ${errorMessage}`);
       return createErrorResult(errorMessage);
     }
 
@@ -129,8 +123,7 @@ Examples:
       );
 
       logger.info(
-        "[getMarketPriceAction] LLM result:",
-        JSON.stringify(llmResult),
+        `[getMarketPriceAction] LLM result: ${JSON.stringify(llmResult)}`
       );
 
       if (llmResult?.error) {
@@ -141,9 +134,7 @@ Examples:
 
       tokenId = llmResult?.tokenId || "";
     } catch (error) {
-      logger.warn(
-        "[getMarketPriceAction] LLM extraction failed, trying regex fallback",
-      );
+      logger.warn(`[getMarketPriceAction] LLM extraction failed, trying regex fallback`);
 
       // Fallback to regex extraction
       const text = message.content?.text || "";
@@ -203,9 +194,7 @@ Analyzing current market conditions...`,
       }
 
       // Fetch order book data for both sides
-      logger.info(
-        `[getMarketPriceAction] Fetching orderbook for token: ${tokenId}`,
-      );
+      logger.info(`[getMarketPriceAction] Fetching orderbook for token: ${tokenId}`);
 
       const [buyBook, sellBook] = await Promise.all([
         client.getOrderBooks([{ token_id: tokenId, side: "buy" as any }]),
@@ -336,7 +325,7 @@ Analyzing current market conditions...`,
         error instanceof Error
           ? error.message
           : "Unknown error occurred while fetching market price";
-      logger.error(`[getMarketPriceAction] Price fetch error:`, error);
+      logger.error(`[getMarketPriceAction] Price fetch error: ${error}`);
 
       const errorContent: Content = {
         text: `❌ **Market Price Fetch Failed**

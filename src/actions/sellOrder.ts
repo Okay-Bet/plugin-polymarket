@@ -54,15 +54,11 @@ export const sellOrderAction: Action = {
     message: Memory,
     state?: State,
   ): Promise<boolean> => {
-    logger.info(
-      `[sellOrderAction] Validate called for message: "${message.content?.text}"`,
-    );
+    logger.info(`[sellOrderAction] Validate called for message: "${message.content?.text}"`);
 
     const clobApiUrl = runtime.getSetting("CLOB_API_URL");
     if (!clobApiUrl) {
-      logger.warn(
-        "[sellOrderAction] CLOB_API_URL is required but not provided",
-      );
+      logger.warn(`[sellOrderAction] CLOB_API_URL is required but not provided`);
       return false;
     }
 
@@ -103,7 +99,7 @@ export const sellOrderAction: Action = {
         "sellOrderAction",
       );
 
-      logger.info("[sellOrderAction] LLM result:", JSON.stringify(llmResult));
+      logger.info(`[sellOrderAction] LLM result: ${JSON.stringify(llmResult)}`);
 
       if (llmResult?.error) {
         return createErrorResult("Required sell parameters not found");
@@ -137,9 +133,7 @@ export const sellOrderAction: Action = {
         (tokenId === "MARKET_NAME_LOOKUP" || !tokenId || tokenId.length < 10) &&
         llmResult?.marketName
       ) {
-        logger.info(
-          `[sellOrderAction] Market name lookup requested: ${llmResult.marketName}`,
-        );
+        logger.info(`[sellOrderAction] Market name lookup requested: ${llmResult.marketName}`);
 
         try {
           const marketResult = await findMarketByName(
@@ -206,9 +200,7 @@ Requested outcome: ${outcome}
           }
 
           tokenId = targetToken.token_id;
-          logger.info(
-            `[sellOrderAction] Resolved "${llmResult.marketName}" -> ${outcome} -> ${tokenId.slice(0, 12)}...`,
-          );
+          logger.info(`[sellOrderAction] Resolved "${llmResult.marketName}" -> ${outcome} -> ${tokenId.slice(0, 12)}...`);
 
           if (callback) {
             const resolutionContent: Content = {
@@ -231,7 +223,7 @@ Preparing sell order...`,
             await callback(resolutionContent);
           }
         } catch (lookupError) {
-          logger.error(`[sellOrderAction] Market lookup failed:`, lookupError);
+          logger.error(`[sellOrderAction] Market lookup failed: ${lookupError}`);
           return createErrorResult("Market lookup failed for selling");
         }
       }
@@ -264,9 +256,7 @@ Preparing sell order...`,
       
       logger.info(`[sellOrderAction] Validation passed`);
     } catch (error) {
-      logger.warn(
-        "[sellOrderAction] LLM extraction failed, trying regex fallback",
-      );
+      logger.warn(`[sellOrderAction] LLM extraction failed, trying regex fallback`);
 
       // Regex fallback for sell orders
       const text = message.content?.text || "";
@@ -357,9 +347,7 @@ Preparing sell order...`,
         runtime.getSetting("CLOB_PASS_PHRASE");
 
       if (!hasApiKey || !hasApiSecret || !hasApiPassphrase) {
-        logger.info(
-          `[sellOrderAction] API credentials missing, attempting to derive them`,
-        );
+        logger.info(`[sellOrderAction] API credentials missing, attempting to derive them`);
 
         if (callback) {
           const derivingContent: Content = {
@@ -388,9 +376,7 @@ Deriving credentials...`,
             derivedCreds.passphrase,
           );
 
-          logger.info(
-            `[sellOrderAction] Successfully derived and stored API credentials`,
-          );
+          logger.info(`[sellOrderAction] Successfully derived and stored API credentials`);
 
           if (callback) {
             const successContent: Content = {
@@ -408,10 +394,7 @@ Reinitializing client with credentials...`,
             await callback(successContent);
           }
         } catch (deriveError) {
-          logger.error(
-            `[sellOrderAction] Failed to derive API credentials:`,
-            deriveError,
-          );
+          logger.error(`[sellOrderAction] Failed to derive API credentials: ${deriveError}`);
           const errorContent: Content = {
             text: `❌ **Failed to Derive API Credentials**
 
@@ -452,9 +435,7 @@ Please ensure your wallet is properly configured and try again.`,
       logger.info(`[sellOrderAction] Needs position fetch: ${needsPositionFetch} (size=${size}, includes 'all'=${message.content?.text?.toLowerCase().includes("all")})`);
       
       if (needsPositionFetch) {
-        logger.info(
-          `[sellOrderAction] Fetching actual position size for token: ${tokenId?.slice(0,20)}...`,
-        );
+        logger.info(`[sellOrderAction] Fetching actual position size for token: ${tokenId?.slice(0,20)}...`);
 
         try {
           // Get wallet address from the client
@@ -479,9 +460,7 @@ Please ensure your wallet is properly configured and try again.`,
                 const actualSize = parseFloat(position.size || position.position_size || "0");
                 if (actualSize > 0) {
                   size = actualSize;
-                  logger.info(
-                    `[sellOrderAction] Found position size: ${size} shares`,
-                  );
+                  logger.info(`[sellOrderAction] Found position size: ${size} shares`);
                   
                   // Check if position is below minimum
                   if (size < 5) {
@@ -509,10 +488,7 @@ Please ensure your wallet is properly configured and try again.`,
             }
           }
         } catch (posError) {
-          logger.error(
-            `[sellOrderAction] Failed to fetch position size:`,
-            posError,
-          );
+          logger.error(`[sellOrderAction] Failed to fetch position size: ${posError}`);
           // Continue with size = 5 (minimum) if we can't fetch the actual size
           if (size <= 0) size = 5;
         }
@@ -520,9 +496,7 @@ Please ensure your wallet is properly configured and try again.`,
 
       // If market order with no price, fetch current best bid
       if (price === -1) {
-        logger.info(
-          `[sellOrderAction] Fetching market price for token: ${tokenId}`,
-        );
+        logger.info(`[sellOrderAction] Fetching market price for token: ${tokenId}`);
 
         try {
           // Use the price endpoint for accurate current prices
@@ -572,9 +546,7 @@ Please ensure your wallet is properly configured and try again.`,
             
             // For FOK orders with insufficient liquidity, warn the user
             if (orderType === "FOK" && !hasGoodLiquidity) {
-              logger.warn(
-                `[sellOrderAction] Insufficient liquidity for FOK order - Need: ${size}, Available at best bid: ${bidLiquidity}, Total top 5: ${totalLiquidity}`,
-              );
+              logger.warn(`[sellOrderAction] Insufficient liquidity for FOK order - Need: ${size}, Available at best bid: ${bidLiquidity}, Total top 5: ${totalLiquidity}`);
               
               const liquidityContent: Content = {
                 text: `⚠️ **Insufficient Liquidity for Market Order (FOK)**
@@ -631,9 +603,7 @@ Would you like to proceed with one of these alternatives?`,
             const marketDiscount = orderType === "FOK" && hasGoodLiquidity ? 1.0 : (orderType === "FOK" ? 0.995 : 0.98);
             price = Math.max(0.01, Math.min(0.99, bestBid * marketDiscount));
             
-            logger.info(
-              `[sellOrderAction] Market price fetched - Current sell price: ${currentSellPrice}, Best bid: ${bestBid}, Liquidity: ${bidLiquidity}, Sell at: ${price}`,
-            );
+            logger.info(`[sellOrderAction] Market price fetched - Current sell price: ${currentSellPrice}, Best bid: ${bestBid}, Liquidity: ${bidLiquidity}, Sell at: ${price}`);
 
             if (callback) {
               const discountPercent = ((1 - marketDiscount) * 100).toFixed(1);
@@ -670,10 +640,7 @@ Submitting order...`,
             );
           }
         } catch (priceError) {
-          logger.error(
-            `[sellOrderAction] Failed to fetch market price:`,
-            priceError,
-          );
+          logger.error(`[sellOrderAction] Failed to fetch market price: ${priceError}`);
           return createErrorResult(
             "Failed to fetch current market price. Please try a limit order with a specific price.",
           );
@@ -689,10 +656,7 @@ Submitting order...`,
         feeRateBps: parseFloat(feeRateBps),
       };
 
-      logger.info(
-        `[sellOrderAction] Creating sell order with args:`,
-        orderArgs,
-      );
+      logger.info(`[sellOrderAction] Creating sell order with args: ${orderArgs}`);
 
       if (callback) {
         const orderContent: Content = {
@@ -826,7 +790,7 @@ ${
         error instanceof Error
           ? error.message
           : "Unknown error occurred while selling";
-      logger.error(`[sellOrderAction] Sell order error:`, error);
+      logger.error(`[sellOrderAction] Sell order error: ${error}`);
 
       const errorContent: Content = {
         text: `❌ **Sell Order Error**
@@ -857,7 +821,7 @@ Please check:
       return createErrorResult(errorMessage);
     }
     } catch (outerError) {
-      logger.error(`[sellOrderAction] Outer handler error:`, outerError);
+      logger.error(`[sellOrderAction] Outer handler error: ${outerError}`);
       const errorMessage = outerError instanceof Error ? outerError.message : "Unknown error in sell handler";
       
       const errorContent: Content = {

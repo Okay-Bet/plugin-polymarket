@@ -125,7 +125,7 @@ export const getMarketDataAction: Action = {
           }
         }
       } catch (error) {
-        logger.warn("[getMarketDataAction] CLOB API failed:", error);
+        logger.warn(`[getMarketDataAction] CLOB API failed: ${error}`);
       }
       
       // Fetch from Gamma API for additional data
@@ -155,7 +155,7 @@ export const getMarketDataAction: Action = {
           }
         }
       } catch (error) {
-        logger.warn("[getMarketDataAction] Gamma API failed:", error);
+        logger.warn(`[getMarketDataAction] Gamma API failed: ${error}`);
       }
       
       if (!marketData.question) {
@@ -215,7 +215,7 @@ To place an order: "buy YES" or "buy NO" with the amount you want to trade!`;
       };
       
     } catch (error) {
-      logger.error("[getMarketDataAction] Error:", error);
+      logger.error(`[getMarketDataAction] Error: ${error}`);
       
       const errorContent: Content = {
         text: "Failed to fetch market data. Please try again.",

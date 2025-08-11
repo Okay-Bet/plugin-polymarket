@@ -70,9 +70,7 @@ export const approveUSDCAction: Action = {
     message: Memory,
     state?: State,
   ): Promise<boolean> => {
-    logger.info(
-      `[approveUSDCAction] Validate called for message: "${message.content?.text}"`,
-    );
+    logger.info(`[approveUSDCAction] Validate called for message: "${message.content?.text}"`);
 
     const privateKey =
       runtime.getSetting("WALLET_PRIVATE_KEY") ||
@@ -170,9 +168,7 @@ Checking current approvals...`,
         : USDC_BRIDGED_ADDRESS;
       const usdcType = useNativeUSDC ? "Native USDC" : "USDC.e (Bridged)";
 
-      logger.info(
-        `[approveUSDCAction] Using ${usdcType} (${ethers.formatUnits(useNativeUSDC ? nativeBalance : bridgedBalance, 6)} USDC)`,
-      );
+      logger.info(`[approveUSDCAction] Using ${usdcType} (${ethers.formatUnits(useNativeUSDC ? nativeBalance : bridgedBalance, 6)} USDC)`);
 
       // Check current approval status for both exchanges
       const [
@@ -272,7 +268,7 @@ You can now place orders on Polymarket!`,
       }
 
       // Set missing approvals
-      const transactions = [];
+      const transactions: Array<{ step: number; contract: string; txHash: any }> = [];
       const gasLimit = 100000; // Conservative gas limit for approvals
 
       // Step 1: Approve USDC for CTF if needed
@@ -302,9 +298,7 @@ Setting unlimited allowance for Conditional Tokens Framework...
 
       // Step 2: Approve USDC for Exchange if needed
       if (!currentStatus.usdcForExchange) {
-        logger.info(
-          "[approveUSDCAction] Setting USDC allowance for Exchange...",
-        );
+        logger.info(`[approveUSDCAction] Setting USDC allowance for Exchange...`);
 
         if (callback) {
           const step2Content: Content = {
@@ -330,9 +324,7 @@ Setting unlimited allowance for CTF Exchange...
           txHash: receipt2.hash,
         });
 
-        logger.info(
-          `[approveUSDCAction] Exchange approval tx: ${receipt2.hash}`,
-        );
+        logger.info(`[approveUSDCAction] Exchange approval tx: ${receipt2.hash}`);
       }
 
       // Step 3: Set CTF approval for Exchange if needed
@@ -368,9 +360,7 @@ Setting approval for all CTF tokens on Exchange...
 
       // Step 4: Approve USDC for Neg Risk Exchange if needed
       if (!currentStatus.usdcForNegRisk) {
-        logger.info(
-          "[approveUSDCAction] Setting USDC allowance for Neg Risk Exchange...",
-        );
+        logger.info(`[approveUSDCAction] Setting USDC allowance for Neg Risk Exchange...`);
 
         if (callback) {
           const step4Content: Content = {
@@ -396,16 +386,12 @@ Setting unlimited allowance for Neg Risk Exchange...
           txHash: receipt4.hash,
         });
 
-        logger.info(
-          `[approveUSDCAction] Neg Risk Exchange approval tx: ${receipt4.hash}`,
-        );
+        logger.info(`[approveUSDCAction] Neg Risk Exchange approval tx: ${receipt4.hash}`);
       }
 
       // Step 5: Set CTF approval for Neg Risk Exchange if needed
       if (!currentStatus.ctfForNegRisk) {
-        logger.info(
-          "[approveUSDCAction] Setting CTF approval for Neg Risk Exchange...",
-        );
+        logger.info(`[approveUSDCAction] Setting CTF approval for Neg Risk Exchange...`);
 
         if (callback) {
           const step5Content: Content = {
@@ -431,9 +417,7 @@ Setting approval for all CTF tokens on Neg Risk Exchange...
           txHash: receipt5.hash,
         });
 
-        logger.info(
-          `[approveUSDCAction] CTF approval for Neg Risk Exchange tx: ${receipt5.hash}`,
-        );
+        logger.info(`[approveUSDCAction] CTF approval for Neg Risk Exchange tx: ${receipt5.hash}`);
       }
 
       // Success response
@@ -479,7 +463,7 @@ ${transactions.map((tx) => `• Step ${tx.step} - ${tx.contract}: [${tx.txHash.s
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error occurred";
-      logger.error(`[approveUSDCAction] Error:`, error);
+      logger.error(`[approveUSDCAction] Error: ${error}`);
 
       const errorContent: Content = {
         text: `❌ **USDC Approval Failed**

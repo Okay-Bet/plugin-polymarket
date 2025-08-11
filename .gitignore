@@ -8,3 +8,4 @@ coverage/
 *.tsbuildinfo
 .vitest/
 .eliza/
+.elizadb-test/

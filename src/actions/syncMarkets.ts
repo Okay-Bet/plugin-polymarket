@@ -118,7 +118,7 @@ export const syncMarketsAction: Action = {
       };
       
     } catch (error) {
-      logger.error("[syncMarketsAction] Error syncing markets:", error);
+      logger.error(`[syncMarketsAction] Error syncing markets: ${error}`);
       
       const errorContent: Content = {
         text: `❌ Failed to sync markets: ${error instanceof Error ? error.message : "Unknown error"}`,

@@ -83,17 +83,12 @@ export const getSamplingMarkets: Action = {
           params = extractedParams;
         }
       } catch (error) {
-        logger.warn(
-          "[getSamplingMarkets] LLM extraction failed, using defaults:",
-          error,
-        );
+        logger.warn(`[getSamplingMarkets] LLM extraction failed, using defaults: ${error}`);
         // Continue with empty params (no pagination cursor)
       }
 
       // Call CLOB API to get sampling markets
-      logger.info(
-        "[getSamplingMarkets] Fetching sampling markets from CLOB API",
-      );
+      logger.info(`[getSamplingMarkets] Fetching sampling markets from CLOB API`);
       const marketsResponse = await clobClient.getSamplingMarkets(
         params.next_cursor,
       );
@@ -102,9 +97,7 @@ export const getSamplingMarkets: Action = {
       const totalCount = marketsResponse.count || 0;
       const nextCursor = marketsResponse.next_cursor;
 
-      logger.info(
-        `[getSamplingMarkets] Retrieved ${markets.length} sampling markets`,
-      );
+      logger.info(`[getSamplingMarkets] Retrieved ${markets.length} sampling markets`);
 
       // Format response message
       const responseMessage = formatSamplingMarketsResponse(
@@ -139,10 +132,7 @@ export const getSamplingMarkets: Action = {
 
       return responseContent;
     } catch (error) {
-      logger.error(
-        "[getSamplingMarkets] Error retrieving sampling markets:",
-        error,
-      );
+      logger.error(`[getSamplingMarkets] Error retrieving sampling markets: ${error}`);
 
       const errorMessage = `❌ **Error getting sampling markets**: ${error instanceof Error ? error.message : "Unknown error"}
 
