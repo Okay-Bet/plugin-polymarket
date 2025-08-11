@@ -65,6 +65,9 @@
   ],
   "dependencies": {
     "@elizaos/core": "^1.4.2",
+    "@elizaos/plugin-discord": "1.2.5",
+    "@elizaos/plugin-ollama": "1.2.3",
+    "@elizaos/plugin-openai": "1.0.9",
     "@elizaos/plugin-sql": "^1.4.2",
     "@polymarket/clob-client": "^4.16.0",
     "ethers": "^6.13.1",
@@ -73,10 +76,11 @@
     "zod": "3.25.32"
   },
   "devDependencies": {
-    "tsup": "8.4.0",
+    "@elizaos/cli": "^1.4.2",
+    "@vitest/coverage-v8": "2.1.5",
     "prettier": "3.5.3",
-    "vitest": "2.1.5",
-    "@vitest/coverage-v8": "2.1.5"
+    "tsup": "8.4.0",
+    "vitest": "2.1.5"
   },
   "scripts": {
     "start": "elizaos start",
