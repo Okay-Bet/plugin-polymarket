@@ -1,22 +1,30 @@
 {
   "compilerOptions": {
-    "target": "ES2022", // Modern target
-    "module": "ESNext", // Use ESNext for module system
-    "moduleResolution": "bundler", // Or "NodeNext", modern resolution strategy
+    "outDir": "dist",
+    "rootDir": "src",
+    "lib": ["ESNext"],
+    "target": "ESNext",
+    "module": "Preserve",
+    "moduleResolution": "Bundler",
+    "strict": false,
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "strict": true,
     "skipLibCheck": true,
-    "outDir": "./dist",
+    "forceConsistentCasingInFileNames": false,
+    "allowImportingTsExtensions": true,
     "declaration": true,
-    "sourceMap": true, // Good for debugging
+    "emitDeclarationOnly": true,
+    "resolveJsonModule": true,
+    "noImplicitAny": false,
+    "allowJs": true,
+    "checkJs": false,
+    "noEmitOnError": false,
+    "moduleDetection": "force",
+    "allowArbitraryExtensions": true,
+    "baseUrl": ".",
+    "paths": {
+      "@elizaos/core": ["../../core/src"],
+      "@elizaos/core/*": ["../../core/src/*"]
+    }
   },
-  "include": [
-    "src/**/*",
-    "vitest.config.ts" // Include Vitest config if it's TypeScript
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
-  ]
+  "include": ["src/**/*.ts"]
 }

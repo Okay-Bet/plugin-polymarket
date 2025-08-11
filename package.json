@@ -1,10 +1,56 @@
 {
   "name": "@elizaos/plugin-polymarket",
-  "version": "0.2.0",
+  "description": "ElizaOS plugin for Polymarket prediction markets",
+  "version": "0.1.0",
   "type": "module",
   "main": "dist/index.js",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
+  "keywords": [
+    "polymarket",
+    "prediction-markets",
+    "elizaos",
+    "elizaos-plugin",
+    "agent",
+    "trading",
+    "defi",
+    "web3",
+    "plugin"
+  ],
+  "agentConfig": {
+    "pluginType": "elizaos:plugin:1.0.0",
+    "pluginParameters": {
+      "WALLET_PRIVATE_KEY": {
+        "type": "string",
+        "description": "Private key for the wallet to use for trading",
+        "required": false
+      },
+      "CLOB_API_URL": {
+        "type": "string",
+        "description": "Polymarket CLOB API URL (defaults to https://clob.polymarket.com)",
+        "required": false,
+        "default": "https://clob.polymarket.com"
+      },
+      "CLOB_API_KEY": {
+        "type": "string",
+        "description": "Optional API key for L2 operations",
+        "required": false
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Okay-Bet/plugin-polymarket"
+  },
+  "homepage": "https://github.com/Okay-Bet/plugin-polymarket#readme",
+  "bugs": {
+    "url": "https://github.com/Okay-Bet/plugin-polymarket/issues"
+  },
+  "author": {
+    "name": "Benjamin Scheinberg",
+    "email": "ben@spmc.dev"
+  },
+  "license": "MIT",
   "exports": {
     "./package.json": "./package.json",
     ".": {
@@ -17,45 +63,36 @@
   "files": [
     "dist"
   ],
-  "scripts": {
-    "build": "tsc",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage",
-    "prepublishOnly": "npm run build"
-  },
-  "agentConfig": {
-    "name": "@elizaos/plugin-polymarket",
-    "version": "1.0.0",
-    "pluginType": "elizaos:plugin:1.0.0",
-    "pluginParameters": {
-      "API_KEY": {
-        "type": "string",
-        "description": "API key for Polymarket service"
-      }
-    }
-  },
-  "keywords": [
-    "elizaos-plugin",
-    "prediction-markets",
-    "polymarket"
-  ],
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "@vitest/coverage-v8": "^3.2.4",
-    "@vitest/eslint-plugin": "1.0.1",
-    "tinypool": "^0.8.1",
-    "typescript": "^5.8.3",
-    "vitest": "^3.2.4"
-  },
   "dependencies": {
-    "@elizaos/core": "^1.0.15",
-    "@elizaos/plugin-0g": "1.0.0"
+    "@elizaos/core": "^0.1.7-alpha.1",
+    "@elizaos/plugin-sql": "^0.1.7-alpha.1",
+    "@polymarket/clob-client": "^4.16.0",
+    "ethers": "^6.13.1",
+    "node-fetch": "^3.0.0",
+    "ws": "^8.17.0",
+    "zod": "3.25.32"
   },
-  "packageType": "plugin",
-  "platform": "node",
-  "trustedDependencies": [
-    "es5-ext"
-  ]
+  "devDependencies": {
+    "tsup": "8.4.0",
+    "prettier": "3.5.3",
+    "vitest": "2.1.5",
+    "@vitest/coverage-v8": "2.1.5"
+  },
+  "scripts": {
+    "start": "elizaos start",
+    "dev": "elizaos dev",
+    "build": "tsup",
+    "lint": "prettier --write ./src",
+    "test:component": "vitest run",
+    "test:e2e": "elizaos test",
+    "test": "npm run test:component && npm run test:e2e",
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest",
+    "format": "prettier --write ./src",
+    "format:check": "prettier --check ./src"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "gitHead": "b165ad83e5f7a21bc1edbd83374ca087e3cd6b33"
 }

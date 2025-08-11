@@ -1,24 +1,10 @@
-# Compiled output
-dist/
-build/
-
-# Dependencies
 node_modules/
-
-# eliza
-.eliza
-
-# IDE and editor files
-.vscode/
-*.suo
-*.njsproj
-*.sln
-*.swp
-
-# Logs and temp files
-*.log
-tmp/
-temp/
-
-# Environment files
+dist/
+coverage/
 .env
+.env.local
+*.log
+.DS_Store
+*.tsbuildinfo
+.vitest/
+.eliza/
