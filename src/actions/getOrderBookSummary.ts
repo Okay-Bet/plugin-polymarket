@@ -87,6 +87,7 @@ export const getOrderBookSummaryAction: Action = {
     }
 
     let tokenId = "";
+    let isConditionId = false;
 
     // Extract token ID using LLM
     try {
@@ -123,6 +124,12 @@ Please provide a token ID in your request. For example:
 
       tokenId = llmResult?.tokenId || "";
 
+      // Check if this is a condition ID (hex string starting with 0x)
+      if (tokenId.startsWith("0x") && tokenId.length === 66) {
+        isConditionId = true;
+        logger.info(`[getOrderBookSummaryAction] Detected condition ID: ${tokenId}`);
+      }
+
       if (!tokenId || tokenId.trim() === "") {
         // Try to extract from query as fallback
         const fallbackId = llmResult?.query || "";
@@ -144,16 +151,25 @@ Please provide a token ID in your request. For example:
 
       logger.warn(`[getOrderBookSummaryAction] LLM extraction failed, trying regex fallback`);
 
-      // Regex fallback - try to extract token ID directly from the message
+      // Regex fallback - try to extract token ID or condition ID directly from the message
       const messageText = message.content.text || "";
-      const tokenIdMatch = messageText.match(
-        /(?:token|TOKEN)\s*(\d+)|ORDER_BOOK\s*(\d+)|(\d{6,})/i,
-      );
-
-      if (tokenIdMatch) {
-        tokenId = tokenIdMatch[1] || tokenIdMatch[2] || tokenIdMatch[3];
-        logger.info(`[getOrderBookSummaryAction] Regex fallback extracted token ID: ${tokenId}`);
+      
+      // First check for hex condition ID
+      const hexMatch = messageText.match(/0x[a-fA-F0-9]{64}/);
+      if (hexMatch) {
+        tokenId = hexMatch[0];
+        isConditionId = true;
+        logger.info(`[getOrderBookSummaryAction] Regex fallback extracted condition ID: ${tokenId}`);
       } else {
+        // Try numeric token ID
+        const tokenIdMatch = messageText.match(
+          /(?:token|TOKEN)\s*(\d+)|ORDER_BOOK\s*(\d+)|(\d{6,})/i,
+        );
+
+        if (tokenIdMatch) {
+          tokenId = tokenIdMatch[1] || tokenIdMatch[2] || tokenIdMatch[3];
+          logger.info(`[getOrderBookSummaryAction] Regex fallback extracted token ID: ${tokenId}`);
+        } else {
         const errorMessage =
           "Unable to extract token ID from your message. Please provide a valid token ID.";
         logger.error(`[getOrderBookSummaryAction] LLM parameter extraction failed: ${error}`);
@@ -167,6 +183,65 @@ Please provide a token ID in your request. For example:
 • "ORDER_BOOK 345678"`,
           actions: ["POLYMARKET_GET_ORDER_BOOK"],
           data: { error: errorMessage },
+        };
+
+        if (callback) {
+          await callback(errorContent);
+        }
+        return createErrorResult(errorMessage);
+        }
+      }
+    }
+
+    // If we have a condition ID, fetch the market data to get token IDs
+    if (isConditionId) {
+      try {
+        logger.info(`[getOrderBookSummaryAction] Fetching market data for condition ID: ${tokenId}`);
+        const marketResponse = await fetch(
+          `https://clob.polymarket.com/markets/${tokenId}`,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+        
+        if (!marketResponse.ok) {
+          throw new Error(`Market not found for condition ID: ${tokenId}`);
+        }
+        
+        const marketData: any = await marketResponse.json();
+        
+        // Extract token IDs from market data
+        if (marketData.tokens && marketData.tokens.length > 0) {
+          // Get the YES token by default (usually what users want for order books)
+          const yesToken = marketData.tokens.find((t: any) => t.outcome === "Yes");
+          if (yesToken && yesToken.token_id) {
+            const originalId = tokenId;
+            tokenId = yesToken.token_id;
+            logger.info(`[getOrderBookSummaryAction] Converted condition ID ${originalId} to token ID ${tokenId}`);
+          } else if (marketData.tokens[0]?.token_id) {
+            // Fallback to first token if YES not found
+            tokenId = marketData.tokens[0].token_id;
+            logger.info(`[getOrderBookSummaryAction] Using first available token ID: ${tokenId}`);
+          } else {
+            throw new Error("No token IDs found in market data");
+          }
+        } else {
+          throw new Error("No tokens found for this market");
+        }
+      } catch (error) {
+        logger.error(`[getOrderBookSummaryAction] Failed to convert condition ID to token ID: ${error}`);
+        const errorMessage = `Unable to fetch token information for condition ID: ${tokenId}`;
+        const errorContent: Content = {
+          text: `❌ **Error**: ${errorMessage}
+
+The condition ID exists but I couldn't retrieve the token IDs. Please try:
+• Using a specific token ID instead
+• Checking if the market is active
+• Verifying the condition ID is correct`,
+          actions: ["POLYMARKET_GET_ORDER_BOOK"],
+          data: { error: errorMessage, conditionId: tokenId },
         };
 
         if (callback) {
