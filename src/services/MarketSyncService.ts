@@ -163,22 +163,28 @@ export class MarketSyncService extends Service {
 
       // Sync markets to database
       let syncedCount = 0;
+      let skippedCount = 0;
       const totalMarkets = markets.length;
       const logInterval = Math.max(100, Math.floor(totalMarkets / 10)); // Log progress every 10% or 100 markets
       
       for (let i = 0; i < markets.length; i++) {
         const market = markets[i];
         try {
-          await this.syncMarketToDatabase(market);
-          syncedCount++;
+          const wasSynced = await this.syncMarketToDatabase(market);
+          if (wasSynced) {
+            syncedCount++;
+          } else {
+            skippedCount++;
+          }
           
           // Log progress at intervals
           if ((i + 1) % logInterval === 0 || i === markets.length - 1) {
             const progress = ((i + 1) / totalMarkets * 100).toFixed(1);
-            logger.info(`Sync progress: ${i + 1}/${totalMarkets} markets (${progress}%)`);
+            logger.info(`Sync progress: ${i + 1}/${totalMarkets} markets (${progress}%) - Synced: ${syncedCount}, Skipped: ${skippedCount}`);
           }
         } catch (error) {
           logger.error(`Failed to sync market ${market.condition_id}: ${error}`);
+          skippedCount++;
         }
       }
 
@@ -196,7 +202,7 @@ export class MarketSyncService extends Service {
         logger.error(`Failed to cleanup old markets: ${cleanupError}`);
       }
 
-      logger.info(`Market sync completed: ${syncedCount}/${markets.length} markets synced in ${duration}ms`);
+      logger.info(`Market sync completed: ${syncedCount} synced, ${skippedCount} skipped (expired/invalid) out of ${markets.length} total markets in ${duration}ms`);
     } catch (error) {
       logger.error(`Market sync failed: ${error}`);
       throw error;
@@ -403,8 +409,9 @@ export class MarketSyncService extends Service {
 
   /**
    * Sync a single market to the database (upsert)
+   * Returns true if market was synced, false if skipped
    */
-  private async syncMarketToDatabase(market: Market): Promise<void> {
+  private async syncMarketToDatabase(market: Market): Promise<boolean> {
     const db = (this.runtime as any).db;
     if (!db) {
       throw new Error("Database not available");
@@ -417,7 +424,7 @@ export class MarketSyncService extends Service {
       const initialized = await initializePolymarketTables(db);
       if (!initialized) {
         logger.error("Failed to initialize database tables, skipping sync");
-        return;
+        return false;
       }
       logger.info("Database tables created successfully");
     }
@@ -434,7 +441,7 @@ export class MarketSyncService extends Service {
           !market.market_slug
         ) {
           logger.warn(`Skipping market with missing required fields: condition_id=${market.condition_id}, question_id=${market.question_id}, question=${market.question?.substring(0, 50)}, market_slug=${market.market_slug}`);
-          return;
+          return false;
         }
 
         // FINAL SAFETY CHECK: Reject markets from previous years or already ended
@@ -446,8 +453,8 @@ export class MarketSyncService extends Service {
 
           // Reject anything from previous years completely
           if (marketYear < currentYear) {
-            logger.error(`🚫 BLOCKING OLD YEAR MARKET (${marketYear}): condition_id=${market.condition_id}, question=${market.question?.substring(0, 100)}, end_date=${market.end_date_iso}, market_year=${marketYear}, current_year=${currentYear}, active=${market.active}, closed=${market.closed}`);
-            return;
+            logger.debug(`Skipping old year market (${marketYear}): ${market.question?.substring(0, 50)}`);
+            return false;
           }
 
           // Also reject if already ended
@@ -456,17 +463,9 @@ export class MarketSyncService extends Service {
               (currentDate.getTime() - endDate.getTime()) /
                 (24 * 60 * 60 * 1000),
             );
-            logger.error(
-              `🚫 BLOCKING EXPIRED MARKET (ended ${daysAgo} days ago): condition_id=${market.condition_id}, question=${market.question?.substring(0, 100)}, end_date=${market.end_date_iso}, days_ago=${daysAgo}, current_time=${currentDate.toISOString()}, active=${market.active}, closed=${market.closed}`
-            );
-            return;
-          } else {
-            // Market is still future - keep it
-            // Remove verbose logging for each market
+            logger.debug(`Skipping expired market (ended ${daysAgo} days ago): ${market.question?.substring(0, 50)}`);
+            return false;
           }
-        } else {
-          // Market has no end date - log this case for debugging
-          logger.warn(`⚠️  MARKET WITH NO END DATE: condition_id=${market.condition_id}, question=${market.question?.substring(0, 100)}, active=${market.active}, closed=${market.closed}`);
         }
 
         // Upsert market
@@ -647,7 +646,10 @@ export class MarketSyncService extends Service {
 
       // Don't throw error to prevent stopping the entire sync process
       logger.warn(`Continuing sync process despite database error for market ${market.condition_id}`);
+      return false;
     }
+    
+    return true; // Successfully synced
   }
 
   /**
@@ -723,22 +725,19 @@ export class MarketSyncService extends Service {
 
     try {
       const currentDate = new Date();
-      // Delete markets that ended more than 30 days ago
-      const cleanupThreshold = new Date(
-        currentDate.getTime() - 30 * 24 * 60 * 60 * 1000,
-      );
-
+      
+      // Delete ALL markets that have already ended
       const deletedCount = await db
         .delete(polymarketMarketsTable)
         .where(
           and(
             sql`${polymarketMarketsTable.endDateIso} IS NOT NULL`,
-            lt(polymarketMarketsTable.endDateIso, cleanupThreshold),
+            lt(polymarketMarketsTable.endDateIso, currentDate),
           ),
         );
 
       if (deletedCount && deletedCount.rowCount > 0) {
-        logger.info(`Cleaned up ${deletedCount.rowCount} old markets that ended before ${cleanupThreshold.toISOString()}`);
+        logger.info(`Cleaned up ${deletedCount.rowCount} expired markets that ended before ${currentDate.toISOString()}`);
       }
     } catch (error) {
       logger.error(`Error during market cleanup: ${error}`);
