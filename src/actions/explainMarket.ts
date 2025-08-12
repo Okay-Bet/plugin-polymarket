@@ -58,26 +58,33 @@ export const explainMarketAction: Action = {
       /^explain #?\d+$/i
     ];
     
-    // Exclude patterns that are searching for markets
-    const searchPatterns = [
+    // Exclude patterns that are searching for markets or trading
+    const excludePatterns = [
       /find.*markets?/i,
       /search.*markets?/i,
       /show.*markets?/i,
       /list.*markets?/i,
-      /markets?.*about/i
+      /markets?.*about/i,
+      /^buy\s+(yes|no)\s+for/i,  // Buy orders with condition ID
+      /^sell\s+(yes|no)\s+for/i, // Sell orders with condition ID
+      /^place.*order/i,
+      /^order\s+\$?\d+/i
     ];
     
-    // Check if it's a search pattern (should not validate)
-    const isSearching = searchPatterns.some(pattern => pattern.test(text));
-    if (isSearching) {
-      logger.info("[explainMarketAction] Detected market search, not explanation");
+    // Check if it's an excluded pattern (should not validate)
+    const isExcluded = excludePatterns.some(pattern => pattern.test(text));
+    if (isExcluded) {
+      logger.info("[explainMarketAction] Detected excluded pattern (search/trade), not explanation");
       return false;
     }
     
-    // Check if it matches explanation patterns or has a condition ID
+    // Check if it matches explanation patterns or has a condition ID (but not for trading)
     const hasExplainPattern = explainPatterns.some(pattern => pattern.test(text));
     
-    if (hasExplainPattern || hasConditionId) {
+    // Only accept condition ID if it's not part of a buy/sell command
+    const hasStandaloneConditionId = hasConditionId && !/(buy|sell|order|place)/i.test(text);
+    
+    if (hasExplainPattern || hasStandaloneConditionId) {
       logger.info("[explainMarketAction] Validation passed");
       return true;
     }

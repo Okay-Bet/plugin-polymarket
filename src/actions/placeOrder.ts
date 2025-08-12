@@ -861,11 +861,45 @@ Please ensure your wallet is properly configured and try again.`,
 
       // Post the order with enhanced error handling
       let orderResponse: any;
+      
       try {
         orderResponse = await client.postOrder(
           signedOrder,
           orderType as OrderType,
-        );
+        ).catch((error: unknown) => {
+          // Catch any errors from the promise
+          logger.error(`[placeOrderAction] CLOB postOrder error caught:`, error);
+          
+          // Extract error message from various possible formats
+          let errorMsg = "Order failed";
+          const err = error as any;
+          if (err?.response?.data?.error) {
+            errorMsg = err.response.data.error;
+          } else if (err?.data?.error) {
+            errorMsg = err.data.error;
+          } else if (err?.message) {
+            errorMsg = err.message;
+          } else if (typeof error === 'string') {
+            errorMsg = error;
+          }
+          
+          throw new Error(errorMsg);
+        });
+        
+        // Check if the response indicates an error (even if no exception was thrown)
+        // The CLOB client sometimes returns undefined or doesn't throw properly
+        if (!orderResponse || orderResponse === undefined) {
+          throw new Error("Order failed - no response from CLOB");
+        }
+        
+        // Check for various failure indicators
+        if (orderResponse.error || orderResponse.errorMsg || 
+            (orderResponse.success === false) ||
+            (!orderResponse.orderId && !orderResponse.status && !orderResponse.orderHashes)) {
+          const errorMsg = orderResponse?.error || orderResponse?.errorMsg || "Order failed";
+          throw new Error(errorMsg);
+        }
+        
         logger.info(`[placeOrderAction] Order posted successfully`);
       } catch (postError) {
         logger.error(`[placeOrderAction] Error posting order: ${postError}`);
