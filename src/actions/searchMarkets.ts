@@ -62,22 +62,33 @@ export const searchMarketsAction: Action = {
   validate: async (runtime: IAgentRuntime, message: Memory, state?: State): Promise<boolean> => {
     logger.info(`[searchMarketsAction] Validate called for message: ${message.content.text}`);
     
-    // This action can be triggered by various market-related queries
-    const marketKeywords = [
-      "market", "markets", "prediction", "bet", "trade", "trading",
-      "popular", "trending", "hot", "interesting", "active",
-      "show", "tell", "what", "which", "find", "search", "look"
-    ];
-    
     const text = (message.content.text || "").toLowerCase();
     
+    // More specific market search patterns
+    const marketSearchPatterns = [
+      /search.*markets?/i,
+      /find.*markets?/i,
+      /show.*markets?/i,
+      /markets?.*about/i,
+      /markets?.*for/i,
+      /\b(trending|popular|hot|active|open)\s+markets?/i,
+      /\bmarkets?\s+(trending|popular|hot|active|open)/i,
+      /what.*markets?/i,
+      /which.*markets?/i,
+      /list.*markets?/i,
+      /available.*markets?/i
+    ];
+    
     // Check for direct topic queries (e.g., "f1 markets", "bitcoin markets")
-    const hasTopicMarket = /\b\w+\s+markets?\b/i.test(text);
+    const hasTopicMarket = /\b\w+\s+markets?\b/i.test(text) && !text.includes("balance");
     
-    // Check for market keywords
-    const hasMarketKeyword = marketKeywords.some(keyword => text.includes(keyword));
+    // Check for market search patterns
+    const hasMarketPattern = marketSearchPatterns.some(pattern => pattern.test(text));
     
-    if (hasMarketKeyword || hasTopicMarket) {
+    // Also check for simple "markets" command
+    const isSimpleMarketCommand = text.trim() === "markets" || text.trim() === "show markets";
+    
+    if (hasMarketPattern || hasTopicMarket || isSimpleMarketCommand) {
       logger.info("[searchMarketsAction] Validation passed - market keywords found");
       return true;
     }
@@ -243,8 +254,58 @@ export const searchMarketsAction: Action = {
         };
       }
       
+      // Fetch prices for each market
+      logger.info(`[searchMarketsAction] Fetching prices for ${markets.length} markets`);
+      
+      const marketsWithPrices = await Promise.all(
+        markets.map(async (market: any) => {
+          let yesPrice = "0.50";
+          let noPrice = "0.50";
+          
+          try {
+            // Fetch price from CLOB API
+            const conditionId = market.conditionId || market.condition_id;
+            if (conditionId) {
+              const clobResponse = await fetch(
+                `https://clob.polymarket.com/markets/${conditionId}`,
+                {
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                }
+              );
+              
+              if (clobResponse.ok) {
+                const clobData = await clobResponse.json() as any;
+                
+                // Extract prices from tokens array
+                if (clobData.tokens && clobData.tokens.length >= 2) {
+                  const yesToken = clobData.tokens.find((t: any) => t.outcome === "Yes");
+                  const noToken = clobData.tokens.find((t: any) => t.outcome === "No");
+                  
+                  if (yesToken && yesToken.price !== undefined) {
+                    yesPrice = String(yesToken.price);
+                  }
+                  if (noToken && noToken.price !== undefined) {
+                    noPrice = String(noToken.price);
+                  }
+                }
+              }
+            }
+          } catch (error) {
+            logger.warn(`[searchMarketsAction] Failed to fetch price for market ${market.conditionId}: ${error}`);
+          }
+          
+          return {
+            ...market,
+            yesPrice,
+            noPrice,
+          };
+        })
+      );
+      
       // Format markets for response
-      const formattedMarkets = markets.map((market: any, index: number) => {
+      const formattedMarkets = marketsWithPrices.map((market: any, index: number) => {
         const endDate = market.endDateIso ? new Date(market.endDateIso) : null;
         const daysUntilEnd = endDate 
           ? Math.floor((endDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
@@ -259,6 +320,8 @@ export const searchMarketsAction: Action = {
           endDate: endDate?.toISOString().split('T')[0],
           daysUntilEnd,
           active: market.active,
+          yesPrice: market.yesPrice,
+          noPrice: market.noPrice,
         };
       });
       
@@ -270,7 +333,11 @@ export const searchMarketsAction: Action = {
         : `Here are some hot markets I'm watching:\n\n`;
       
       formattedMarkets.slice(0, 5).forEach((market, index) => {
+        const yesPercent = (parseFloat(market.yesPrice) * 100).toFixed(1);
+        const noPercent = (parseFloat(market.noPrice) * 100).toFixed(1);
+        
         responseText += `${index + 1}. **${market.question}**\n`;
+        responseText += `   💰 YES: $${market.yesPrice} (${yesPercent}%) | NO: $${market.noPrice} (${noPercent}%)\n`;
         responseText += `   📅 Ends: ${market.endDate} (${market.daysUntilEnd} days)\n`;
         responseText += `   🏷️ Category: ${market.category}\n`;
         responseText += `   🔗 ID: \`${market.conditionId}\`\n\n`;

@@ -51,7 +51,30 @@ export const getWalletBalanceAction: Action = {
   ): Promise<boolean> => {
     logger.info(`[getWalletBalanceAction] Validate called for message: "${message.content?.text}"`);
 
-    // This action doesn't require any specific validation beyond having a wallet configured
+    const messageText = message.content?.text?.toLowerCase() || "";
+    
+    // Check if the message actually relates to wallet balance
+    const balanceKeywords = [
+      "balance",
+      "wallet",
+      "funds",
+      "usdc",
+      "how much",
+      "money",
+      "account",
+      "holdings",
+      "what's my",
+      "show my",
+      "check my"
+    ];
+    
+    const hasBalanceIntent = balanceKeywords.some(keyword => messageText.includes(keyword));
+    
+    if (!hasBalanceIntent) {
+      logger.info("[getWalletBalanceAction] No balance keywords found");
+      return false;
+    }
+
     const privateKey =
       runtime.getSetting("WALLET_PRIVATE_KEY") ||
       runtime.getSetting("PRIVATE_KEY") ||

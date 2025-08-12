@@ -40,12 +40,41 @@ export const explainMarketAction: Action = {
   validate: async (runtime: IAgentRuntime, message: Memory, state?: State): Promise<boolean> => {
     logger.info("[explainMarketAction] Validate called");
     
-    const explainKeywords = ["tell me more", "explain", "details", "odds", "price", "about", "first", "second", "third", "that one", "what are the"];
     const text = (message.content.text || "").toLowerCase();
     
-    const hasExplainKeyword = explainKeywords.some(keyword => text.includes(keyword));
+    // More specific patterns for explaining markets
+    const explainPatterns = [
+      /tell me (more )?about (the )?(first|second|third|#?\d+|that)/i,
+      /explain (the )?(first|second|third|#?\d+|that)/i,
+      /(what|how) (are|is) the (odds|price|prices) (on|for|of)/i,
+      /details (on|about|for) (the )?(first|second|third|#?\d+)/i,
+      /explain .*market/i,
+      /tell me about #?\d+/i,
+      /what('s| is) the price of (yes|no)/i,
+      /^(first|second|third|\d+|#\d+)$/i, // Just a number or ordinal
+      /^explain #?\d+$/i
+    ];
     
-    if (hasExplainKeyword) {
+    // Exclude patterns that are searching for markets
+    const searchPatterns = [
+      /find.*markets?/i,
+      /search.*markets?/i,
+      /show.*markets?/i,
+      /list.*markets?/i,
+      /markets?.*about/i
+    ];
+    
+    // Check if it's a search pattern (should not validate)
+    const isSearching = searchPatterns.some(pattern => pattern.test(text));
+    if (isSearching) {
+      logger.info("[explainMarketAction] Detected market search, not explanation");
+      return false;
+    }
+    
+    // Check if it matches explanation patterns
+    const hasExplainPattern = explainPatterns.some(pattern => pattern.test(text));
+    
+    if (hasExplainPattern) {
       logger.info("[explainMarketAction] Validation passed");
       return true;
     }

@@ -56,6 +56,30 @@ export const sellOrderAction: Action = {
   ): Promise<boolean> => {
     logger.info(`[sellOrderAction] Validate called for message: "${message.content?.text}"`);
 
+    const messageText = message.content?.text?.toLowerCase() || "";
+    
+    // Check if the message actually relates to selling positions
+    const sellKeywords = [
+      "sell",
+      "exit",
+      "close position",
+      "liquidate",
+      "cash out",
+      "take profit",
+      "realize",
+      "dump",
+      "unload",
+      "get rid of",
+      "offload"
+    ];
+    
+    const hasSellIntent = sellKeywords.some(keyword => messageText.includes(keyword));
+    
+    if (!hasSellIntent) {
+      logger.info("[sellOrderAction] No sell keywords found");
+      return false;
+    }
+
     const clobApiUrl = runtime.getSetting("CLOB_API_URL");
     if (!clobApiUrl) {
       logger.warn(`[sellOrderAction] CLOB_API_URL is required but not provided`);

@@ -67,6 +67,30 @@ export const getMarketPriceAction: Action = {
   ): Promise<boolean> => {
     logger.info(`[getMarketPriceAction] Validate called for message: "${message.content?.text}"`);
 
+    const messageText = message.content?.text?.toLowerCase() || "";
+    
+    // Check if the message actually relates to market prices
+    const priceKeywords = [
+      "price",
+      "cost",
+      "worth",
+      "value",
+      "quote",
+      "bid",
+      "ask",
+      "trading at",
+      "how much",
+      "current price",
+      "market price"
+    ];
+    
+    const hasPriceIntent = priceKeywords.some(keyword => messageText.includes(keyword));
+    
+    if (!hasPriceIntent) {
+      logger.info("[getMarketPriceAction] No price keywords found");
+      return false;
+    }
+
     const clobApiUrl = runtime.getSetting("CLOB_API_URL");
 
     if (!clobApiUrl) {

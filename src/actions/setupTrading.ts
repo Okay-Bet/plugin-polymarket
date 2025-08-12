@@ -70,6 +70,28 @@ export const setupTradingAction: Action = {
   ): Promise<boolean> => {
     logger.info(`[setupTradingAction] Validate called for message: "${message.content?.text}"`);
 
+    const messageText = message.content?.text?.toLowerCase() || "";
+    
+    // Check if the message actually relates to trading setup
+    const setupKeywords = [
+      "setup trading",
+      "enable trading",
+      "configure trading",
+      "init trading",
+      "prepare trading",
+      "trading setup",
+      "setup polymarket",
+      "prepare wallet",
+      "ready to trade"
+    ];
+    
+    const hasSetupIntent = setupKeywords.some(keyword => messageText.includes(keyword));
+    
+    if (!hasSetupIntent) {
+      logger.info("[setupTradingAction] No setup keywords found");
+      return false;
+    }
+
     const privateKey =
       runtime.getSetting("WALLET_PRIVATE_KEY") ||
       runtime.getSetting("POLYMARKET_PRIVATE_KEY") ||

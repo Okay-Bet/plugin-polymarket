@@ -75,6 +75,30 @@ export const placeOrderAction: Action = {
   ): Promise<boolean> => {
     logger.info(`[placeOrderAction] Validate called for message: "${message.content?.text}"`);
 
+    const messageText = message.content?.text?.toLowerCase() || "";
+    
+    // Check if the message actually relates to placing orders/buying
+    const buyKeywords = [
+      "buy",
+      "purchase",
+      "place order",
+      "bet",
+      "invest",
+      "acquire",
+      "long",
+      "take position",
+      "get some",
+      "want to buy",
+      "bid"
+    ];
+    
+    const hasBuyIntent = buyKeywords.some(keyword => messageText.includes(keyword));
+    
+    if (!hasBuyIntent) {
+      logger.info("[placeOrderAction] No buy/order keywords found");
+      return false;
+    }
+
     const clobApiUrl = runtime.getSetting("CLOB_API_URL");
 
     if (!clobApiUrl) {

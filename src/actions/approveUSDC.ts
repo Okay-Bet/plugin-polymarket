@@ -72,6 +72,28 @@ export const approveUSDCAction: Action = {
   ): Promise<boolean> => {
     logger.info(`[approveUSDCAction] Validate called for message: "${message.content?.text}"`);
 
+    const messageText = message.content?.text?.toLowerCase() || "";
+    
+    // Check if the message actually relates to USDC approval
+    const approvalKeywords = [
+      "approve",
+      "approval",
+      "allowance",
+      "enable trading",
+      "setup trading",
+      "allow spending",
+      "usdc",
+      "set approval",
+      "authorize"
+    ];
+    
+    const hasApprovalIntent = approvalKeywords.some(keyword => messageText.includes(keyword));
+    
+    if (!hasApprovalIntent) {
+      logger.info("[approveUSDCAction] No approval keywords found");
+      return false;
+    }
+
     const privateKey =
       runtime.getSetting("WALLET_PRIVATE_KEY") ||
       runtime.getSetting("POLYMARKET_PRIVATE_KEY") ||

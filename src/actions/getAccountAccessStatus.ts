@@ -39,6 +39,30 @@ export const getAccountAccessStatusAction: Action = {
     state?: State,
   ): Promise<boolean> => {
     logger.info(`[getAccountAccessStatusAction] Validate called for message: "${message.content?.text}"`);
+    
+    const messageText = message.content?.text?.toLowerCase() || "";
+    
+    // Check if the message actually relates to account access status
+    const accessKeywords = [
+      "account access",
+      "access status",
+      "api key",
+      "account status",
+      "certification",
+      "verified",
+      "permission",
+      "authorized",
+      "can i trade",
+      "am i allowed"
+    ];
+    
+    const hasAccessIntent = accessKeywords.some(keyword => messageText.includes(keyword));
+    
+    if (!hasAccessIntent) {
+      logger.info("[getAccountAccessStatusAction] No access status keywords found");
+      return false;
+    }
+    
     const clobApiUrl = runtime.getSetting("CLOB_API_URL");
     const privateKey =
       runtime.getSetting("WALLET_PRIVATE_KEY") ||

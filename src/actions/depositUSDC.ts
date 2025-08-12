@@ -104,12 +104,16 @@ export const depositUSDCAction: Action = {
     const text = message.content?.text?.toLowerCase() || "";
     const depositKeywords = [
       "deposit",
-      "fund",
-      "add",
-      "transfer",
-      "money",
-      "usdc",
-      "balance",
+      "fund account",
+      "fund polymarket",
+      "add funds",
+      "add money",
+      "add usdc",
+      "transfer usdc",
+      "transfer to polymarket",
+      "deposit usdc",
+      "deposit money",
+      "deposit funds"
     ];
 
     const containsDepositKeyword = depositKeywords.some((keyword) =>
