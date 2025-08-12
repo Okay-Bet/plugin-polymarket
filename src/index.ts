@@ -10,8 +10,6 @@ import polymarketPlugin from "./plugin.ts";
 // Export the plugin directly for use in other configurations
 export { default as polymarketPlugin } from "./plugin.ts";
 
-// === ACTIVE ACTIONS - USED IN PLUGIN ===
-
 // Setup & Management
 export { setupTradingAction } from "./actions/setupTrading";
 export { approveUSDCAction } from "./actions/approveUSDC";
@@ -41,14 +39,12 @@ export { getAccountAccessStatusAction } from "./actions/getAccountAccessStatus";
 export { depositUSDCAction } from "./actions/depositUSDC";
 export { getDepositAddressAction } from "./actions/getDepositAddress";
 
-
 // Export utilities and services for advanced use cases
 export { initializeClobClient, initializeReadOnlyClobClient } from "./utils/clobClient";
 export { callLLMWithTimeout } from "./utils/llmHelpers";
 export { PolymarketService } from "./plugin";
 export { MarketDetailService } from "./services/MarketDetailService";
 
-// Export TypeScript interfaces and types
 export type {
   Market,
   Token,

@@ -1,39 +1,32 @@
 # ElizaOS Polymarket Plugin
 
-A comprehensive plugin for integrating Polymarket prediction markets with ElizaOS agents.
+A plugin for that integrates Polymarket prediction markets with ElizaOS agents. 
 
 ## Features
 
 - **Market Discovery**: Search and browse Polymarket prediction markets
-- **Trading Actions**: Place buy/sell orders with L1 authentication
+- **Trading Actions**: Place buy/sell orders with private wallet key authentication
 - **Portfolio Management**: Track positions, balances, and P&L
 - **Market Analysis**: Get order book data, price history, and market insights
-- **Redemption**: Automatically claim winnings from resolved markets
-- **USDC Management**: Deposit and approve USDC for trading
+- **Redemption**: Claim winnings from resolved markets
+- **USDC Management**: Read and approve USDC for trading
 
 ## Installation
 
 ```bash
-npm install @elizaos/plugin-polymarket
+elizaos plugins add @Okay-Bet/plugin-polymarket
 ```
 
 ## Configuration
 
-Add the plugin to your ElizaOS agent configuration:
+Add to your agent's character file:
 
-```typescript
-import { polymarketPlugin } from "@elizaos/plugin-polymarket";
+\`\`\`json
+{
+  "plugins": ["@theschein/plugin-polymarket"]
+}
+\`\`\`
 
-const agent = {
-  name: "MyAgent",
-  plugins: [polymarketPlugin],
-  settings: {
-    WALLET_PRIVATE_KEY: "your-private-key",
-    CLOB_API_URL: "https://clob.polymarket.com", // optional
-    CLOB_API_KEY: "your-api-key" // optional for L2 operations
-  }
-};
-```
 
 ## Environment Variables
 
