@@ -42,6 +42,9 @@ export const explainMarketAction: Action = {
     
     const text = (message.content.text || "").toLowerCase();
     
+    // Check if it contains a condition ID (hex string)
+    const hasConditionId = /0x[a-f0-9]{64}/i.test(message.content.text || "");
+    
     // More specific patterns for explaining markets
     const explainPatterns = [
       /tell me (more )?about (the )?(first|second|third|#?\d+|that)/i,
@@ -71,10 +74,10 @@ export const explainMarketAction: Action = {
       return false;
     }
     
-    // Check if it matches explanation patterns
+    // Check if it matches explanation patterns or has a condition ID
     const hasExplainPattern = explainPatterns.some(pattern => pattern.test(text));
     
-    if (hasExplainPattern) {
+    if (hasExplainPattern || hasConditionId) {
       logger.info("[explainMarketAction] Validation passed");
       return true;
     }
@@ -98,12 +101,21 @@ export const explainMarketAction: Action = {
       }
       
       const text = (message.content.text || "").toLowerCase();
+      const originalText = message.content.text || "";
       
       // Extract search term from the message
       let searchQuery = "";
+      let conditionId = "";
       
-      // Handle ordinal references (first, second, third)
-      if (text.includes("first") || text.includes("1")) {
+      // Check if a condition ID was provided (64-character hex string)
+      const conditionIdMatch = originalText.match(/0x[a-f0-9]{64}/i);
+      if (conditionIdMatch) {
+        conditionId = conditionIdMatch[0].toLowerCase();
+        logger.info(`[explainMarketAction] Found condition ID: ${conditionId}`);
+      }
+      
+      // Handle ordinal references (first, second, third) if no condition ID
+      else if (text.includes("first") || text.includes("1")) {
         // Get the first market from recent context
         const recentMarkets = await db
           .select()
@@ -165,11 +177,26 @@ export const explainMarketAction: Action = {
         }
       }
       
-      logger.info(`[explainMarketAction] Searching for: "${searchQuery}"`);
+      logger.info(`[explainMarketAction] Searching for: "${searchQuery || conditionId}"`);
       
       // First try to find in our database
       let market: any = null;
-      if (searchQuery) {
+      
+      // If we have a condition ID, search by that first
+      if (conditionId) {
+        const dbResults = await db
+          .select()
+          .from(polymarketMarketsTable)
+          .where(sql`${polymarketMarketsTable.conditionId} = ${conditionId}`)
+          .limit(1);
+        
+        if (dbResults.length > 0) {
+          market = dbResults[0];
+          logger.info(`[explainMarketAction] Found market by condition ID: ${market.question}`);
+        }
+      }
+      // Otherwise search by query text
+      else if (searchQuery) {
         const dbResults = await db
           .select()
           .from(polymarketMarketsTable)
@@ -186,24 +213,44 @@ export const explainMarketAction: Action = {
         }
       }
       
-      // If not found in DB, search using Gamma API
-      if (!market && searchQuery) {
+      // If not found in DB, search using Gamma API or CLOB API for condition ID
+      if (!market && (searchQuery || conditionId)) {
         try {
-          const gammaUrl = new URL('https://gamma-api.polymarket.com/markets');
-          gammaUrl.searchParams.append('limit', '1');
-          gammaUrl.searchParams.append('active', 'true');
-          gammaUrl.searchParams.append('closed', 'false');
-          
-          // Search by keyword in slug (Gamma API doesn't have text search)
-          const searchResponse = await fetch(gammaUrl.toString());
-          if (searchResponse.ok) {
-            const allMarkets = await searchResponse.json() as any[];
+          if (conditionId) {
+            // Use CLOB API for direct condition ID lookup
+            const clobResponse = await fetch(`https://clob.polymarket.com/markets/${conditionId}`);
+            if (clobResponse.ok) {
+              const clobData = await clobResponse.json() as any;
+              // Convert CLOB format to our market format
+              market = {
+                conditionId: conditionId,
+                question: clobData.question || clobData.description || "Market",
+                active: clobData.active !== false,
+                closed: clobData.closed === true,
+                endDateIso: clobData.end_date_iso || clobData.endDate,
+                marketSlug: clobData.market_slug || clobData.slug,
+                liquidity: clobData.liquidity || 0,
+                volume: clobData.volume || 0
+              };
+              logger.info(`[explainMarketAction] Found market via CLOB API: ${market.question}`);
+            }
+          } else {
+            const gammaUrl = new URL('https://gamma-api.polymarket.com/markets');
+            gammaUrl.searchParams.append('limit', '1');
+            gammaUrl.searchParams.append('active', 'true');
+            gammaUrl.searchParams.append('closed', 'false');
             
-            // Find best match by searching in question text
-            market = allMarkets.find((m: any) => 
-              m.question?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              m.slug?.toLowerCase().includes(searchQuery.toLowerCase())
-            );
+            // Search by keyword in slug (Gamma API doesn't have text search)
+            const searchResponse = await fetch(gammaUrl.toString());
+            if (searchResponse.ok) {
+              const allMarkets = await searchResponse.json() as any[];
+              
+              // Find best match by searching in question text
+              market = allMarkets.find((m: any) => 
+                m.question?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                m.slug?.toLowerCase().includes(searchQuery.toLowerCase())
+              );
+            }
           }
         } catch (error) {
           logger.warn(`[explainMarketAction] Gamma API search failed: ${error}`);
