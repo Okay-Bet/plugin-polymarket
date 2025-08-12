@@ -43,23 +43,32 @@ export const getAccountAccessStatusAction: Action = {
     const messageText = message.content?.text?.toLowerCase() || "";
     
     // Check if the message actually relates to account access status
-    const accessKeywords = [
-      "account access",
-      "access status",
-      "api key",
-      "account status",
-      "certification",
-      "verified",
-      "permission",
-      "authorized",
-      "can i trade",
-      "am i allowed"
+    // Be more specific to avoid triggering on "setup trading" or other unrelated commands
+    const accessPatterns = [
+      /check.*account.*(?:access|status)/i,
+      /account.*access.*status/i,
+      /api\s+key/i,
+      /certification.*(?:status|required)/i,
+      /(?:am\s+i|are\s+we).*(?:certified|verified|authorized)/i,
+      /can\s+i\s+trade.*polymarket/i,
+      /polymarket.*(?:access|permission)/i,
+      /u\.?s\.?\s+cert/i
     ];
     
-    const hasAccessIntent = accessKeywords.some(keyword => messageText.includes(keyword));
+    const hasAccessIntent = accessPatterns.some(pattern => pattern.test(messageText));
     
-    if (!hasAccessIntent) {
-      logger.info("[getAccountAccessStatusAction] No access status keywords found");
+    // Exclude messages that are clearly for other actions
+    const excludePatterns = [
+      /setup\s+trading/i,
+      /enable\s+trading/i,
+      /prepare\s+trading/i,
+      /init\s+trading/i
+    ];
+    
+    const isExcluded = excludePatterns.some(pattern => pattern.test(messageText));
+    
+    if (!hasAccessIntent || isExcluded) {
+      logger.info("[getAccountAccessStatusAction] No specific access status keywords found or excluded pattern detected");
       return false;
     }
     
@@ -120,17 +129,8 @@ export const getAccountAccessStatusAction: Action = {
       const hasConfiguredManagedApiCredentials =
         clobApiKey && clobApiSecret && clobApiPassphrase;
 
-      // Check for a session/derived key explicitly set by createApiKeyAction or handleAuthenticationAction
-      // These might be different from the .env configured ones used for getApiKeys()
-      const sessionApiKeyId = runtime.getSetting(
-        "POLYMARKET_SESSION_API_KEY_ID",
-      );
-      const sessionApiLabel = runtime.getSetting(
-        "POLYMARKET_SESSION_API_LABEL",
-      );
-      const sessionApiSource = runtime.getSetting(
-        "POLYMARKET_SESSION_API_SOURCE",
-      ); // e.g., 'derived', 'user-provided'
+      // Check for any configured API credentials
+      const sessionApiKeyId = runtime.getSetting("CLOB_API_KEY");
 
       if (hasConfiguredManagedApiCredentials) {
         try {
@@ -198,16 +198,14 @@ export const getAccountAccessStatusAction: Action = {
         responseText += `Managed API key listing skipped as credentials for this are not configured (CLOB_API_KEY, etc. in .env).\n`;
       }
 
-      // Add information about any active session/derived key
-      responseText += `\n**Active Session API Key:**\n`;
+      // Add information about configured API key
+      responseText += `\n**Configured API Key:**\n`;
       if (sessionApiKeyId) {
-        responseText += `• **ID**: \`${sessionApiKeyId.substring(0, 8)}...\`\n`;
-        if (sessionApiLabel) {
-          responseText += `• **Label/Source**: ${sessionApiLabel} (${sessionApiSource || "runtime"})\n`;
-        }
-        responseText += `  *This key is active for the current session but may not be a long-term managed key on your Polymarket account.*\n`;
+        responseText += `• **Status**: ✅ API key is configured\n`;
+        responseText += `  *This key is configured in your environment settings.*\n`;
       } else {
-        responseText += `No specific API key is currently active for this session (beyond any .env configured managed keys).\n`;
+        responseText += `• **Status**: ❌ No API key configured\n`;
+        responseText += `  *Trading will work without an API key but some features may be limited.*\n`;
       }
 
       const responseContent: Content = {
@@ -215,14 +213,8 @@ export const getAccountAccessStatusAction: Action = {
         actions: ["POLYMARKET_GET_ACCOUNT_ACCESS_STATUS"],
         data: {
           certRequired,
-          managedApiKeys: apiKeysList, // Renamed for clarity
-          activeSessionKey: sessionApiKeyId
-            ? {
-                id: sessionApiKeyId,
-                label: sessionApiLabel,
-                source: sessionApiSource,
-              }
-            : undefined,
+          managedApiKeys: apiKeysList,
+          configuredApiKey: !!sessionApiKeyId,
           error: apiKeysError,
           timestamp: new Date().toISOString(),
         },

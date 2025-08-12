@@ -13,7 +13,6 @@ import {
   contentToActionResult,
   createErrorResult,
 } from "../utils/actionHelpers";
-import { initializeClobClient } from "../utils/clobClient";
 
 // Contract addresses on Polygon (Chain ID: 137)
 const USDC_NATIVE_ADDRESS = "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359"; // Native USDC (preferred)
@@ -38,14 +37,13 @@ const CTF_ABI = [
 
 interface TradingSetupStatus {
   approvalsSet: boolean;
-  credentialsReady: boolean;
   balanceAvailable: boolean;
   readyToTrade: boolean;
 }
 
 /**
  * Streamlined trading setup action
- * Handles approvals, credentials, and validation in one go
+ * Handles approvals and validation for trading
  */
 export const setupTradingAction: Action = {
   name: "SETUP_TRADING",
@@ -61,7 +59,7 @@ export const setupTradingAction: Action = {
     "PREPARE_WALLET",
     "TRADING_INIT",
   ],
-  description: "Complete trading setup: approvals, credentials, and validation",
+  description: "Complete trading setup: approvals and validation",
 
   validate: async (
     runtime: IAgentRuntime,
@@ -75,6 +73,7 @@ export const setupTradingAction: Action = {
     // Check if the message actually relates to trading setup
     const setupKeywords = [
       "setup trading",
+      "set up trading",
       "enable trading",
       "configure trading",
       "init trading",
@@ -145,9 +144,8 @@ export const setupTradingAction: Action = {
 **Setup Steps:**
 1. ✅ Check current approvals
 2. 🔧 Set missing approvals
-3. 🔑 Derive API credentials
-4. 💰 Verify balance
-5. ✅ Final validation
+3. 💰 Verify balance
+4. ✅ Final validation
 
 Starting setup...`,
           actions: ["SETUP_TRADING"],
@@ -159,7 +157,6 @@ Starting setup...`,
       // Step 1: Check current approvals quickly
       const setupStatus: TradingSetupStatus = {
         approvalsSet: false,
-        credentialsReady: false,
         balanceAvailable: false,
         readyToTrade: false,
       };
@@ -306,48 +303,7 @@ ${needsApprovals ? "🔧 Setting missing approvals..." : "✅ All approvals alre
 
       setupStatus.approvalsSet = true;
 
-      // Step 3: Setup API credentials
-      const hasApiKey = runtime.getSetting("CLOB_API_KEY");
-      const hasApiSecret =
-        runtime.getSetting("CLOB_API_SECRET") ||
-        runtime.getSetting("CLOB_SECRET");
-      const hasApiPassphrase =
-        runtime.getSetting("CLOB_API_PASSPHRASE") ||
-        runtime.getSetting("CLOB_PASS_PHRASE");
-
-      if (!hasApiKey || !hasApiSecret || !hasApiPassphrase) {
-        if (callback) {
-          const credContent: Content = {
-            text: `🔑 **Deriving API Credentials**
-
-Generating L2 credentials from wallet signature...`,
-            actions: ["SETUP_TRADING"],
-            data: { step: "credentials" },
-          };
-          await callback(credContent);
-        }
-
-        try {
-          const client = await initializeClobClient(runtime);
-          const derivedCreds = await client.deriveApiKey();
-
-          await runtime.setSetting("CLOB_API_KEY", derivedCreds.key);
-          await runtime.setSetting("CLOB_API_SECRET", derivedCreds.secret);
-          await runtime.setSetting(
-            "CLOB_API_PASSPHRASE",
-            derivedCreds.passphrase,
-          );
-
-          setupStatus.credentialsReady = true;
-        } catch (credError) {
-          logger.warn(`[setupTradingAction] API credential derivation failed, will continue with wallet-only mode`);
-          setupStatus.credentialsReady = false; // Can still trade with wallet-only
-        }
-      } else {
-        setupStatus.credentialsReady = true;
-      }
-
-      // Step 4: Final validation
+      // Step 3: Final validation
       setupStatus.balanceAvailable = totalBalance > 0.01; // At least $0.01
       setupStatus.readyToTrade =
         setupStatus.approvalsSet && setupStatus.balanceAvailable;
@@ -358,7 +314,6 @@ Generating L2 credentials from wallet signature...`,
 
 **✅ Setup Status:**
 • **Approvals**: ${setupStatus.approvalsSet ? "✅ All Set" : "❌ Failed"}
-• **Credentials**: ${setupStatus.credentialsReady ? "✅ Ready" : "⚠️ Wallet-Only Mode"}
 • **Balance**: ${setupStatus.balanceAvailable ? `✅ $${totalBalance.toFixed(2)} Available` : "❌ Insufficient"}
 
 **🚀 Trading Status**: ${setupStatus.readyToTrade ? "✅ READY TO TRADE!" : "❌ Setup Required"}
@@ -427,7 +382,7 @@ Please check:
       {
         name: "{{user2}}",
         content: {
-          text: "I'll set up complete trading functionality for you. This includes approvals, credentials, and validation...",
+          text: "I'll set up complete trading functionality for you. This includes approvals and validation...",
           action: "SETUP_TRADING",
         },
       },
@@ -442,7 +397,7 @@ Please check:
       {
         name: "{{user2}}",
         content: {
-          text: "I'll prepare your wallet for trading by setting up all necessary approvals and credentials...",
+          text: "I'll prepare your wallet for trading by setting up all necessary approvals...",
           action: "SETUP_TRADING",
         },
       },

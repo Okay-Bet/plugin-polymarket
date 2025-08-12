@@ -217,14 +217,14 @@ const plugin: Plugin = {
     // === STREAMLINED TRADING ACTIONS ===
 
     // Setup & Management
-    setupTradingAction, // Complete trading setup (approvals + credentials)
+    setupTradingAction, // Complete trading setup (approvals only)
     approveUSDCAction, // Legacy USDC approval (kept for compatibility)
     getWalletBalanceAction, // Balance checking
     getPortfolioPositionsAction, // Portfolio positions and holdings
 
     // Core Trading
     placeOrderAction, // Buy orders (enhanced with market lookup)
-    sellOrderAction, // Sell orders (now works with derived L2 credentials)
+    sellOrderAction, // Sell orders
     redeemWinningsAction, // Redeem winnings from resolved markets
     // sellInfoAction, // No longer needed - sell works now
     // cancelOrderAction, // Cancel orders - REQUIRES L2
@@ -245,12 +245,8 @@ const plugin: Plugin = {
     // getActiveOrdersAction, // Open orders - REQUIRES L2
     // getTradeHistoryAction, // Trade history - REQUIRES L2
 
-    // Account Management (L2 Required - Disabled)
-    // createApiKeyAction, // REQUIRES L2
-    // revokeApiKeyAction, // REQUIRES L2
-    // getAllApiKeysAction, // REQUIRES L2
-    // checkOrderScoringAction, // REQUIRES L2
-    getAccountAccessStatusAction, // Works with L1
+    // Account Management
+    getAccountAccessStatusAction, // Check account status and permissions
 
     // Advanced Features
     depositUSDCAction, // USDC deposits
