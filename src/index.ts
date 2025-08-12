@@ -24,10 +24,8 @@ export { redeemWinningsAction } from "./actions/redeemWinnings";
 // Market Discovery & Data
 export { explainMarketAction } from "./actions/explainMarket";
 export { getMarketDataAction } from "./actions/getMarketData";
-export { showFavoriteMarketsAction } from "./actions/showFavoriteMarkets";
 export { searchMarketsAction } from "./actions/searchMarkets";
 export { syncMarketsAction } from "./actions/syncMarkets";
-export { getSamplingMarkets } from "./actions/getSamplingMarkets";
 export { getOrderBookSummaryAction } from "./actions/getOrderBookSummary";
 export { getMarketPriceAction } from "./actions/getMarketPrice";
 export { getPriceHistory } from "./actions/getPriceHistory";

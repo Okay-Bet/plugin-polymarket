@@ -19,10 +19,8 @@ import { z } from "zod";
 import { getOrderBookSummaryAction } from "./actions/getOrderBookSummary";
 
 // MARKET DATA ACTIONS
-import { getSamplingMarkets } from "./actions/getSamplingMarkets";
 import { searchMarketsAction } from "./actions/searchMarkets";
 import { syncMarketsAction } from "./actions/syncMarkets";
-import { showFavoriteMarketsAction } from "./actions/showFavoriteMarkets";
 import { explainMarketAction } from "./actions/explainMarket";
 import { getMarketDataAction } from "./actions/getMarketData";
 import { getPriceHistory } from "./actions/getPriceHistory";
@@ -240,10 +238,8 @@ const plugin: Plugin = {
     // Market Discovery & Data
     explainMarketAction, // Explain specific market with prices (HIGH PRIORITY)
     getMarketDataAction, // Get market data by condition ID
-    showFavoriteMarketsAction, // Show favorite markets with commentary
     searchMarketsAction, // Search for markets in database
     syncMarketsAction, // Manually sync markets from API
-    getSamplingMarkets, // Active markets with rewards
     getOrderBookSummaryAction, // Order book data
     getMarketPriceAction, // Current prices and recommendations
     getPriceHistory, // Historical price data
