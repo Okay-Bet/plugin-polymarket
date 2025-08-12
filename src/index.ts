@@ -23,12 +23,10 @@ export { redeemWinningsAction } from "./actions/redeemWinnings";
 
 // Market Discovery & Data
 export { explainMarketAction } from "./actions/explainMarket";
-export { getMarketDataAction } from "./actions/getMarketData";
 export { searchMarketsAction } from "./actions/searchMarkets";
 export { syncMarketsAction } from "./actions/syncMarkets";
 export { getOrderBookSummaryAction } from "./actions/getOrderBookSummary";
 export { getMarketPriceAction } from "./actions/getMarketPrice";
-export { getPriceHistory } from "./actions/getPriceHistory";
 
 // Account Management
 export { getAccountAccessStatusAction } from "./actions/getAccountAccessStatus";

@@ -22,8 +22,6 @@ import { getOrderBookSummaryAction } from "./actions/getOrderBookSummary";
 import { searchMarketsAction } from "./actions/searchMarkets";
 import { syncMarketsAction } from "./actions/syncMarkets";
 import { explainMarketAction } from "./actions/explainMarket";
-import { getMarketDataAction } from "./actions/getMarketData";
-import { getPriceHistory } from "./actions/getPriceHistory";
 import { placeOrderAction } from "./actions/placeOrder";
 import { getAccountAccessStatusAction } from "./actions/getAccountAccessStatus";
 import { getWalletBalanceAction } from "./actions/getWalletBalance";
@@ -237,12 +235,10 @@ const plugin: Plugin = {
 
     // Market Discovery & Data
     explainMarketAction, // Explain specific market with prices (HIGH PRIORITY)
-    getMarketDataAction, // Get market data by condition ID
     searchMarketsAction, // Search for markets in database
     syncMarketsAction, // Manually sync markets from API
     getOrderBookSummaryAction, // Order book data
     getMarketPriceAction, // Current prices and recommendations
-    getPriceHistory, // Historical price data
 
     // Order Management (L2 Required - Disabled)
     // getOrderDetailsAction, // Order status - REQUIRES L2
