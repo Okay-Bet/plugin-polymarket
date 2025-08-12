@@ -88,20 +88,27 @@ export const syncMarketsAction: Action = {
         await callback(responseContent);
       }
       
-      // Trigger sync
-      await syncService.performSync("manual", searchTerm);
+      // Trigger sync and get results
+      const syncResults = await syncService.performSync("manual", searchTerm);
       
       // Get sync status for the response
       const syncStatus = await syncService.getSyncStatus();
       
+      // Format duration
+      const durationSeconds = (syncResults.duration / 1000).toFixed(1);
+      
       const successContent: Content = {
         text: searchTerm
-          ? `✅ Successfully synced ${searchTerm.toUpperCase()} markets! Try searching again.`
-          : `✅ Market database sync completed! Fresh markets are now available.\n\n📊 Sync Status:\n• Last sync: Just now\n• Next automatic sync: ${syncStatus.nextSyncTime ? syncStatus.nextSyncTime.toLocaleString() : 'In 24 hours'}\n• Sync interval: Daily (24 hours)`,
+          ? `✅ Successfully synced ${searchTerm.toUpperCase()} markets!\n\n📊 **Sync Results:**\n• Markets found: ${syncResults.totalMarkets}\n• Markets synced: ${syncResults.syncedCount}\n• Markets skipped: ${syncResults.skippedCount} (expired/invalid)\n• Time taken: ${durationSeconds} seconds\n\nTry searching for ${searchTerm} markets now!`
+          : `✅ Market database sync completed!\n\n📊 **Sync Results:**\n• Total markets fetched: ${syncResults.totalMarkets}\n• Successfully synced: ${syncResults.syncedCount}\n• Skipped (expired/invalid): ${syncResults.skippedCount}\n• Time taken: ${durationSeconds} seconds\n\n⏰ **Schedule:**\n• Last sync: Just now\n• Next automatic sync: ${syncStatus.nextSyncTime ? syncStatus.nextSyncTime.toLocaleString() : 'In 24 hours'}\n• Sync interval: Daily (24 hours)\n\nFresh markets are now available for searching!`,
         action: "SYNC_POLYMARKET_MARKETS",
         data: {
           searchTerm,
           status: "completed",
+          syncedCount: syncResults.syncedCount,
+          skippedCount: syncResults.skippedCount,
+          totalMarkets: syncResults.totalMarkets,
+          duration: syncResults.duration,
           lastSyncTime: syncStatus.lastSyncTime,
           nextSyncTime: syncStatus.nextSyncTime,
           syncInterval: syncStatus.syncInterval,

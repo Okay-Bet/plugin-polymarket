@@ -127,10 +127,10 @@ export class MarketSyncService extends Service {
   async performSync(
     syncType: "startup" | "scheduled" | "manual",
     searchTerm?: string,
-  ): Promise<void> {
+  ): Promise<{ syncedCount: number; skippedCount: number; totalMarkets: number; duration: number }> {
     if (this.isRunning) {
       logger.warn("Sync already in progress, skipping...");
-      return;
+      return { syncedCount: 0, skippedCount: 0, totalMarkets: 0, duration: 0 };
     }
 
     this.isRunning = true;
@@ -141,7 +141,7 @@ export class MarketSyncService extends Service {
     if (!db) {
       logger.warn(`Database not available for ${syncType} sync, will retry later`);
       this.isRunning = false;
-      return;
+      return { syncedCount: 0, skippedCount: 0, totalMarkets: 0, duration: 0 };
     }
 
     try {
@@ -203,6 +203,13 @@ export class MarketSyncService extends Service {
       }
 
       logger.info(`Market sync completed: ${syncedCount} synced, ${skippedCount} skipped (expired/invalid) out of ${markets.length} total markets in ${duration}ms`);
+      
+      return {
+        syncedCount,
+        skippedCount,
+        totalMarkets: markets.length,
+        duration
+      };
     } catch (error) {
       logger.error(`Market sync failed: ${error}`);
       throw error;
