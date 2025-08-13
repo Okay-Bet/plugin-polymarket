@@ -7,8 +7,6 @@ import {
   type Memory,
   type State,
   logger,
-  ModelType,
-  composePromptFromState,
 } from "@elizaos/core";
 import { callLLMWithTimeout } from "../utils/llmHelpers";
 import { initializeClobClient } from "../utils/clobClient";
@@ -26,7 +24,6 @@ import {
 } from "../utils/balanceChecker";
 import { findMarketByName } from "../utils/marketLookup";
 import { ClobClient, Side } from "@polymarket/clob-client";
-import { ethers } from "ethers";
 
 interface PlaceOrderParams {
   tokenId: string;
@@ -193,17 +190,17 @@ export const placeOrderAction: Action = {
             const errorContent: Content = {
               text: `❌ **Market not found: "${llmResult.marketName}"**
 
-I couldn't find an active market matching that name.
+              I couldn't find an active market matching that name.
 
-**Please try:**
-1. "Show me open markets" to see available markets
-2. Be more specific with the market name
-3. Use quotes around the exact market name
+              **Please try:**
+              1. "Show me open markets" to see available markets
+              2. Be more specific with the market name
+              3. Use quotes around the exact market name
 
-**Example:**
-- "Show me open markets"
-- "Buy YES in 'Macron out in 2025?'" 
-- "Trade on the Chiefs vs Raiders market"`,
+              **Example:**
+              - "Show me open markets"
+              - "Buy YES in 'Macron out in 2025?'" 
+              - "Trade on the Chiefs vs Raiders market"`,
               actions: ["POLYMARKET_GET_OPEN_MARKETS"],
               data: {
                 error: "Market not found",
@@ -233,14 +230,14 @@ I couldn't find an active market matching that name.
             const errorContent: Content = {
               text: `❌ **Outcome not found in market**
 
-Market: "${marketResult.market.question}"
-Available outcomes: ${availableOutcomes}
-Requested outcome: ${outcome}
+              Market: "${marketResult.market.question}"
+              Available outcomes: ${availableOutcomes}
+              Requested outcome: ${outcome}
 
-**Please specify:**
-- "Buy YES in [market name]"
-- "Buy NO in [market name]"
-- Or use the exact outcome names listed above`,
+              **Please specify:**
+              - "Buy YES in [market name]"
+              - "Buy NO in [market name]"
+              - Or use the exact outcome names listed above`,
               actions: [],
               data: {
                 error: "Outcome not found",
@@ -265,11 +262,11 @@ Requested outcome: ${outcome}
             const resolutionContent: Content = {
               text: `✅ **Market Resolved**
 
-**Market**: ${marketResult.market.question}
-**Outcome**: ${targetToken.outcome}
-**Token ID**: ${tokenId.slice(0, 12)}...
+              **Market**: ${marketResult.market.question}
+              **Outcome**: ${targetToken.outcome}
+              **Token ID**: ${tokenId.slice(0, 12)}...
 
-Proceeding with order verification...`,
+              Proceeding with order verification...`,
               actions: [],
               data: {
                 marketResolution: {
@@ -286,17 +283,17 @@ Proceeding with order verification...`,
           const errorContent: Content = {
             text: `❌ **Market lookup failed**
 
-Error finding market: "${llmResult.marketName}"
+            Error finding market: "${llmResult.marketName}"
 
-This could be due to:
-• Database connectivity issues
-• Market not synchronized
-• Invalid market name
+            This could be due to:
+            • Database connectivity issues
+            • Market not synchronized
+            • Invalid market name
 
-**Please try:**
-- "Show me open markets" to browse available markets
-- Use more specific market names
-- Check spelling and try again`,
+            **Please try:**
+            - "Show me open markets" to browse available markets
+            - Use more specific market names
+            - Check spelling and try again`,
             actions: ["POLYMARKET_GET_OPEN_MARKETS"],
             data: {
               error: "Market lookup failed",
@@ -334,16 +331,16 @@ This could be due to:
             const errorContent: Content = {
               text: `❌ **Market not found for condition ID**
               
-Condition ID: ${tokenId}
+              Condition ID: ${tokenId}
 
-This market may be:
-• Inactive or closed
-• Not yet synced
-• Invalid condition ID
+              This market may be:
+              • Inactive or closed
+              • Not yet synced
+              • Invalid condition ID
 
-Please try:
-- "Show me active markets" to browse available markets
-- Use the GET_MARKET_DATA action with this condition ID to verify it exists`,
+              Please try:
+              - "Show me active markets" to browse available markets
+              - Use the GET_MARKET_DATA action with this condition ID to verify it exists`,
               actions: [],
               data: {
                 error: "Market not found",
@@ -371,10 +368,10 @@ Please try:
             const errorContent: Content = {
               text: `❌ **Token IDs not available for this market**
               
-Market: ${market.question}
-Condition ID: ${tokenId}
+              Market: ${market.question}
+              Condition ID: ${tokenId}
 
-This market may not have trading tokens configured yet.`,
+              This market may not have trading tokens configured yet.`,
               actions: [],
               data: {
                 error: "Token IDs not found",
@@ -406,11 +403,11 @@ This market may not have trading tokens configured yet.`,
             const errorContent: Content = {
               text: `❌ **Invalid outcome for market**
               
-Market: ${market.question}
-Available outcomes: ${outcomes.join(", ")}
-Requested outcome: ${outcome}
+              Market: ${market.question}
+              Available outcomes: ${outcomes.join(", ")}
+              Requested outcome: ${outcome}
 
-Please specify YES or NO (or the exact outcome name).`,
+              Please specify YES or NO (or the exact outcome name).`,
               actions: [],
               data: {
                 error: "Invalid outcome",
@@ -437,12 +434,12 @@ Please specify YES or NO (or the exact outcome name).`,
             const resolutionContent: Content = {
               text: `✅ **Market Resolved from Condition ID**
 
-**Market**: ${market.question}
-**Outcome**: ${outcome} (${outcomes[outcomeIndex]})
-**Token ID**: ${tokenId}
-**Original Condition ID**: ${originalTokenId}
+              **Market**: ${market.question}
+              **Outcome**: ${outcome} (${outcomes[outcomeIndex]})
+              **Token ID**: ${tokenId}
+              **Original Condition ID**: ${originalTokenId}
 
-Proceeding with order verification...`,
+              Proceeding with order verification...`,
               actions: [],
               data: {
                 marketResolution: {
@@ -461,13 +458,13 @@ Proceeding with order verification...`,
           const errorContent: Content = {
             text: `❌ **Failed to resolve condition ID**
 
-Condition ID: ${tokenId}
-Error: ${conditionLookupError instanceof Error ? conditionLookupError.message : "Unknown error"}
+            Condition ID: ${tokenId}
+            Error: ${conditionLookupError instanceof Error ? conditionLookupError.message : "Unknown error"}
 
-Please try:
-- Using the specific token ID instead of condition ID
-- Verifying the market is active
-- Using "Show me active markets" to find the correct market`,
+            Please try:
+            - Using the specific token ID instead of condition ID
+            - Verifying the market is active
+            - Using "Show me active markets" to find the correct market`,
             actions: [],
             data: {
               error: "Condition ID lookup failed",
@@ -542,20 +539,20 @@ Please try:
         const errorContent: Content = {
           text: `❌ **Error**: ${errorMessage}
 
-Please provide order details in your request. Examples:
-• "Buy 100 tokens of 123456 at $0.50 limit order"
-• "Sell 50 shares of token 789012 at $0.75"
-• "Place market order to buy 25 tokens of 456789"
+          Please provide order details in your request. Examples:
+          • "Buy 100 tokens of 123456 at $0.50 limit order"
+          • "Sell 50 shares of token 789012 at $0.75"
+          • "Place market order to buy 25 tokens of 456789"
 
-**Required parameters:**
-- Token ID (market identifier)
-- Side (buy/sell)
-- Price (in USD, 0-1.0 for prediction markets)
-- Size (number of shares)
+          **Required parameters:**
+          - Token ID (market identifier)
+          - Side (buy/sell)
+          - Price (in USD, 0-1.0 for prediction markets)
+          - Size (number of shares)
 
-**Optional parameters:**
-- Order type (GTC/limit, FOK/market, GTD, FAK)
-- Fee rate (in basis points)`,
+          **Optional parameters:**
+          - Order type (GTC/limit, FOK/market, GTD, FAK)
+          - Fee rate (in basis points)`,
           actions: ["PLACE_ORDER"],
           data: { error: errorMessage },
         };
@@ -612,14 +609,14 @@ Please provide order details in your request. Examples:
         const errorContent: Content = {
           text: `${balanceDisplay}
 
-**Order Details:**
-• **Token ID**: ${tokenId}
-• **Side**: ${side}
-• **Price**: $${price.toFixed(4)} (${(price * 100).toFixed(2)}%)
-• **Size**: ${size} shares
-• **Total Value**: $${finalTotalValue.toFixed(2)}
+          **Order Details:**
+          • **Token ID**: ${tokenId}
+          • **Side**: ${side}
+          • **Price**: $${price.toFixed(4)} (${(price * 100).toFixed(2)}%)
+          • **Size**: ${size} shares
+          • **Total Value**: $${finalTotalValue.toFixed(2)}
 
-Please add more USDC to your wallet and try again.`,
+          Please add more USDC to your wallet and try again.`,
           actions: [],
           data: {
             error: "Insufficient USDC balance",
@@ -640,18 +637,18 @@ Please add more USDC to your wallet and try again.`,
         const errorContent: Content = {
           text: `❌ **Order Exceeds Position Limit**
 
-**Position Limit Check:**
-• **Max Position Size**: $${maxPositionSize.toFixed(2)}
-• **Requested Order**: $${finalTotalValue.toFixed(2)}
-• **Excess Amount**: $${(finalTotalValue - maxPositionSize).toFixed(2)}
+          **Position Limit Check:**
+          • **Max Position Size**: $${maxPositionSize.toFixed(2)}
+          • **Requested Order**: $${finalTotalValue.toFixed(2)}
+          • **Excess Amount**: $${(finalTotalValue - maxPositionSize).toFixed(2)}
 
-**Order Details:**
-• **Token ID**: ${tokenId}
-• **Side**: ${side}
-• **Price**: $${price.toFixed(4)}
-• **Size**: ${size} shares
+          **Order Details:**
+          • **Token ID**: ${tokenId}
+          • **Side**: ${side}
+          • **Price**: $${price.toFixed(4)}
+          • **Size**: ${size} shares
 
-Please reduce your order size to stay within the configured limit.`,
+          Please reduce your order size to stay within the configured limit.`,
           actions: [],
           data: {
             error: "Order exceeds position limit",
@@ -675,14 +672,14 @@ Please reduce your order size to stay within the configured limit.`,
         const balanceContent: Content = {
           text: `${balanceDisplay}
 
-**Proceeding with Order:**
-• **Token ID**: ${tokenId}
-• **Side**: ${side}
-• **Price**: $${price.toFixed(4)} (${(price * 100).toFixed(2)}%)
-• **Size**: ${size} shares
-• **Total Value**: $${finalTotalValue.toFixed(2)}
+          **Proceeding with Order:**
+          • **Token ID**: ${tokenId}
+          • **Side**: ${side}
+          • **Price**: $${price.toFixed(4)} (${(price * 100).toFixed(2)}%)
+          • **Size**: ${size} shares
+          • **Total Value**: $${finalTotalValue.toFixed(2)}
 
-Creating order...`,
+          Creating order...`,
           actions: [],
           data: {
             balanceInfo,
@@ -696,19 +693,19 @@ Creating order...`,
       const errorContent: Content = {
         text: `❌ **Balance Check Failed**
 
-Unable to verify wallet balance before placing order. This could be due to:
-• Network connectivity issues
-• RPC provider problems  
-• Wallet configuration errors
+        Unable to verify wallet balance before placing order. This could be due to:
+        • Network connectivity issues
+        • RPC provider problems  
+        • Wallet configuration errors
 
-**Order Details:**
-• **Token ID**: ${tokenId}
-• **Side**: ${side}
-• **Price**: $${price.toFixed(4)}
-• **Size**: ${size} shares
-• **Total Value**: $${finalTotalValue.toFixed(2)}
+        **Order Details:**
+        • **Token ID**: ${tokenId}
+        • **Side**: ${side}
+        • **Price**: $${price.toFixed(4)}
+        • **Size**: ${size} shares
+        • **Total Value**: $${finalTotalValue.toFixed(2)}
 
-Please check your wallet configuration and try again.`,
+        Please check your wallet configuration and try again.`,
         actions: [],
         data: {
           error: "Balance check failed",
@@ -747,11 +744,11 @@ Please check your wallet configuration and try again.`,
           const derivingContent: Content = {
             text: `🔑 **Deriving API Credentials**
 
-**Status**: Generating L2 API credentials from wallet
-• **Method**: deriveApiKey() from wallet signature
-• **Purpose**: Enable order posting to Polymarket
+            **Status**: Generating L2 API credentials from wallet
+            • **Method**: deriveApiKey() from wallet signature
+            • **Purpose**: Enable order posting to Polymarket
 
-Deriving credentials...`,
+            Deriving credentials...`,
             actions: [],
             data: { derivingCredentials: true },
           };
@@ -775,13 +772,7 @@ Deriving credentials...`,
           if (callback) {
             const successContent: Content = {
               text: `✅ **API Credentials Derived Successfully**
-
-**Credential Details:**
-• **API Key**: ${derivedCreds.key}
-• **Status**: ✅ Ready for Trading
-• **Method**: Wallet-derived L2 credentials
-
-Reinitializing client with credentials...`,
+              Reinitializing client with credentials...`,
               actions: [],
               data: { credentialsReady: true, apiKey: derivedCreds.key },
             };
@@ -792,14 +783,14 @@ Reinitializing client with credentials...`,
           const errorContent: Content = {
             text: `❌ **Failed to Derive API Credentials**
 
-**Error**: ${deriveError instanceof Error ? deriveError.message : "Unknown error"}
+            **Error**: ${deriveError instanceof Error ? deriveError.message : "Unknown error"}
 
-This could be due to:
-• Network connectivity issues
-• Wallet signature problems
-• Polymarket API issues
+            This could be due to:
+            • Network connectivity issues
+            • Wallet signature problems
+            • Polymarket API issues
 
-Please ensure your wallet is properly configured and try again.`,
+            Please ensure your wallet is properly configured and try again.`,
             actions: [],
             data: {
               error: "Failed to derive API credentials",
@@ -916,16 +907,16 @@ Please ensure your wallet is properly configured and try again.`,
             const approvalContent: Content = {
               text: `⚠️ **Approval Required**
 
-The order failed because USDC spending approvals are not set.
+              The order failed because USDC spending approvals are not set.
 
-**Setting up required approvals:**
-• Approving USDC for Conditional Tokens Framework
-• Approving USDC for CTF Exchange
-• Setting CTF approvals for trading
+              **Setting up required approvals:**
+              • Approving USDC for Conditional Tokens Framework
+              • Approving USDC for CTF Exchange
+              • Setting CTF approvals for trading
 
-This is a one-time setup that will enable all future trades.
+              This is a one-time setup that will enable all future trades.
 
-Setting approvals now...`,
+              Setting approvals now...`,
               actions: [],
               data: { requiresApproval: true }
             };
@@ -953,7 +944,7 @@ Setting approvals now...`,
                 const retryContent: Content = {
                   text: `✅ **Approvals Set Successfully**
 
-Now retrying your order with the proper approvals in place...`,
+                Now retrying your order with the proper approvals in place...`,
                   actions: [],
                   data: { approvalsSet: true, retrying: true }
                 };
@@ -1009,31 +1000,30 @@ Now retrying your order with the proper approvals in place...`,
 
         responseText = `✅ **Order Placed Successfully**
 
-**Order Details:**
-• **Type**: ${orderTypeText} ${sideText} order
-• **Token ID**: ${tokenId}
-• **Side**: ${sideText.toUpperCase()}
-• **Price**: $${price.toFixed(4)} (${(price * 100).toFixed(2)}%)
-• **Size**: ${size} shares
-• **Total Value**: $${totalValueDisplay}
-• **Fee Rate**: ${feeRateBps} bps
+        **Order Details:**
+        • **Type**: ${orderTypeText} ${sideText} order
+        • **Token ID**: ${tokenId}
+        • **Side**: ${sideText.toUpperCase()}
+        • **Price**: $${price.toFixed(4)} (${(price * 100).toFixed(2)}%)
+        • **Size**: ${size} shares
+        • **Total Value**: $${totalValueDisplay}
 
-**Order Response:**
-• **Order ID**: ${orderResponse.orderId || "Pending"}
-• **Status**: ${orderResponse.status || "submitted"}
-${
-  orderResponse.orderHashes && orderResponse.orderHashes.length > 0
-    ? `• **Transaction Hash(es)**: ${orderResponse.orderHashes.join(", ")}`
-    : ""
-}
+        **Order Response:**
+        • **Order ID**: ${orderResponse.orderId || "Pending"}
+        • **Status**: ${orderResponse.status || "submitted"}
+        ${
+          orderResponse.orderHashes && orderResponse.orderHashes.length > 0
+            ? `• **Transaction Hash(es)**: ${orderResponse.orderHashes.join(", ")}`
+            : ""
+        }
 
-${
-  orderResponse.status === "matched"
-    ? "🎉 Your order was immediately matched and executed!"
-    : orderResponse.status === "delayed"
-      ? "⏳ Your order is subject to a matching delay due to market conditions."
-      : "📋 Your order has been placed and is waiting to be matched."
-}`;
+        ${
+          orderResponse.status === "matched"
+            ? "🎉 Your order was immediately matched and executed!"
+            : orderResponse.status === "delayed"
+              ? "⏳ Your order is subject to a matching delay due to market conditions."
+              : "📋 Your order has been placed and is waiting to be matched."
+        }`;
 
         responseData = {
           success: true,
@@ -1052,20 +1042,16 @@ ${
       } else {
         responseText = `❌ **Order Placement Failed**
 
-**Error**: ${orderResponse.errorMsg || "Unknown error occurred"}
+        **Error**: ${orderResponse.errorMsg || "Unknown error occurred"}
 
-**Order Details Attempted:**
-• **Token ID**: ${tokenId}
-• **Side**: ${side}
-• **Price**: $${price.toFixed(4)}
-• **Size**: ${size} shares
-• **Order Type**: ${orderType}
+        **Order Details Attempted:**
+        • **Token ID**: ${tokenId}
+        • **Side**: ${side}
+        • **Price**: $${price.toFixed(4)}
+        • **Size**: ${size} shares
+        • **Order Type**: ${orderType}
 
-Please check your parameters and try again. Common issues:
-• Insufficient balance or allowances
-• Invalid price or size
-• Market not active
-• Network connectivity issues`;
+        Please check your parameters and try again.`;
 
         responseData = {
           success: false,
@@ -1103,19 +1089,19 @@ Please check your parameters and try again. Common issues:
       const errorContent: Content = {
         text: `❌ **Order Placement Error**
 
-**Error**: ${errorMessage}
+        **Error**: ${errorMessage}
 
-**Order Details:**
-• **Token ID**: ${tokenId}
-• **Side**: ${side}
-• **Price**: $${price.toFixed(4)}
-• **Size**: ${size} shares
+        **Order Details:**
+        • **Token ID**: ${tokenId}
+        • **Side**: ${side}
+        • **Price**: $${price.toFixed(4)}
+        • **Size**: ${size} shares
 
-Please check your configuration and try again. Make sure:
-• CLOB_API_URL is properly configured
-• Token ID is valid and active
-• Price and size are within acceptable ranges
-• Network connection is stable`,
+        Please check your configuration and try again. Make sure:
+        • CLOB_API_URL is properly configured
+        • Token ID is valid and active
+        • Price and size are within acceptable ranges
+        • Network connection is stable`,
         actions: [],
         data: {
           error: errorMessage,
