@@ -138,16 +138,14 @@ export const sellOrderAction: Action = {
       
       logger.info(`[sellOrderAction] Extracted params: tokenId=${tokenId?.slice(0,20)}..., price=${price}, size=${size}, orderType=${orderType}`);
 
-      // Convert order types
+      // Convert order types to CLOB client format
       logger.info(`[sellOrderAction] Converting order type: ${orderType}`);
       if (orderType === "limit") {
-        orderType = "GTC";
-      } else if (orderType === "market") {
-        // For partial sells (not selling entire position), use GTC to allow partial fills
-        // FOK requires the entire order to be filled immediately which can fail for larger/partial sells
-        const messageText = (message.content?.text || "").toLowerCase();
-        const isPartialSell = (size > 0 && !messageText.includes("all")) || messageText.includes("half");
-        orderType = isPartialSell ? "GTC" : "FOK";
+        orderType = "GTC"; // Good Till Cancelled for limit orders
+      } else {
+        // Use FOK (Fill or Kill) for all non-limit orders including market orders
+        // This matches the behavior in placeOrder.ts
+        orderType = "FOK";
         // For market sells, we'll fetch the current price later
         if (price <= 0) {
           price = -1; // Flag to fetch market price
@@ -689,6 +687,70 @@ Submitting order...`,
         }
       }
 
+      // Always verify token balance before attempting to sell (unless size was auto-detected)
+      if (size > 0) {
+        logger.info(`[sellOrderAction] Verifying token balance for ${tokenId}`);
+        try {
+          const privateKey =
+            runtime.getSetting("WALLET_PRIVATE_KEY") ||
+            runtime.getSetting("PRIVATE_KEY") ||
+            runtime.getSetting("POLYMARKET_PRIVATE_KEY");
+          
+          if (privateKey) {
+            const formattedPrivateKey = privateKey.startsWith("0x")
+              ? privateKey
+              : `0x${privateKey}`;
+            const { ethers } = await import("ethers");
+            const wallet = new ethers.Wallet(formattedPrivateKey);
+            const walletAddress = wallet.address.toLowerCase();
+            
+            // Use the documented Polymarket Data API endpoint
+            const positionsUrl = `https://data-api.polymarket.com/positions?sizeThreshold=0.01&limit=50&user=${walletAddress}`;
+            const positionsResponse = await fetch(positionsUrl);
+            
+            if (positionsResponse.ok) {
+              const positionsData = await positionsResponse.json() as any;
+              const positions = Array.isArray(positionsData) ? positionsData : positionsData.positions || [];
+              
+              const position = positions.find((pos: any) => {
+                const posTokenId = pos.asset || pos.tokenId || pos.token_id;
+                return posTokenId === tokenId;
+              });
+              
+              const actualBalance = position ? parseFloat(position.size || position.position_size || "0") : 0;
+              
+              logger.info(`[sellOrderAction] Token balance check - Available: ${actualBalance}, Requested: ${size}`);
+              
+              if (actualBalance < size) {
+                const errorContent: Content = {
+                  text: `❌ **Insufficient Token Balance**
+
+**Token ID**: ${tokenId.slice(0, 12)}...
+**Available**: ${actualBalance.toFixed(2)} shares
+**Trying to sell**: ${size.toFixed(2)} shares
+**Shortfall**: ${(size - actualBalance).toFixed(2)} shares
+
+You don't own enough tokens to complete this sell order.`,
+                  actions: ["SELL_ORDER"],
+                  data: {
+                    error: "Insufficient balance",
+                    available: actualBalance,
+                    requested: size,
+                  },
+                };
+                
+                if (callback) {
+                  await callback(errorContent);
+                }
+                return contentToActionResult(errorContent);
+              }
+            }
+          }
+        } catch (balanceCheckError) {
+          logger.warn(`[sellOrderAction] Could not verify token balance, proceeding anyway: ${balanceCheckError}`);
+        }
+      }
+
       // Create sell order arguments
       const orderArgs = {
         tokenID: tokenId,
@@ -739,6 +801,38 @@ Submitting sell order...`,
             errorMsg = err.data.error;
           } else if (err?.message) {
             errorMsg = err.message;
+          }
+          
+          // Check for approval/allowance errors
+          if (errorMsg.includes("not enough balance / allowance")) {
+            logger.error(`[sellOrderAction] Approval or balance error: ${errorMsg}`);
+            
+            // Provide clear guidance on the issue
+            const approvalErrorContent: Content = {
+              text: `❌ **Sell Order Failed**
+
+**Error**: ${errorMsg}
+
+This error means either:
+1. **Insufficient token balance** - You don't own enough tokens
+2. **Missing CTF approvals** - Tokens not approved for exchange
+
+**To resolve:**
+• Run "show my positions" to check your token balance
+• Run "setup trading" to ensure all approvals are set
+• Then try your sell order again`,
+              actions: ["SELL_ORDER"],
+              data: {
+                error: errorMsg,
+                needsApprovalOrBalance: true,
+              },
+            };
+            
+            if (callback) {
+              callback(approvalErrorContent).catch((cbError: unknown) => {
+                logger.error(`[sellOrderAction] Callback error: ${cbError}`);
+              });
+            }
           }
           
           // Return error response format

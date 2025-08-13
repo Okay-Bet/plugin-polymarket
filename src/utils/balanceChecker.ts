@@ -37,7 +37,12 @@ export async function checkPolymarketBalance(
   runtime: IAgentRuntime,
   requiredAmount: string,
 ): Promise<BalanceInfo> {
-  logger.info(`[balanceChecker] Checking Polymarket trading balance for required amount: ${requiredAmount}`);
+  // Round to 6 decimals to match USDC precision
+  const requiredAmountNum = parseFloat(requiredAmount);
+  const requiredAmountRounded = Math.round(requiredAmountNum * 1000000) / 1000000;
+  const requiredAmountStr = requiredAmountRounded.toFixed(6);
+  
+  logger.info(`[balanceChecker] Checking Polymarket trading balance for required amount: ${requiredAmountStr}`);
 
   try {
     // Initialize CLOB client
@@ -55,9 +60,8 @@ export async function checkPolymarketBalance(
     logger.info(`[balanceChecker] Found Polymarket L2 USDC balance: ${usdcBalance} USDC (raw: ${usdcBalanceRaw})`);
 
     // Check if balance is sufficient
-    const requiredAmountNum = parseFloat(requiredAmount);
     const balanceNum = parseFloat(usdcBalance);
-    const hasEnoughBalance = balanceNum >= requiredAmountNum;
+    const hasEnoughBalance = balanceNum >= requiredAmountRounded;
 
     // Get wallet address for display
     const privateKey =
@@ -79,13 +83,13 @@ export async function checkPolymarketBalance(
       usdcBalance: usdcBalance,
       usdcBalanceRaw: usdcBalanceRaw,
       hasEnoughBalance,
-      requiredAmount,
+      requiredAmount: requiredAmountStr,
     };
 
     logger.info(`[balanceChecker] Polymarket balance check complete:`, {
       address: wallet.address,
       balance: usdcBalance,
-      required: requiredAmount,
+      required: requiredAmountStr,
       sufficient: hasEnoughBalance,
     });
 
@@ -95,7 +99,7 @@ export async function checkPolymarketBalance(
 
     // Fallback to wallet balance checking if CLOB balance fails
     logger.warn(`[balanceChecker] Falling back to wallet balance check`);
-    return await checkUSDCBalance(runtime, requiredAmount);
+    return await checkUSDCBalance(runtime, requiredAmountStr);
   }
 }
 
@@ -109,7 +113,12 @@ export async function checkUSDCBalance(
   runtime: IAgentRuntime,
   requiredAmount: string,
 ): Promise<BalanceInfo> {
-  logger.info(`[balanceChecker] Checking USDC balance for required amount: ${requiredAmount}`);
+  // Round to 6 decimals to match USDC precision
+  const requiredAmountNum = parseFloat(requiredAmount);
+  const requiredAmountRounded = Math.round(requiredAmountNum * 1000000) / 1000000;
+  const requiredAmountStr = requiredAmountRounded.toFixed(6);
+  
+  logger.info(`[balanceChecker] Checking USDC balance for required amount: ${requiredAmountStr}`);
 
   try {
     // Get wallet private key and create wallet instance
@@ -220,7 +229,7 @@ export async function checkUSDCBalance(
     const balanceFormatted = ethers.formatUnits(totalBalanceRaw, decimals);
 
     // Check if balance is sufficient
-    const requiredAmountBN = ethers.parseUnits(requiredAmount, decimals);
+    const requiredAmountBN = ethers.parseUnits(requiredAmountStr, decimals);
     const hasEnoughBalance = totalBalanceRaw >= requiredAmountBN;
 
     const balanceInfo: BalanceInfo = {
@@ -228,13 +237,13 @@ export async function checkUSDCBalance(
       usdcBalance: balanceFormatted,
       usdcBalanceRaw: totalBalanceRaw.toString(),
       hasEnoughBalance,
-      requiredAmount,
+      requiredAmount: requiredAmountStr,
     };
 
     logger.info(`[balanceChecker] Balance check complete:`, {
       address: walletAddress,
       balance: balanceFormatted,
-      required: requiredAmount,
+      required: requiredAmountStr,
       sufficient: hasEnoughBalance,
     });
 

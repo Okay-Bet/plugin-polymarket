@@ -163,13 +163,12 @@ export const placeOrderAction: Action = {
       // Convert order types to CLOB client format
       if (orderType === "limit") {
         orderType = "GTC"; // Good Till Cancelled
-      } else if (orderType === "market") {
-        orderType = "GTC"; // Use GTC for better market order execution
+      } else {
+        orderType = "FOK"; // Fill or Kill for non-limit orders
         // For market orders, we need to get the current market price
         if (price <= 0) {
-          // We'll set a reasonable price for market orders - this will be updated later
-          // Use slightly more aggressive pricing to ensure execution
-          price = side === "BUY" ? 0.995 : 0.005; // Market order pricing with buffer
+          // Flag to fetch actual market price later
+          price = -1;
         }
       }
 
@@ -429,29 +428,8 @@ export const placeOrderAction: Action = {
           
           logger.info(`[placeOrderAction] Resolved condition ID ${originalTokenId} -> ${outcome} -> ${tokenId}`);
           
-          // Show resolution to user
-          if (callback) {
-            const resolutionContent: Content = {
-              text: `✅ **Market Resolved from Condition ID**
-
-              **Market**: ${market.question}
-              **Outcome**: ${outcome} (${outcomes[outcomeIndex]})
-              **Token ID**: ${tokenId}
-              **Original Condition ID**: ${originalTokenId}
-
-              Proceeding with order verification...`,
-              actions: [],
-              data: {
-                marketResolution: {
-                  market: market,
-                  selectedOutcome: outcomes[outcomeIndex],
-                  resolvedTokenId: tokenId,
-                  conditionId: originalTokenId,
-                },
-              },
-            };
-            await callback(resolutionContent);
-          }
+          // Log resolution internally
+          logger.info(`[placeOrderAction] Resolved condition ID ${originalTokenId} to token ${tokenId} for outcome ${outcome}`);
           
         } catch (conditionLookupError) {
           logger.error(`[placeOrderAction] Condition ID lookup failed: ${conditionLookupError}`);
@@ -480,9 +458,14 @@ export const placeOrderAction: Action = {
         }
       }
 
-      // Updated validation - price can be 0 for market orders
+      // Updated validation - price can be -1 for market orders
       if (!tokenId || !side || size <= 0) {
         return createErrorResult("Invalid order parameters");
+      }
+      
+      // Don't validate price for market orders that will fetch price later
+      if (price > 0 && (price < 0.01 || price > 0.99)) {
+        return createErrorResult(`Invalid price ${price}. Must be between 0.01 and 0.99`);
       }
 
       // For market orders without explicit price, price will be set later
@@ -526,9 +509,9 @@ export const placeOrderAction: Action = {
         orderType = "GTC"; // Always use GTC for better execution
       }
 
-      // Set market order pricing if no price given
-      if (orderType === "GTC" && price <= 0) {
-        price = side === "BUY" ? 0.995 : 0.005; // Market order pricing with buffer
+      // Set market order pricing flag if no price given
+      if ((orderType === "FOK" || orderType === "GTC") && price <= 0) {
+        price = -1; // Flag to fetch actual market price later
       }
 
       if (!tokenId || size <= 0 || (orderType === "GTC" && price <= 0)) {
@@ -577,8 +560,8 @@ export const placeOrderAction: Action = {
       orderType = "GTC"; // Default to GTC
     }
 
-    // Calculate total order value
-    const totalValue = price * size;
+    // Calculate total order value and round to 6 decimals (USDC precision)
+    const totalValue = Math.round(price * size * 1000000) / 1000000;
 
     // Enforce minimum order requirements: $1 minimum or 5 tokens minimum
     // If order value is less than $1, adjust size to meet minimum
@@ -592,8 +575,76 @@ export const placeOrderAction: Action = {
       );
     }
 
-    // Recalculate total value with adjusted size
-    const finalTotalValue = price * size;
+    // If market order with -1 flag, fetch actual market price first
+    if (price === -1) {
+      logger.info(`[placeOrderAction] Market order detected, fetching current market price for token: ${tokenId}`);
+      
+      try {
+        // Fetch the order book to get current market prices
+        const bookUrl = `${runtime.getSetting("CLOB_API_URL")}/book?token_id=${tokenId}`;
+        const bookResponse = await fetch(bookUrl);
+        
+        if (!bookResponse.ok) {
+          throw new Error(`Failed to fetch order book: ${bookResponse.statusText}`);
+        }
+        
+        const bookData = await bookResponse.json() as any;
+        
+        if (side === "BUY") {
+          // For buy orders, look at the asks (what sellers are offering)
+          const sortedAsks = bookData.asks?.sort((a: any, b: any) => parseFloat(a.price) - parseFloat(b.price));
+          
+          if (sortedAsks && sortedAsks.length > 0) {
+            const bestAsk = parseFloat(sortedAsks[0].price);
+            // Use a slightly higher price for FOK to ensure execution
+            price = Math.min(0.99, bestAsk * 1.01); // Add 1% buffer, cap at 0.99
+            
+            logger.info(`[placeOrderAction] Market BUY - Best ask: ${bestAsk}, Using price: ${price}`);
+            
+            if (callback) {
+              const priceContent: Content = {
+                text: `📊 **Market Price Found**\n• **Best Ask**: $${bestAsk.toFixed(4)} (${(bestAsk * 100).toFixed(2)}%)\n• **Your Buy Price**: $${price.toFixed(4)} (${(price * 100).toFixed(2)}%)\n• **Buffer**: +1.0% for execution`,
+                actions: [],
+                data: { marketPrice: bestAsk, executionPrice: price },
+              };
+              await callback(priceContent);
+            }
+          } else {
+            throw new Error("No asks available in order book");
+          }
+        } else {
+          // For sell orders, look at the bids (what buyers are offering)
+          const sortedBids = bookData.bids?.sort((a: any, b: any) => parseFloat(b.price) - parseFloat(a.price));
+          
+          if (sortedBids && sortedBids.length > 0) {
+            const bestBid = parseFloat(sortedBids[0].price);
+            // Use a slightly lower price for FOK to ensure execution
+            price = Math.max(0.01, bestBid * 0.99); // Subtract 1% buffer, floor at 0.01
+            
+            logger.info(`[placeOrderAction] Market SELL - Best bid: ${bestBid}, Using price: ${price}`);
+            
+            if (callback) {
+              const priceContent: Content = {
+                text: `📊 **Market Price Found**\n• **Best Bid**: $${bestBid.toFixed(4)} (${(bestBid * 100).toFixed(2)}%)\n• **Your Sell Price**: $${price.toFixed(4)} (${(price * 100).toFixed(2)}%)\n• **Buffer**: -1.0% for execution`,
+                actions: [],
+                data: { marketPrice: bestBid, executionPrice: price },
+              };
+              await callback(priceContent);
+            }
+          } else {
+            throw new Error("No bids available in order book");
+          }
+        }
+      } catch (priceError) {
+        logger.error(`[placeOrderAction] Failed to fetch market price: ${priceError}`);
+        return createErrorResult(
+          `Failed to fetch market price: ${priceError instanceof Error ? priceError.message : "Unknown error"}\n\nPlease specify a price for your order.`,
+        );
+      }
+    }
+
+    // Now calculate total value with actual price (not -1)
+    const finalTotalValue = Math.round(price * size * 1000000) / 1000000;
 
     // Check Polymarket trading balance before placing order
     logger.info(`[placeOrderAction] Checking Polymarket trading balance for order value: $${finalTotalValue.toFixed(2)}`);
@@ -601,7 +652,7 @@ export const placeOrderAction: Action = {
     try {
       const balanceInfo = await checkPolymarketBalance(
         runtime,
-        finalTotalValue.toString(),
+        finalTotalValue.toFixed(6),  // Ensure proper decimal format
       );
 
       if (!balanceInfo.hasEnoughBalance) {
@@ -666,20 +717,11 @@ export const placeOrderAction: Action = {
 
       // Display successful balance check
       logger.info(`[placeOrderAction] Balance check passed. Proceeding with order.`);
-      const balanceDisplay = formatBalanceInfo(balanceInfo);
-
+      
+      // Simplified user message
       if (callback) {
         const balanceContent: Content = {
-          text: `${balanceDisplay}
-
-          **Proceeding with Order:**
-          • **Token ID**: ${tokenId}
-          • **Side**: ${side}
-          • **Price**: $${price.toFixed(4)} (${(price * 100).toFixed(2)}%)
-          • **Size**: ${size} shares
-          • **Total Value**: $${finalTotalValue.toFixed(2)}
-
-          Creating order...`,
+          text: `📊 **Placing ${side.toUpperCase()} order** - ${size} shares at $${price.toFixed(4)} (Total: $${finalTotalValue.toFixed(2)})`,
           actions: [],
           data: {
             balanceInfo,
@@ -740,20 +782,8 @@ export const placeOrderAction: Action = {
       if (!hasApiKey || !hasApiSecret || !hasApiPassphrase) {
         logger.info(`[placeOrderAction] API credentials missing, attempting to derive them`);
 
-        if (callback) {
-          const derivingContent: Content = {
-            text: `🔑 **Deriving API Credentials**
-
-            **Status**: Generating L2 API credentials from wallet
-            • **Method**: deriveApiKey() from wallet signature
-            • **Purpose**: Enable order posting to Polymarket
-
-            Deriving credentials...`,
-            actions: [],
-            data: { derivingCredentials: true },
-          };
-          await callback(derivingContent);
-        }
+        // Derive credentials silently
+        logger.info(`[placeOrderAction] Deriving API credentials from wallet...`);
 
         try {
           const client = await initializeClobClient(runtime);
@@ -769,15 +799,8 @@ export const placeOrderAction: Action = {
 
           logger.info(`[placeOrderAction] Successfully derived and stored API credentials`);
 
-          if (callback) {
-            const successContent: Content = {
-              text: `✅ **API Credentials Derived Successfully**
-              Reinitializing client with credentials...`,
-              actions: [],
-              data: { credentialsReady: true, apiKey: derivedCreds.key },
-            };
-            await callback(successContent);
-          }
+          // Log success internally
+          logger.info(`[placeOrderAction] API credentials derived and stored successfully`);
         } catch (deriveError) {
           logger.error(`[placeOrderAction] Failed to derive API credentials: ${deriveError}`);
           const errorContent: Content = {
@@ -901,82 +924,133 @@ export const placeOrderAction: Action = {
             errorMessage.includes("allowance") || 
             errorMessage.includes("approve")) {
           
-          logger.info(`[placeOrderAction] Detected approval issue, attempting to set approvals...`);
+          logger.info(`[placeOrderAction] Detected balance/approval issue, will attempt deposit first...`);
           
-          if (callback) {
-            const approvalContent: Content = {
-              text: `⚠️ **Approval Required**
-
-              The order failed because USDC spending approvals are not set.
-
-              **Setting up required approvals:**
-              • Approving USDC for Conditional Tokens Framework
-              • Approving USDC for CTF Exchange
-              • Setting CTF approvals for trading
-
-              This is a one-time setup that will enable all future trades.
-
-              Setting approvals now...`,
-              actions: [],
-              data: { requiresApproval: true }
-            };
-            await callback(approvalContent);
-          }
+          // When we get "not enough balance / allowance", it usually means no L2 balance
+          // We'll deposit the required amount plus a buffer
+          // Since we can't reliably check L2 balance without the order working first,
+          // we'll assume L2 balance is 0 and deposit the full amount needed
+          const depositAmount = Math.ceil((finalTotalValue + 1) * 100) / 100; // Add $1 buffer
           
-          // Import and run the approval action
-          const { approveUSDCAction } = await import("./approveUSDC");
+          logger.info(`[placeOrderAction] Will deposit $${depositAmount} to Polymarket L2`);
           
-          try {
-            // Run the approval action
-            const approvalResult = await approveUSDCAction.handler(
-              runtime,
-              message,
-              state,
-              options,
-              callback
-            );
+          // Always try deposit first when we get this error
+          const shouldDeposit = true;
+          
+          if (shouldDeposit) {
             
-            // Check if approval was successful
-            if (approvalResult && approvalResult.success) {
-              logger.info(`[placeOrderAction] Approvals set successfully, retrying order...`);
+            logger.info(`[placeOrderAction] Insufficient L2 balance. Need to deposit $${depositAmount}`);
+            
+            if (callback) {
+              const depositContent: Content = {
+                text: `💵 **Setting up trading** - Depositing $${depositAmount.toFixed(2)} USDC to Polymarket...`,
+                actions: [],
+                data: { depositing: true, amount: depositAmount },
+              };
+              await callback(depositContent);
+            }
+            
+            // Import and execute deposit
+            const { depositUSDC } = await import("../utils/depositManager");
+            
+            try {
+              const depositResult = await depositUSDC(runtime, depositAmount.toFixed(2));
               
-              if (callback) {
-                const retryContent: Content = {
-                  text: `✅ **Approvals Set Successfully**
-
-                Now retrying your order with the proper approvals in place...`,
-                  actions: [],
-                  data: { approvalsSet: true, retrying: true }
-                };
-                await callback(retryContent);
-              }
-              
-              // Retry the order now that approvals are set
-              try {
-                // Need to recreate the signed order after approval
+              if (depositResult.success) {
+                logger.info(`[placeOrderAction] Deposit successful! TX: ${depositResult.transactionHash}`);
+                
+                // Log deposit success internally
+                logger.info(`[placeOrderAction] Deposit complete. TX: ${depositResult.transactionHash}`);
+                
+                // Wait for deposit to be recognized
+                await new Promise(resolve => setTimeout(resolve, 5000));
+                
+                // Retry the order
+                logger.info(`[placeOrderAction] Retrying order after deposit...`);
                 const newSignedOrder = await client.createOrder(orderArgs);
                 orderResponse = await client.postOrder(
                   newSignedOrder,
                   orderType as OrderType,
                 );
-                logger.info(`[placeOrderAction] Order retry successful after approval`);
-              } catch (retryError) {
-                logger.error(`[placeOrderAction] Order retry failed after approval: ${retryError}`);
-                return createErrorResult(
-                  `Order failed even after setting approvals: ${retryError instanceof Error ? retryError.message : "Unknown error"}. Please check your USDC balance.`,
-                );
+                
+                if (orderResponse && orderResponse.success !== false) {
+                  logger.info(`[placeOrderAction] Order successful after deposit!`);
+                  // Continue to normal success flow
+                } else {
+                  // If still fails, try approvals
+                  logger.info(`[placeOrderAction] Order still failed after deposit, checking approvals...`);
+                }
+              } else {
+                throw new Error("Deposit transaction failed");
               }
-            } else {
-              logger.error(`[placeOrderAction] Failed to set approvals`);
+            } catch (depositError) {
+              logger.error(`[placeOrderAction] Deposit failed: ${depositError}`);
               return createErrorResult(
-                `Failed to set USDC approvals. Please run "approve USDC" manually and ensure you have MATIC for gas fees.`,
+                `Auto-deposit failed: ${depositError instanceof Error ? depositError.message : "Unknown error"}. Please deposit manually using "deposit $${depositAmount.toFixed(2)}"`,
               );
             }
-          } catch (approvalError) {
-            logger.error(`[placeOrderAction] Error setting approvals: ${approvalError}`);
-            return createErrorResult(
-              `Failed to set approvals: ${approvalError instanceof Error ? approvalError.message : "Unknown error"}. Please ensure you have MATIC for gas fees.`,
-            );
+          }
+          
+          // If we get here and orderResponse is still not successful, try approvals
+          if (!orderResponse || orderResponse.success === false) {
+            logger.info(`[placeOrderAction] Attempting approval setup...`);
+            
+            if (callback) {
+              const approvalContent: Content = {
+                text: `🔧 **Setting up approvals** - One-time setup for trading...`,
+                actions: [],
+                data: { requiresApproval: true }
+              };
+              await callback(approvalContent);
+            }
+            
+            // Import and run the approval action
+            const { approveUSDCAction } = await import("./approveUSDC");
+            
+            try {
+              // Run the approval action
+              const approvalResult = await approveUSDCAction.handler(
+                runtime,
+                message,
+                state,
+                options,
+                callback
+              );
+              
+              // Check if approval was successful
+              if (approvalResult && approvalResult.success) {
+                logger.info(`[placeOrderAction] Approvals set successfully, retrying order...`);
+                
+                // Log approval success internally  
+                logger.info(`[placeOrderAction] Approvals set, retrying order...`);
+                
+                // Retry the order now that approvals are set
+                try {
+                  // Need to recreate the signed order after approval
+                  const newSignedOrder = await client.createOrder(orderArgs);
+                  orderResponse = await client.postOrder(
+                    newSignedOrder,
+                    orderType as OrderType,
+                  );
+                  logger.info(`[placeOrderAction] Order retry successful after approval`);
+                } catch (retryError) {
+                  logger.error(`[placeOrderAction] Order retry failed after approval: ${retryError}`);
+                  return createErrorResult(
+                    `Order failed even after setting approvals: ${retryError instanceof Error ? retryError.message : "Unknown error"}. Please check your USDC balance.`,
+                  );
+                }
+              } else {
+                logger.error(`[placeOrderAction] Failed to set approvals`);
+                return createErrorResult(
+                  `Failed to set USDC approvals. Please run "approve USDC" manually and ensure you have MATIC for gas fees.`,
+                );
+              }
+            } catch (approvalError) {
+              logger.error(`[placeOrderAction] Error setting approvals: ${approvalError}`);
+              return createErrorResult(
+                `Failed to set approvals: ${approvalError instanceof Error ? approvalError.message : "Unknown error"}. Please ensure you have MATIC for gas fees.`,
+              );
+            }
           }
         } else {
           // Other types of errors
@@ -992,38 +1066,19 @@ export const placeOrderAction: Action = {
 
       if (orderResponse.success) {
         const sideText = side.toLowerCase();
-        const orderTypeText = 
-          price >= 0.995 || price <= 0.005
-            ? "market"
-            : "limit";
-        const totalValueDisplay = (price * size).toFixed(4);
+        const orderTypeText = orderType === "FOK" ? "market" : "limit";
+        const totalValueDisplay = (price * size).toFixed(2);
 
-        responseText = `✅ **Order Placed Successfully**
+        const statusMessage = orderResponse.status === "matched"
+          ? " - Order executed!"
+          : orderResponse.status === "delayed"
+            ? " - Processing (may take a moment)"
+            : " - Order submitted";
 
-        **Order Details:**
-        • **Type**: ${orderTypeText} ${sideText} order
-        • **Token ID**: ${tokenId}
-        • **Side**: ${sideText.toUpperCase()}
-        • **Price**: $${price.toFixed(4)} (${(price * 100).toFixed(2)}%)
-        • **Size**: ${size} shares
-        • **Total Value**: $${totalValueDisplay}
-
-        **Order Response:**
-        • **Order ID**: ${orderResponse.orderId || "Pending"}
-        • **Status**: ${orderResponse.status || "submitted"}
-        ${
-          orderResponse.orderHashes && orderResponse.orderHashes.length > 0
-            ? `• **Transaction Hash(es)**: ${orderResponse.orderHashes.join(", ")}`
-            : ""
-        }
-
-        ${
-          orderResponse.status === "matched"
-            ? "🎉 Your order was immediately matched and executed!"
-            : orderResponse.status === "delayed"
-              ? "⏳ Your order is subject to a matching delay due to market conditions."
-              : "📋 Your order has been placed and is waiting to be matched."
-        }`;
+        responseText = `✅ **${sideText.toUpperCase()} order placed successfully**${statusMessage}
+        
+${size} shares at $${price.toFixed(4)} • Total: $${totalValueDisplay}
+Order ID: ${orderResponse.orderId || "Pending"}`;
 
         responseData = {
           success: true,
@@ -1040,18 +1095,9 @@ export const placeOrderAction: Action = {
           timestamp: new Date().toISOString(),
         };
       } else {
-        responseText = `❌ **Order Placement Failed**
-
-        **Error**: ${orderResponse.errorMsg || "Unknown error occurred"}
-
-        **Order Details Attempted:**
-        • **Token ID**: ${tokenId}
-        • **Side**: ${side}
-        • **Price**: $${price.toFixed(4)}
-        • **Size**: ${size} shares
-        • **Order Type**: ${orderType}
-
-        Please check your parameters and try again.`;
+        responseText = `❌ **Order failed** - ${orderResponse.errorMsg || "Unknown error"}
+        
+Attempted: ${side} ${size} shares at $${price.toFixed(4)}`;
 
         responseData = {
           success: false,
