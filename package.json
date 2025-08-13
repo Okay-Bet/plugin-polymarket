@@ -19,6 +19,36 @@
   ],
   "agentConfig": {
     "pluginType": "elizaos:plugin:1.0.0",
+    "supportedActions": [
+      "PLACE_ORDER",
+      "SELL_ORDER",
+      "REDEEM_WINNINGS",
+      "SEARCH_MARKETS",
+      "EXPLAIN_MARKET",
+      "GET_MARKET_PRICE",
+      "GET_PORTFOLIO_POSITIONS",
+      "GET_WALLET_BALANCE",
+      "DEPOSIT_USDC",
+      "GET_DEPOSIT_ADDRESS",
+      "APPROVE_USDC",
+      "SETUP_TRADING",
+      "GET_ORDER_BOOK_SUMMARY",
+      "SYNC_MARKETS",
+      "GET_ACCOUNT_ACCESS_STATUS"
+    ],
+    "compatibleModels": [
+      "gpt-4",
+      "gpt-4-turbo",
+      "gpt-3.5-turbo",
+      "claude-3-opus",
+      "claude-3-sonnet",
+      "claude-3-haiku",
+      "local-llama",
+      "local-mistral"
+    ],
+    "providers": [
+      "marketDataProvider"
+    ],
     "pluginParameters": {
       "WALLET_PRIVATE_KEY": {
         "type": "string",
@@ -65,11 +95,9 @@
   ],
   "dependencies": {
     "@elizaos/core": "^1.4.2",
-    "@elizaos/plugin-discord": "1.2.5",
-    "@elizaos/plugin-ollama": "1.2.3",
-    "@elizaos/plugin-openai": "1.0.9",
-    "@elizaos/plugin-sql": "^1.4.2",
     "@polymarket/clob-client": "^4.16.0",
+    "@polymarket/sdk": "^1.0.0",
+    "drizzle-orm": "^0.29.0",
     "ethers": "^6.13.1",
     "node-fetch": "^3.0.0",
     "ws": "^8.17.0",

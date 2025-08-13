@@ -106,24 +106,6 @@ src/
 └── index.ts         # Public exports
 ```
 
-## Development
-
-### Building
-```bash
-npm run build
-```
-
-### Testing
-```bash
-npm run test
-npm run test:coverage
-```
-
-### Linting
-```bash
-npm run lint
-npm run format
-```
 
 ## Services
 
@@ -137,21 +119,12 @@ Provides detailed market information and analysis capabilities.
 
 - Never commit private keys to version control
 - Use environment variables for sensitive configuration
-- The plugin uses L1 authentication for on-chain transactions
-- L2 operations require additional API credentials they are not scoped for this plugin
 
-## Contributing
-
-Contributions are welcome! Please see our [contributing guidelines](CONTRIBUTING.md).
-
-## License
-
-MIT
 
 ## Support
 
 For issues and questions:
-- GitHub Issues: [Create an issue](https://github.com/yourusername/elizaos-plugin-polymarket/issues)
+- GitHub Issues: [Create an issue](https://github.com/Okay-Bet/plugin-polymarket/issues)
 - Documentation: [ElizaOS Docs](https://docs.elizaos.com)
 
 ## Acknowledgments
