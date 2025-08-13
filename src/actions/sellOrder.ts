@@ -143,8 +143,11 @@ export const sellOrderAction: Action = {
       if (orderType === "limit") {
         orderType = "GTC";
       } else if (orderType === "market") {
-        // Use FOK for market sells for immediate execution
-        orderType = "FOK";
+        // For partial sells (not selling entire position), use GTC to allow partial fills
+        // FOK requires the entire order to be filled immediately which can fail for larger/partial sells
+        const messageText = (message.content?.text || "").toLowerCase();
+        const isPartialSell = (size > 0 && !messageText.includes("all")) || messageText.includes("half");
+        orderType = isPartialSell ? "GTC" : "FOK";
         // For market sells, we'll fetch the current price later
         if (price <= 0) {
           price = -1; // Flag to fetch market price
@@ -483,23 +486,35 @@ Please ensure your wallet is properly configured and try again.`,
               if (position) {
                 const actualSize = parseFloat(position.size || position.position_size || "0");
                 if (actualSize > 0) {
-                  size = actualSize;
-                  logger.info(`[sellOrderAction] Found position size: ${size} shares`);
+                  // Check if user wants to sell "half" or "all"
+                  const messageText = (message.content?.text || "").toLowerCase();
+                  const sellHalf = messageText.includes("half");
+                  const sellAll = messageText.includes("all");
+                  
+                  // Set size based on user intent
+                  if (sellHalf) {
+                    size = actualSize / 2;
+                    logger.info(`[sellOrderAction] Found position size: ${actualSize} shares, selling half: ${size} shares`);
+                  } else {
+                    // Default to selling all if not specified as half
+                    size = actualSize;
+                    logger.info(`[sellOrderAction] Found position size: ${size} shares, selling all`);
+                  }
                   
                   // Check if position is below minimum
                   if (size < 5) {
                     return createErrorResult(
-                      `Your position of ${size.toFixed(2)} shares is below Polymarket's minimum order size of 5 shares. Cannot sell.`
+                      `Your position of ${actualSize.toFixed(2)} shares (selling ${size.toFixed(2)}) is below Polymarket's minimum order size of 5 shares. Cannot sell.`
                     );
                   }
                   
                   if (callback) {
                     const sizeContent: Content = {
                       text: `📊 **Position Found**
-• **Current Holdings**: ${size} shares
-• **Selling**: ALL (${size} shares)`,
+• **Current Holdings**: ${actualSize.toFixed(2)} shares
+• **Selling**: ${sellHalf ? `HALF (${size.toFixed(2)} shares)` : `ALL (${size.toFixed(2)} shares)`}`,
                       actions: ["SELL_ORDER"],
-                      data: { positionSize: size },
+                      data: { positionSize: actualSize, sellingSize: size },
                     };
                     await callback(sizeContent);
                   }
@@ -622,9 +637,12 @@ Would you like to proceed with one of these alternatives?`,
             }
             
             // Set price for immediate execution
-            // FOK orders should match the best bid when there's sufficient liquidity
-            // Only apply discount if liquidity is low or for GTC orders
-            const marketDiscount = orderType === "FOK" && hasGoodLiquidity ? 1.0 : (orderType === "FOK" ? 0.995 : 0.98);
+            // For market orders:
+            // - FOK orders should match the best bid when there's sufficient liquidity
+            // - GTC orders (partial sells) should use a slightly better price to ensure execution
+            const marketDiscount = orderType === "FOK" && hasGoodLiquidity ? 1.0 : 
+                                  (orderType === "FOK" ? 0.995 : 
+                                   orderType === "GTC" ? 0.98 : 0.98);
             price = Math.max(0.01, Math.min(0.99, bestBid * marketDiscount));
             
             logger.info(`[sellOrderAction] Market price fetched - Current sell price: ${currentSellPrice}, Best bid: ${bestBid}, Liquidity: ${bidLiquidity}, Sell at: ${price}`);
@@ -639,7 +657,7 @@ ${depthInfo.slice(0, 3).join('\n')}
 
 **Your Order**:
 • **Size**: ${size} shares to sell
-• **Type**: ${orderType === "FOK" ? "Market (Fill-Or-Kill)" : "Limit (GTC)"}
+• **Type**: ${orderType === "FOK" ? "Market (Fill-Or-Kill)" : orderType === "GTC" ? "Market (Good-Till-Cancelled)" : "Limit"}
 • **Liquidity Check**: ${hasGoodLiquidity ? "✅ Sufficient" : "⚠️ Limited"} (${bidLiquidity.toFixed(0)} shares available at best bid)
 
 **Execution Price**:
@@ -688,7 +706,7 @@ Submitting order...`,
 
 **Order Details:**
 • **Token ID**: ${tokenId.slice(0, 12)}...
-• **Type**: ${orderType === "FOK" ? "Market (Fill-Or-Kill)" : "Limit (GTC)"} Sell
+• **Type**: ${orderType === "FOK" ? "Market (Fill-Or-Kill)" : orderType === "GTC" ? "Market (Good-Till-Cancelled)" : "Limit"} Sell
 • **Price**: $${price.toFixed(4)} (${(price * 100).toFixed(2)}%)
 • **Size**: ${size} shares
 • **Expected Proceeds**: $${(price * size).toFixed(2)}
@@ -702,10 +720,49 @@ Submitting sell order...`,
 
       // Create and post the sell order
       const signedOrder = await client.createOrder(orderArgs);
-      const orderResponse = await client.postOrder(
-        signedOrder,
-        orderType as OrderType,
-      );
+      let orderResponse: any;
+      
+      try {
+        orderResponse = await client.postOrder(
+          signedOrder,
+          orderType as OrderType,
+        ).catch((error: unknown) => {
+          // Catch any errors from the promise
+          logger.error(`[sellOrderAction] CLOB postOrder error caught: ${error}`);
+          
+          // Extract error message from various possible formats
+          let errorMsg = "Order failed";
+          const err = error as any;
+          if (err?.response?.data?.error) {
+            errorMsg = err.response.data.error;
+          } else if (err?.data?.error) {
+            errorMsg = err.data.error;
+          } else if (err?.message) {
+            errorMsg = err.message;
+          }
+          
+          // Return error response format
+          return {
+            success: false,
+            errorMsg: errorMsg
+          };
+        });
+        
+        // Check if the response indicates an error (even if no exception was thrown)
+        if (!orderResponse || orderResponse === undefined) {
+          orderResponse = {
+            success: false,
+            errorMsg: "Order failed - no response from CLOB"
+          };
+        }
+      } catch (error) {
+        // Backup catch in case something else goes wrong
+        logger.error(`[sellOrderAction] Unexpected error posting order: ${error}`);
+        orderResponse = {
+          success: false,
+          errorMsg: error instanceof Error ? error.message : "Unknown error occurred"
+        };
+      }
 
       // Format response
       let responseText: string;
@@ -768,12 +825,20 @@ ${
 
 ${
   orderResponse.errorMsg?.includes("FOK orders are fully filled or killed")
-    ? `**Note**: The market order (FOK) couldn't find enough liquidity at the specified price.
+    ? `**Note**: The Fill-Or-Kill order couldn't be fully executed. This happens when there isn't enough liquidity at your price.
 
 **Suggestions:**
-• Try a limit order instead: "Sell 62 shares at $0.98 limit"
-• Use a higher discount for market orders
-• Check the order book depth for available liquidity`
+• Try selling a smaller amount that matches available liquidity
+• Use a limit order instead: "Sell ${size} shares at $${price.toFixed(4)} limit"
+• Check your actual position size with "show my positions"
+• The order type has been updated to use GTC for partial sells - try again`
+    : orderResponse.errorMsg?.includes("not enough balance")
+    ? `**Note**: You don't have enough shares to sell.
+
+**Suggestions:**
+• Check your actual position: "show my positions"
+• Sell a smaller amount
+• Verify the correct token/outcome (YES vs NO)`
     : `Common issues with sell orders:
 • You don't own enough tokens to sell
 • Invalid price or size
