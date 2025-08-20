@@ -101,13 +101,9 @@ export async function findMarketByName(
       })),
     };
 
-    logger.info(`[marketLookup] Market lookup successful:`, {
-      question: result.market.question,
-      tokenCount: result.tokens.length,
-      tokens: result.tokens.map(
+    logger.info(`[marketLookup] Market lookup successful: question="${result.market.question}", tokenCount=${result.tokens.length}, tokens=[${result.tokens.map(
         (t) => `${t.outcome}: ${t.token_id.slice(0, 8)}...`,
-      ),
-    });
+      ).join(", ")}]`);
 
     return result;
   } catch (error) {

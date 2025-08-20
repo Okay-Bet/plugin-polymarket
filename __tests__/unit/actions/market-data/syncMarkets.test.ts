@@ -98,8 +98,8 @@ describe('retrieveAllMarketsAction', () => {
 
       (mockRuntime.getSetting as any).mockReturnValue('https://clob.polymarket.com');
 
-      const { callLLMWithTimeout } = await import('../../../../src/utils/llmHelpers');
-      const { initializeClobClient } = await import('../../../../src/utils/clobClient');
+      const { callLLMWithTimeout } = await import('../../../../utils/llmHelpers');
+      const { initializeClobClient } = await import('../../../../utils/clobClient');
 
       (callLLMWithTimeout as any).mockResolvedValue({});
       (initializeClobClient as any).mockResolvedValue(mockClobClient);
@@ -135,8 +135,8 @@ describe('retrieveAllMarketsAction', () => {
 
       (mockRuntime.getSetting as any).mockReturnValue('https://clob.polymarket.com');
 
-      const { callLLMWithTimeout } = await import('../../../../src/utils/llmHelpers');
-      const { initializeClobClient } = await import('../../../../src/utils/clobClient');
+      const { callLLMWithTimeout } = await import('../../../../utils/llmHelpers');
+      const { initializeClobClient } = await import('../../../../utils/clobClient');
 
       (callLLMWithTimeout as any).mockResolvedValue({});
       (initializeClobClient as any).mockResolvedValue(mockClobClient);
@@ -163,8 +163,8 @@ describe('retrieveAllMarketsAction', () => {
 
       (mockRuntime.getSetting as any).mockReturnValue('https://clob.polymarket.com');
 
-      const { callLLMWithTimeout } = await import('../../../../src/utils/llmHelpers');
-      const { initializeClobClient } = await import('../../../../src/utils/clobClient');
+      const { callLLMWithTimeout } = await import('../../../../utils/llmHelpers');
+      const { initializeClobClient } = await import('../../../../utils/clobClient');
 
       (callLLMWithTimeout as any).mockResolvedValue({});
       (initializeClobClient as any).mockResolvedValue(mockClobClient);

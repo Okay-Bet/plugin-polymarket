@@ -2,8 +2,8 @@ import { describe, expect, it, vi, beforeAll, afterAll } from 'vitest';
 import * as fs from 'fs';
 import * as path from 'path';
 import { logger, IAgentRuntime, Plugin } from '@elizaos/core';
-import { character } from '../src/index';
-import plugin from '../src/plugin';
+import { character } from '../../src/index';
+import plugin from '../../src/plugin';
 import { createMockRuntime } from './test-utils';
 import * as os from 'os';
 

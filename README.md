@@ -14,7 +14,7 @@ A plugin for that integrates Polymarket prediction markets with ElizaOS agents.
 ## Installation
 
 ```bash
-elizaos plugins add @Okay-Bet/plugin-polymarket
+npm install @theschein/plugin-polymarket
 ```
 
 ## Configuration

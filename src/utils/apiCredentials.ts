@@ -38,11 +38,7 @@ export async function createApiCredentials(
     };
 
     // Log success (without revealing secrets)
-    logger.info("[apiCredentials] New credentials ready:", {
-      apiKey: credentials.apiKey,
-      hasSecret: !!credentials.secret,
-      hasPassphrase: !!credentials.passphrase,
-    });
+    logger.info(`[apiCredentials] New credentials ready: apiKey=${credentials.apiKey}, hasSecret=${!!credentials.secret}, hasPassphrase=${!!credentials.passphrase}`);
 
     return credentials;
   } catch (error) {
@@ -68,12 +64,7 @@ export function hasApiCredentials(runtime: IAgentRuntime): boolean {
 
   const hasAll = !!(apiKey && apiSecret && apiPassphrase);
 
-  logger.info("[apiCredentials] Credential check:", {
-    hasApiKey: !!apiKey,
-    hasSecret: !!apiSecret,
-    hasPassphrase: !!apiPassphrase,
-    hasAll,
-  });
+  logger.info(`[apiCredentials] Credential check: hasApiKey=${!!apiKey}, hasSecret=${!!apiSecret}, hasPassphrase=${!!apiPassphrase}, hasAll=${hasAll}`);
 
   return hasAll;
 }

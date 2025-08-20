@@ -882,7 +882,7 @@ export const placeOrderAction: Action = {
           orderType as OrderType,
         ).catch((error: unknown) => {
           // Catch any errors from the promise
-          logger.error(`[placeOrderAction] CLOB postOrder error caught:`, error);
+          logger.error(`[placeOrderAction] CLOB postOrder error caught: ${error}`);
           
           // Extract error message from various possible formats
           let errorMsg = "Order failed";

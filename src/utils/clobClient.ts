@@ -30,10 +30,7 @@ export async function initializeReadOnlyClobClient(
   const clobApiUrl =
     runtime.getSetting("CLOB_API_URL") || "https://clob.polymarket.com";
   
-  logger.info(`[initializeReadOnlyClobClient] Initializing read-only CLOB client:`, {
-    httpUrl: clobApiUrl,
-    authType: "None (read-only)",
-  });
+  logger.info(`[initializeReadOnlyClobClient] Initializing read-only CLOB client: httpUrl=${clobApiUrl}, authType=None (read-only)`);
 
   try {
     // Create a dummy wallet for read-only operations
@@ -99,11 +96,7 @@ export async function initializeClobClient(
 
   const hasApiCreds = !!(apiKey && apiSecret && apiPassphrase);
 
-  logger.info(`[initializeClobClient] Initializing CLOB client:`, {
-    httpUrl: clobApiUrl,
-    hasApiCredentials: hasApiCreds,
-    authType: hasApiCreds ? "L1 + L2 (API creds)" : "L1 only (wallet)",
-  });
+  logger.info(`[initializeClobClient] Initializing CLOB client: httpUrl=${clobApiUrl}, hasApiCredentials=${hasApiCreds}, authType=${hasApiCreds ? "L1 + L2 (API creds)" : "L1 only (wallet)"}`);
 
   try {
     // Ensure private key has 0x prefix for ethers.js
@@ -183,15 +176,7 @@ export async function initializeClobClientWithCreds(
     runtime.getSetting("CLOB_PASS_PHRASE");
 
   logger.info(
-    `[initializeClobClientWithCreds] Checking credentials and URLs:`,
-    {
-      hasApiKey: !!apiKey,
-      hasApiSecret: !!apiSecret,
-      hasApiPassphrase: !!apiPassphrase,
-      httpUrl: clobApiUrl,
-      wsUrl: clobWsUrl || "not provided",
-      apiKeyPreview: apiKey ? `${apiKey.substring(0, 8)}...` : "missing",
-    },
+    `[initializeClobClientWithCreds] Checking credentials and URLs: hasApiKey=${!!apiKey}, hasApiSecret=${!!apiSecret}, hasApiPassphrase=${!!apiPassphrase}, httpUrl=${clobApiUrl}, wsUrl=${clobWsUrl || "not provided"}, apiKeyPreview=${apiKey ? `${apiKey.substring(0, 8)}...` : "missing"}`
   );
 
   if (!apiKey || !apiSecret || !apiPassphrase) {

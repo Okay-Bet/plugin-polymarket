@@ -68,11 +68,7 @@ export async function getDepositAddress(
       userAddress,
     );
 
-    logger.info(`[depositManager] Calculated proxy wallet address:`, {
-      userAddress,
-      proxyAddress,
-      factory: "GNOSIS_SAFE_FACTORY",
-    });
+    logger.info(`[depositManager] Calculated proxy wallet address: userAddress=${userAddress}, proxyAddress=${proxyAddress}, factory=GNOSIS_SAFE_FACTORY`);
 
     return proxyAddress;
   } catch (error) {
@@ -163,12 +159,7 @@ export async function depositUSDC(
       );
     }
 
-    logger.info(`[depositManager] Executing USDC transfer:`, {
-      from: userAddress,
-      to: proxyWalletAddress,
-      amount: `$${amount}`,
-      balance: `$${currentBalance}`,
-    });
+    logger.info(`[depositManager] Executing USDC transfer: from=${userAddress}, to=${proxyWalletAddress}, amount=$${amount}, balance=$${currentBalance}`);
 
     // Execute the USDC transfer to proxy wallet
     const transferTx = await usdcContract.transfer(

@@ -9,15 +9,13 @@
   "maintainers": [
     "theSchein"
   ],
-  "publishedAt": "2025-08-13T20:19:58.093Z",
+  "publishedAt": "2025-08-13T23:13:01.557Z",
   "publishedBy": "theSchein",
   "dependencies": {
     "@elizaos/core": "^1.4.2",
-    "@elizaos/plugin-discord": "1.2.5",
-    "@elizaos/plugin-ollama": "1.2.3",
-    "@elizaos/plugin-openai": "1.0.9",
-    "@elizaos/plugin-sql": "^1.4.2",
     "@polymarket/clob-client": "^4.16.0",
+    "@polymarket/sdk": "^1.0.0",
+    "drizzle-orm": "^0.29.0",
     "ethers": "^6.13.1",
     "node-fetch": "^3.0.0",
     "ws": "^8.17.0",

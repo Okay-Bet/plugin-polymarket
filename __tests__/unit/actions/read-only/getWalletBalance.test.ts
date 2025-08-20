@@ -113,7 +113,7 @@ describe('getWalletBalanceAction', () => {
 
   describe('handler', () => {
     it('should return wallet balance successfully', async () => {
-      const { checkUSDCBalance } = await import('../../../../src/utils/balanceChecker');
+      const { checkUSDCBalance } = await import('../../../../utils/balanceChecker');
       (checkUSDCBalance as any).mockResolvedValueOnce({
         onChainBalance: '2500.75',
         formattedBalance: '2,500.75',
@@ -138,7 +138,7 @@ describe('getWalletBalanceAction', () => {
     });
 
     it('should handle zero balance', async () => {
-      const { checkUSDCBalance } = await import('../../../../src/utils/balanceChecker');
+      const { checkUSDCBalance } = await import('../../../../utils/balanceChecker');
       (checkUSDCBalance as any).mockResolvedValueOnce({
         onChainBalance: '0',
         formattedBalance: '0.00',
@@ -162,7 +162,7 @@ describe('getWalletBalanceAction', () => {
     });
 
     it('should handle balance check errors', async () => {
-      const { checkUSDCBalance } = await import('../../../../src/utils/balanceChecker');
+      const { checkUSDCBalance } = await import('../../../../utils/balanceChecker');
       (checkUSDCBalance as any).mockRejectedValueOnce(new Error('RPC error'));
 
       const memory: Memory = {
@@ -182,7 +182,7 @@ describe('getWalletBalanceAction', () => {
     });
 
     it('should check Polymarket trading balance when requested', async () => {
-      const { checkPolymarketBalance } = await import('../../../../src/utils/balanceChecker');
+      const { checkPolymarketBalance } = await import('../../../../utils/balanceChecker');
 
       const memory: Memory = {
         content: { text: 'check trading balance' },
@@ -200,7 +200,7 @@ describe('getWalletBalanceAction', () => {
     });
 
     it('should format balance information correctly', async () => {
-      const { formatBalanceInfo } = await import('../../../../src/utils/balanceChecker');
+      const { formatBalanceInfo } = await import('../../../../utils/balanceChecker');
       (formatBalanceInfo as any).mockReturnValueOnce('Formatted: $1,234.56 USDC');
 
       const memory: Memory = {
