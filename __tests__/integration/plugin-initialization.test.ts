@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach, afterEach, beforeAll, afterAll } from 'vitest';
-import plugin from '../../src/plugin';
+import plugin, { PolymarketService } from '../../src/plugin';
 import { ModelType, logger } from '@elizaos/core';
 import dotenv from 'dotenv';
 
@@ -46,7 +46,7 @@ function createRealRuntime() {
 
   // Create a real service instance if needed
   const createService = (serviceType: string) => {
-    // Return null for now as we don't have a StarterService
+    // Return null for now as we don't have a PolymarketService
     return null;
   };
 
@@ -223,18 +223,18 @@ describe.skip('Plugin Models', () => {
   });
 });
 
-describe('StarterService', () => {
+describe('PolymarketService', () => {
   it('should start the service', async () => {
     const runtime = createRealRuntime();
     let startResult;
     let error = null;
 
     try {
-      logger.info('Starting StarterService');
-      startResult = await StarterService.start(runtime as any);
+      logger.info('Starting PolymarketService');
+      startResult = await PolymarketService.start(runtime as any);
 
       expect(startResult).toBeDefined();
-      expect(startResult.constructor.name).toBe('StarterService');
+      expect(startResult.constructor.name).toBe('PolymarketService');
 
       // Test real functionality - check stop method is available
       expect(typeof startResult.stop).toBe('function');
@@ -244,7 +244,7 @@ describe('StarterService', () => {
     }
 
     documentTestResult(
-      'StarterService start',
+      'PolymarketService start',
       {
         success: !!startResult,
         serviceType: startResult?.constructor.name,
@@ -257,14 +257,14 @@ describe('StarterService', () => {
     const runtime = createRealRuntime();
 
     // First registration should succeed
-    const result1 = await StarterService.start(runtime as any);
+    const result1 = await PolymarketService.start(runtime as any);
     expect(result1).toBeTruthy();
 
     let startupError: Error | unknown = null;
 
     try {
       // Second registration should fail
-      await StarterService.start(runtime as any);
+      await PolymarketService.start(runtime as any);
       expect(true).toBe(false); // Should not reach here
     } catch (e) {
       startupError = e;
@@ -272,7 +272,7 @@ describe('StarterService', () => {
     }
 
     documentTestResult(
-      'StarterService double start',
+      'PolymarketService double start',
       {
         errorThrown: !!startupError,
         errorMessage: startupError instanceof Error ? startupError.message : String(startupError),
@@ -287,14 +287,14 @@ describe('StarterService', () => {
 
     try {
       // Register a real service first
-      const service = new StarterService(runtime as any);
-      runtime.registerService(StarterService.serviceType, service);
+      const service = new PolymarketService(runtime as any);
+      runtime.registerService(PolymarketService.serviceType, service);
 
       // Spy on the real service's stop method
       const stopSpy = vi.spyOn(service, 'stop');
 
       // Call the static stop method
-      await StarterService.stop(runtime as any);
+      await PolymarketService.stop(runtime as any);
 
       // Verify the service's stop method was called
       expect(stopSpy).toHaveBeenCalled();
@@ -304,7 +304,7 @@ describe('StarterService', () => {
     }
 
     documentTestResult(
-      'StarterService stop',
+      'PolymarketService stop',
       {
         success: !error,
       },
@@ -323,7 +323,7 @@ describe('StarterService', () => {
       const originalGetService = runtime.getService;
       runtime.getService = () => null;
 
-      await StarterService.stop(runtime as any);
+      await PolymarketService.stop(runtime as any);
       // Should not reach here
       expect(true).toBe(false);
     } catch (e) {
@@ -331,7 +331,7 @@ describe('StarterService', () => {
       // This is expected - verify it's the right error
       expect(error).toBeTruthy();
       if (error instanceof Error) {
-        expect(error.message).toContain('Starter service not found');
+        expect(error.message).toContain('Polymarket service not found');
       }
     } finally {
       // Restore original getService function if needed
@@ -341,7 +341,7 @@ describe('StarterService', () => {
     }
 
     documentTestResult(
-      'StarterService non-existent stop',
+      'PolymarketService non-existent stop',
       {
         errorThrown: !!error,
         errorMessage: error instanceof Error ? error.message : String(error),
@@ -354,15 +354,18 @@ describe('StarterService', () => {
     const runtime = createRealRuntime();
 
     // First start the service
-    const startResult = await StarterService.start(runtime as any);
+    const startResult = await PolymarketService.start(runtime as any);
     expect(startResult).toBeTruthy();
+    
+    // Register the service in runtime so it can be stopped
+    runtime.registerService(PolymarketService.serviceType, startResult);
 
     let stopError: Error | unknown = null;
     let stopSuccess = false;
 
     try {
       // Then stop it
-      await StarterService.stop(runtime as any);
+      await PolymarketService.stop(runtime as any);
       stopSuccess = true;
     } catch (e) {
       stopError = e;
@@ -370,7 +373,7 @@ describe('StarterService', () => {
     }
 
     documentTestResult(
-      'StarterService stop',
+      'PolymarketService stop',
       {
         success: stopSuccess,
         errorThrown: !!stopError,
