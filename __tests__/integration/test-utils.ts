@@ -4,6 +4,8 @@ import type { IAgentRuntime, Memory, State, Action } from '@elizaos/core';
 export function createMockRuntime(overrides?: Partial<IAgentRuntime>): IAgentRuntime {
   return {
     getSetting: vi.fn(),
+    getService: vi.fn(),
+    registerService: vi.fn(),
     getMemory: vi.fn(),
     getMemories: vi.fn(),
     saveMemory: vi.fn(),
