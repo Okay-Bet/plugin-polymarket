@@ -255,7 +255,7 @@ const plugin: Plugin = {
     // setupWebsocketAction, // REQUIRES L2
     // handleRealtimeUpdatesAction, // REQUIRES L2
   ],
-  providers: [polymarketProvider, marketDataProvider],
+  providers: [marketDataProvider],
   tests: pluginTests,
 };
 

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeAll, afterAll } from 'vitest';
-import plugin from '../../../../src/plugin';
+import plugin from '../../../src/plugin';
 import type { IAgentRuntime, Memory, State, Provider } from '@elizaos/core';
 import { logger } from '@elizaos/core';
 import { v4 as uuidv4 } from 'uuid';
