@@ -86,12 +86,7 @@ export async function checkPolymarketBalance(
       requiredAmount: requiredAmountStr,
     };
 
-    logger.info(`[balanceChecker] Polymarket balance check complete:`, {
-      address: wallet.address,
-      balance: usdcBalance,
-      required: requiredAmountStr,
-      sufficient: hasEnoughBalance,
-    });
+    logger.info(`[balanceChecker] Polymarket balance check complete: address=${wallet.address}, balance=${usdcBalance}, required=${requiredAmountStr}, sufficient=${hasEnoughBalance}`);
 
     return balanceInfo;
   } catch (error) {
@@ -240,12 +235,7 @@ export async function checkUSDCBalance(
       requiredAmount: requiredAmountStr,
     };
 
-    logger.info(`[balanceChecker] Balance check complete:`, {
-      address: walletAddress,
-      balance: balanceFormatted,
-      required: requiredAmountStr,
-      sufficient: hasEnoughBalance,
-    });
+    logger.info(`[balanceChecker] Balance check complete: address=${walletAddress}, balance=${balanceFormatted}, required=${requiredAmountStr}, sufficient=${hasEnoughBalance}`);
 
     return balanceInfo;
   } catch (error) {
@@ -310,12 +300,7 @@ export async function getMaxPositionSize(
       maxPositionSize,
     );
 
-    logger.info(`[balanceChecker] Max position size calculated:`, {
-      currentBalance,
-      configuredLimit: maxPositionSize,
-      confidenceThreshold: minConfidenceThreshold,
-      effectiveLimit,
-    });
+    logger.info(`[balanceChecker] Max position size calculated: currentBalance=${currentBalance}, configuredLimit=${maxPositionSize}, confidenceThreshold=${minConfidenceThreshold}, effectiveLimit=${effectiveLimit}`);
 
     return effectiveLimit;
   } catch (error) {

@@ -10,7 +10,7 @@ import { polymarketMarketsTable } from "../schema";
 import { sql, and, desc } from "drizzle-orm";
 
 export const marketDataProvider: Provider = {
-  name: "POLYMARKET_MARKET_DATA",
+  name: "POLYMARKET_PROVIDER",
   description: "Provides current active Polymarket markets from the database",
   
   get: async (runtime: IAgentRuntime, message: Memory, state?: State): Promise<ProviderResult> => {

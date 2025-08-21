@@ -13,6 +13,7 @@ import { MarketSyncService } from "../services/MarketSyncService";
 export const syncMarketsAction: Action = {
   name: "SYNC_POLYMARKET_MARKETS",
   description: "Manually trigger a sync of Polymarket markets, optionally with a search term",
+  similes: ["GET_ALL_MARKETS", "LIST_MARKETS", "REFRESH_MARKETS", "UPDATE_MARKETS"],
   examples: [
     [
       {
