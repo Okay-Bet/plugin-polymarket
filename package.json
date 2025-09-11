@@ -1,7 +1,7 @@
 {
   "name": "@theschein/plugin-polymarket",
   "description": "ElizaOS plugin for Polymarket prediction markets",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "type": "module",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -94,14 +94,14 @@
     "dist"
   ],
   "dependencies": {
-    "@elizaos/core": "^1.4.2",
+    "@elizaos/core": "1.5.7",
     "@polymarket/clob-client": "^4.16.0",
     "@polymarket/sdk": "^6.0.0",
-    "drizzle-orm": "^0.29.0",
+    "drizzle-orm": "^0.44.5",
     "ethers": "^6.13.1",
     "node-fetch": "^3.0.0",
     "ws": "^8.17.0",
-    "zod": "3.25.32"
+    "zod": "3.24.2"
   },
   "devDependencies": {
     "@elizaos/cli": "^1.4.2",

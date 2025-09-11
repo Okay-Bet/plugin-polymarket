@@ -96,8 +96,6 @@ export async function initializeClobClient(
 
   const hasApiCreds = !!(apiKey && apiSecret && apiPassphrase);
 
-  logger.info(`[initializeClobClient] Initializing CLOB client: httpUrl=${clobApiUrl}, hasApiCredentials=${hasApiCreds}, authType=${hasApiCreds ? "L1 + L2 (API creds)" : "L1 only (wallet)"}`);
-
   try {
     // Ensure private key has 0x prefix for ethers.js
     const formattedPrivateKey = privateKey.startsWith("0x")
@@ -115,25 +113,49 @@ export async function initializeClobClient(
     logger.info(`[initializeClobClient] Wallet address: ${wallet.address}`);
     logger.info(`[initializeClobClient] Chain ID: 137`);
 
-    // Create API credentials object if available
+    // Create API credentials object - either from env vars or derive from wallet
     let creds: ApiKeyCreds | undefined = undefined;
+    
     if (hasApiCreds) {
+      // Use provided API credentials
       creds = {
         key: apiKey!,
         secret: apiSecret!,
         passphrase: apiPassphrase!,
       };
+      logger.info(`[initializeClobClient] Using provided API credentials`);
+    } else {
+      // Derive API credentials from wallet
+      logger.info(`[initializeClobClient] Deriving API credentials from wallet...`);
+      const tempClient = new ClobClient(
+        clobApiUrl,
+        137,
+        enhancedWallet as any,
+        undefined,
+        SignatureType.EOA
+      );
+      
+      try {
+        // Use createOrDeriveApiKey to get or create API credentials
+        creds = await tempClient.createOrDeriveApiKey();
+        logger.info(`[initializeClobClient] Successfully derived API credentials from wallet`);
+      } catch (deriveError) {
+        logger.error(`[initializeClobClient] Failed to derive API credentials: ${deriveError}`);
+        // Continue without API creds - some operations may still work
+      }
     }
+
+    logger.info(`[initializeClobClient] Initializing CLOB client: httpUrl=${clobApiUrl}, hasApiCredentials=${!!creds}, authType=${creds ? "L1 + L2 (API creds)" : "L1 only (wallet)"}`);
 
     const client = new ClobClient(
       clobApiUrl,
       137, // Polygon chain ID
       enhancedWallet as any,
-      creds, // API credentials (undefined if not available)
+      creds, // API credentials (derived or provided)
       SignatureType.EOA, // Use EOA signature type for regular private key wallets
     );
 
-    logger.info(`[initializeClobClient] CLOB client initialized successfully with ${hasApiCreds ? "API credentials and wallet" : "wallet only"}.`);
+    logger.info(`[initializeClobClient] CLOB client initialized successfully with ${creds ? "API credentials and wallet" : "wallet only"}.`);
     return client;
   } catch (error) {
     logger.error(`[initializeClobClient] Failed to initialize CLOB client: ${error}`);
