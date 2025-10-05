@@ -60,10 +60,11 @@ export const searchMarketsAction: Action = {
   ],
   
   validate: async (runtime: IAgentRuntime, message: Memory, state?: State): Promise<boolean> => {
-    logger.info(`[searchMarketsAction] Validate called for message: ${message.content.text}`);
-    
     const text = (message.content.text || "").toLowerCase();
-    
+
+    // Quick rejection for very short messages
+    if (text.length < 3) return false;
+
     // More specific market search patterns
     const marketSearchPatterns = [
       /search.*markets?/i,
@@ -78,23 +79,23 @@ export const searchMarketsAction: Action = {
       /list.*markets?/i,
       /available.*markets?/i
     ];
-    
+
     // Check for direct topic queries (e.g., "f1 markets", "bitcoin markets")
     const hasTopicMarket = /\b\w+\s+markets?\b/i.test(text) && !text.includes("balance");
-    
+
     // Check for market search patterns
     const hasMarketPattern = marketSearchPatterns.some(pattern => pattern.test(text));
-    
+
     // Also check for simple "markets" command
     const isSimpleMarketCommand = text.trim() === "markets" || text.trim() === "show markets";
-    
-    if (hasMarketPattern || hasTopicMarket || isSimpleMarketCommand) {
-      logger.info("[searchMarketsAction] Validation passed - market keywords found");
-      return true;
+
+    const isValid = hasMarketPattern || hasTopicMarket || isSimpleMarketCommand;
+
+    if (isValid) {
+      logger.debug(`[searchMarketsAction] Validation passed: "${text.slice(0, 50)}..."`);
     }
-    
-    logger.info("[searchMarketsAction] No market keywords found");
-    return false;
+
+    return isValid;
   },
 
   handler: async (

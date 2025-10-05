@@ -70,10 +70,11 @@ export const placeOrderAction: Action = {
     message: Memory,
     state?: State,
   ): Promise<boolean> => {
-    logger.info(`[placeOrderAction] Validate called for message: "${message.content?.text}"`);
-
     const messageText = message.content?.text?.toLowerCase() || "";
-    
+
+    // Quick rejection for very short messages
+    if (messageText.length < 3) return false;
+
     // Check if the message actually relates to placing orders/buying
     const buyKeywords = [
       "buy",
@@ -88,11 +89,10 @@ export const placeOrderAction: Action = {
       "want to buy",
       "bid"
     ];
-    
+
     const hasBuyIntent = buyKeywords.some(keyword => messageText.includes(keyword));
-    
+
     if (!hasBuyIntent) {
-      logger.info("[placeOrderAction] No buy/order keywords found");
       return false;
     }
 
@@ -103,7 +103,8 @@ export const placeOrderAction: Action = {
       return false;
     }
 
-    logger.info("[placeOrderAction] Validation passed");
+    // Only log when validation passes
+    logger.debug(`[placeOrderAction] Validation passed for: "${messageText.slice(0, 50)}..."`);
     return true;
   },
 

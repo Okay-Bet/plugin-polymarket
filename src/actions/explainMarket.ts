@@ -38,13 +38,14 @@ export const explainMarketAction: Action = {
   ],
   
   validate: async (runtime: IAgentRuntime, message: Memory, state?: State): Promise<boolean> => {
-    logger.info("[explainMarketAction] Validate called");
-    
     const text = (message.content.text || "").toLowerCase();
-    
+
+    // Quick rejection for very short messages
+    if (text.length < 2) return false;
+
     // Check if it contains a condition ID (hex string)
     const hasConditionId = /0x[a-f0-9]{64}/i.test(message.content.text || "");
-    
+
     // More specific patterns for explaining markets
     const explainPatterns = [
       /tell me (more )?about (the )?(first|second|third|#?\d+|that)/i,
@@ -57,7 +58,7 @@ export const explainMarketAction: Action = {
       /^(first|second|third|\d+|#\d+)$/i, // Just a number or ordinal
       /^explain #?\d+$/i
     ];
-    
+
     // Exclude patterns that are searching for markets or trading
     const excludePatterns = [
       /find.*markets?/i,
@@ -70,26 +71,26 @@ export const explainMarketAction: Action = {
       /^place.*order/i,
       /^order\s+\$?\d+/i
     ];
-    
+
     // Check if it's an excluded pattern (should not validate)
     const isExcluded = excludePatterns.some(pattern => pattern.test(text));
     if (isExcluded) {
-      logger.info("[explainMarketAction] Detected excluded pattern (search/trade), not explanation");
       return false;
     }
-    
+
     // Check if it matches explanation patterns or has a condition ID (but not for trading)
     const hasExplainPattern = explainPatterns.some(pattern => pattern.test(text));
-    
+
     // Only accept condition ID if it's not part of a buy/sell command
     const hasStandaloneConditionId = hasConditionId && !/(buy|sell|order|place)/i.test(text);
-    
-    if (hasExplainPattern || hasStandaloneConditionId) {
-      logger.info("[explainMarketAction] Validation passed");
-      return true;
+
+    const isValid = hasExplainPattern || hasStandaloneConditionId;
+
+    if (isValid) {
+      logger.debug(`[explainMarketAction] Validation passed: "${text.slice(0, 50)}..."`);
     }
-    
-    return false;
+
+    return isValid;
   },
 
   handler: async (

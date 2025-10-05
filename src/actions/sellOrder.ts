@@ -54,10 +54,11 @@ export const sellOrderAction: Action = {
     message: Memory,
     state?: State,
   ): Promise<boolean> => {
-    logger.info(`[sellOrderAction] Validate called for message: "${message.content?.text}"`);
-
     const messageText = message.content?.text?.toLowerCase() || "";
-    
+
+    // Quick rejection for very short messages
+    if (messageText.length < 3) return false;
+
     // Check if the message actually relates to selling positions
     const sellKeywords = [
       "sell",
@@ -72,11 +73,10 @@ export const sellOrderAction: Action = {
       "get rid of",
       "offload"
     ];
-    
+
     const hasSellIntent = sellKeywords.some(keyword => messageText.includes(keyword));
-    
+
     if (!hasSellIntent) {
-      logger.info("[sellOrderAction] No sell keywords found");
       return false;
     }
 
@@ -86,7 +86,7 @@ export const sellOrderAction: Action = {
       return false;
     }
 
-    logger.info("[sellOrderAction] Validation passed");
+    logger.debug(`[sellOrderAction] Validation passed for: "${messageText.slice(0, 50)}..."`);
     return true;
   },
 

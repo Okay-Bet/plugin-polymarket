@@ -1,6 +1,9 @@
 # ElizaOS Polymarket Plugin
 
-A plugin for that integrates Polymarket prediction markets with ElizaOS agents. 
+A plugin that integrates Polymarket prediction markets with ElizaOS agents.
+
+**Version:** 0.3.0
+**ElizaOS Compatibility:** 1.6.x+
 
 ## Features
 
