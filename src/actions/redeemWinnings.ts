@@ -14,6 +14,16 @@ import {
   contentToActionResult,
   createErrorResult,
 } from "../utils/actionHelpers";
+import {
+  fetchPositionsWithFallback,
+  isMarketEligibleForRedemption,
+  checkOnChainResolution,
+  type ResolvedMarket,
+} from "../utils/positionFetcher";
+import {
+  fetchMarketInfoWithFallback,
+  validateMarketForRedemption,
+} from "../utils/marketValidation";
 
 // Contract addresses
 const CONDITIONAL_TOKENS_ADDRESS = "0x4D97DCd97eC945f40cF65F87097ACe5EA0476045";
@@ -32,17 +42,7 @@ const NEG_RISK_ADAPTER_ABI = [
   "function redeemPositions(bytes32 conditionId, uint256[] calldata amounts) external",
 ];
 
-interface ResolvedMarket {
-  conditionId: string;
-  question: string;
-  resolvedOutcome?: string;
-  isNegRisk?: boolean;
-  positions?: {
-    tokenId: string;
-    outcome: string;
-    size: string;
-  }[];
-}
+// ResolvedMarket interface is now imported from positionFetcher
 
 /**
  * Redeem winnings from resolved markets
@@ -158,121 +158,92 @@ export const redeemWinningsAction: Action = {
         });
       }
 
-      // Get current positions from Polymarket API
-      const positionsUrl = `https://data-api.polymarket.com/positions?user=${walletAddress}&sizeThreshold=0.01`;
-      logger.info(`[redeemWinnings] Fetching positions from: ${positionsUrl}`);
-      const positionsResponse = await fetch(positionsUrl);
-      
-      if (!positionsResponse.ok) {
-        throw new Error(`Failed to fetch positions: ${positionsResponse.status}`);
-      }
-
-      const positionsData: any = await positionsResponse.json();
-      const positions = positionsData.data || positionsData || [];
-
+      // Get current positions using fallback chain
+      logger.info(`[redeemWinnings] Fetching positions for wallet: ${walletAddress}`);
+      const positions = await fetchPositionsWithFallback(runtime, walletAddress);
       logger.info(`[redeemWinnings] Found ${positions.length} positions`);
 
       // Check which markets are resolved
       const marketMap = new Map<string, ResolvedMarket>();
+      const clobApiUrl = runtime.getSetting("CLOB_API_URL") || "https://clob.polymarket.com";
       
       for (const position of positions) {
         // Skip if position is too small
-        const size = parseFloat(position.size || position.quantity || "0");
-        if (size < 0.01) continue;
+        const size = parseFloat(position.size || "0");
+        if (size < 0.01) {
+          logger.info(`[redeemWinnings] Skipping position with small size: ${size}`);
+          continue;
+        }
 
-        // Get condition ID from various possible fields
-        const conditionId = position.conditionId || 
-                          position.market?.conditionId || 
-                          position.marketConditionId ||
-                          position.condition_id;
+        const conditionId = position.conditionId;
         
         if (!conditionId) {
           logger.warn(`[redeemWinnings] No condition ID for position: ${JSON.stringify(position).substring(0, 200)}`);
           continue;
         }
 
-        // Also check if current price is 0 or 1 (indicates resolution)
-        const currentPrice = parseFloat(position.currentPrice || position.price || position.current_price || "-1");
-        const isLikelyResolved = currentPrice === 0 || currentPrice === 1 || currentPrice === 0.0 || currentPrice === 1.0;
-        
-        logger.info(`[redeemWinnings] Position ${position.outcome} in market ${conditionId?.substring(0, 10)}... has price ${currentPrice}, size ${size}`);
+        logger.info(`[redeemWinnings] Checking position ${position.outcome} in market ${conditionId?.substring(0, 10)}... with size ${size}`);
 
-        // Check if market is resolved by querying the market data
-        try {
-          // First try to get market data from Gamma API
-          const marketUrl = `https://gamma-api.polymarket.com/markets?conditionId=${conditionId}`;
-          logger.info(`[redeemWinnings] Checking market resolution at: ${marketUrl}`);
-          const marketResponse = await fetch(marketUrl);
-          
-          if (marketResponse.ok) {
-            const marketData = await marketResponse.json();
-            const market = Array.isArray(marketData) ? marketData[0] : marketData;
-            
-            // Check if market is closed/resolved OR if price indicates resolution
-            // Also filter out very old markets
-            const marketEndDate = market?.endDate || market?.end_date_iso;
-            const isOldMarket = marketEndDate ? new Date(marketEndDate) < new Date('2024-01-01') : false;
-            
-            if (market && !isOldMarket && (market.closed || market.resolved || isLikelyResolved)) {
-              const existingMarket = marketMap.get(conditionId);
-              
-              if (existingMarket) {
-                // Add this position to existing market entry
-                existingMarket.positions?.push({
-                  tokenId: position.tokenId || position.token_id,
-                  outcome: position.outcome,
-                  size: position.size || position.quantity,
-                });
-              } else {
-                // Create new market entry
-                marketMap.set(conditionId, {
-                  conditionId,
-                  question: market.question || position.market?.question || position.question || "Unknown market",
-                  resolvedOutcome: market.outcome || market.resolved_outcome,
-                  isNegRisk: market.negRisk || market.neg_risk || market.negative_risk || false,
-                  positions: [{
-                    tokenId: position.tokenId || position.token_id,
-                    outcome: position.outcome,
-                    size: position.size || position.quantity,
-                  }],
-                });
-              }
-              
-              logger.info(`[redeemWinnings] Found resolved market: ${market.question?.substring(0, 50)}...`);
-            }
-          }
-        } catch (error) {
-          logger.warn(`[redeemWinnings] Failed to check market ${conditionId}: ${error}`);
-          
-          // If API fails but price indicates resolution, still try to redeem
-          if (isLikelyResolved) {
-            const existingMarket = marketMap.get(conditionId);
-            
-            if (existingMarket) {
-              existingMarket.positions?.push({
-                tokenId: position.tokenId,
-                outcome: position.outcome,
-                size: position.size || position.quantity,
-              });
-            } else {
-              marketMap.set(conditionId, {
-                conditionId,
-                question: position.question || position.market?.question || "Unknown market",
-                resolvedOutcome: currentPrice === 1 ? position.outcome : undefined,
-                isNegRisk: position.negRisk || position.negative_risk || false,
-                positions: [{
-                  tokenId: position.tokenId || position.token_id,
-                  outcome: position.outcome,
-                  size: position.size || position.quantity,
-                }],
-              });
-            }
-          }
+        // Get market info with fallback chain
+        const marketInfo = await fetchMarketInfoWithFallback(conditionId, clobApiUrl);
+        
+        if (!marketInfo) {
+          logger.warn(`[redeemWinnings] Could not fetch market info for ${conditionId}`);
+          continue;
         }
+        
+        // Validate market for redemption
+        const validation = validateMarketForRedemption(marketInfo);
+        
+        if (!validation.isValid) {
+          logger.info(`[redeemWinnings] Market ${conditionId} not eligible: ${validation.reason}`);
+          continue;
+        }
+        
+        // Check on-chain resolution status
+        const isResolvedOnChain = await checkOnChainResolution(provider, conditionId);
+        
+        if (!isResolvedOnChain) {
+          logger.info(`[redeemWinnings] Market ${conditionId} not resolved on-chain yet`);
+          continue;
+        }
+        
+        // Market is valid for redemption
+        const existingMarket = marketMap.get(conditionId);
+        
+        if (existingMarket) {
+          // Add this position to existing market entry
+          existingMarket.positions?.push({
+            tokenId: position.tokenId,
+            outcome: position.outcome,
+            size: position.size,
+          });
+        } else {
+          // Create new market entry
+          marketMap.set(conditionId, {
+            conditionId,
+            question: marketInfo.question || "Unknown market",
+            resolvedOutcome: marketInfo.outcome,
+            isNegRisk: marketInfo.negRisk,
+            endDate: marketInfo.endDate,
+            closed: marketInfo.closed,
+            resolved: marketInfo.resolved,
+            positions: [{
+              tokenId: position.tokenId,
+              outcome: position.outcome,
+              size: position.size,
+            }],
+          });
+        }
+        
+        logger.info(`[redeemWinnings] Found redeemable market: ${marketInfo.question?.substring(0, 50)}...`);
       }
       
-      // Convert map to array
-      const resolvedMarkets = Array.from(marketMap.values());
+      // Convert map to array and do final validation
+      const allMarkets = Array.from(marketMap.values());
+      const resolvedMarkets = allMarkets.filter(market => isMarketEligibleForRedemption(market));
+      
+      logger.info(`[redeemWinnings] ${resolvedMarkets.length} markets eligible for redemption out of ${allMarkets.length} resolved markets`);
 
       if (resolvedMarkets.length === 0) {
         const responseContent: Content = {

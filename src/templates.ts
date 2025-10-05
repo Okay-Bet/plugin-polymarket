@@ -94,70 +94,40 @@ If no valid market identifier is found, you MUST respond with the following JSON
 }
 `;
 
-export const orderTemplate = `You are an AI assistant. Your task is to extract order parameters from the user's message.
-
-Review the recent messages:
-<recent_messages>
+// Simplified order template for small LLMs
+export const orderTemplate = `Extract order details from message:
 {{recentMessages}}
-</recent_messages>
 
-Based on the conversation, identify:
-- tokenId: The token ID for the market position (required) - can be explicit ID or extracted from market name
-- side: "buy" or "sell" (required)
-- price: The price per share (0.001-0.999) (optional - if not specified, use market order)
-- size: The quantity/size of the order (optional - defaults to 1 share)
-- orderType: "limit" or "market" (optional, defaults to "market" if no price given)
-- marketName: Name/description of the market (if mentioned)
-- outcome: "YES", "NO", or specific outcome name (if mentioned)
+Find:
+- tokenId: Long number OR "0x..." OR set to "MARKET_NAME_LOOKUP" if market name given
+- side: "buy" or "sell"
+- price: Number between 0.01-0.99 (optional)
+- size: Number of shares (optional, default 1)
+- marketName: Market name if mentioned
+- outcome: "YES" or "NO" if mentioned
 
-**Token ID Extraction Rules:**
-1. Look for explicit token IDs (long numeric strings like "71321045679252212594626385532706912750332728571942532289631379312455583992563")
-2. Look for condition IDs (0x... format, 66 characters long) - these are acceptable and will be automatically resolved
-3. If the previous message shows "YES Token:" or "NO Token:" with a token ID, use that token ID based on the user's desired outcome
-4. Look for market names like "Nuggets NBA Champion", "Chiefs vs Raiders", "Nobel Peace Prize", "Macron out in 2025?"
-5. If only market name is provided, set tokenId to "MARKET_NAME_LOOKUP" and include the market name and outcome
-6. NEVER generate fake or example token IDs - only use real ones from the conversation
-7. If no valid token ID is found, return an error
+Examples:
+"Buy YES in Trump election" → {"tokenId":"MARKET_NAME_LOOKUP","marketName":"Trump election","side":"buy","outcome":"YES"}
+"Sell 10 shares at 0.75" → {"side":"sell","size":10,"price":0.75}
 
-**Examples:**
-- "Buy 5 shares at $0.75 for the Nobel Peace Prize market" → tokenId: "MARKET_NAME_LOOKUP", marketName: "Nobel Peace Prize market", side: "buy", price: 0.75, size: 5
-- "Buy YES in Macron out in 2025?" → tokenId: "MARKET_NAME_LOOKUP", marketName: "Macron out in 2025?", outcome: "YES", side: "buy", orderType: "market"
-- "Sell NO position in Trump election" → tokenId: "MARKET_NAME_LOOKUP", marketName: "Trump election", outcome: "NO", side: "sell", orderType: "market"
-- "Place buy order for token 71321045679252212594626385532706912750332728571942532289631379312455583992563" → tokenId: "71321045679252212594626385532706912750332728571942532289631379312455583992563", orderType: "market"
-- "Buy $10 of Chiefs to win" → tokenId: "MARKET_NAME_LOOKUP", marketName: "Chiefs", outcome: "YES" (inferred), orderType: "market"
-- If previous message shows "YES Token: 12345..." and user says "buy yes" → tokenId: "12345...", side: "buy", orderType: "market"
-- If previous message shows market data with token IDs and user says "buy the NO token" → extract the NO token ID from the previous message
-- If message shows condition ID like "0x7f6e9f3aee46ac8031a9879ed7e9d94b082c3e0e76395e82f9e7d5c57362efd8" and user says "buy yes" → tokenId: "0x7f6e9f3aee46ac8031a9879ed7e9d94b082c3e0e76395e82f9e7d5c57362efd8", side: "buy", outcome: "YES", orderType: "market"
+Return JSON or {"error":"Need market and buy/sell"}`;
 
-**Pattern Recognition:**
-- "Buy/Sell YES/NO in [market]" → outcome-based trading
-- "[market]" in quotes → exact market name
-- Dollar amounts like "$10" → convert to size if price given
-- "win", "victory" → YES outcome
-- "lose", "defeat" → NO outcome
+// Alternative more structured template for slightly larger small LLMs
+export const orderTemplateStructured = `Message: {{recentMessages}}
 
-**IMPORTANT**: NEVER generate fake token IDs like "0x987654321fedcba" or "123456789". Only extract real token IDs from the user's message or set to "MARKET_NAME_LOOKUP" for market name searches.
+TASK: Extract trading order.
 
-Respond with a JSON object containing the extracted values:
-{
-    "tokenId": string,
-    "side": "buy" | "sell",
-    "price"?: number, // Optional - omit for market orders
-    "size"?: number,  // Optional - defaults to 1 if not specified
-    "orderType"?: "limit" | "market",
-    "marketName"?: string,
-    "outcome"?: string
-}
+FIND THESE:
+1. Market: Token ID (long number) OR market name
+2. Action: BUY or SELL
+3. Outcome: YES or NO
+4. Price: 0.01 to 0.99
+5. Shares: Number
 
-**Default Behavior:**
-- If no price specified: set orderType to "market"
-- If no size specified: default to 1 share
-- If no orderType specified but price given: default to "limit"
+RETURN JSON:
+{"tokenId":"<id or MARKET_NAME_LOOKUP>","side":"<buy/sell>","outcome":"<YES/NO>","price":<number>,"size":<number>,"marketName":"<name>"}
 
-If tokenId and side cannot be determined, respond with:
-{
-    "error": "Missing required order parameters. Please specify market name/tokenId and side (buy/sell)."
-}`;
+If missing market/action: {"error":"Missing parameters"}`;
 
 export const getOrderBookTemplate = `You are an AI assistant. Your task is to extract token identification parameters for retrieving order book data.
 
